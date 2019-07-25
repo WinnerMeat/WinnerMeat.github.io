@@ -6,15 +6,33 @@
     <description>Recent content in Posts on WinnerMeat</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Tue, 23 Jul 2019 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Wed, 24 Jul 2019 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://winnermeat.github.io/post/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
+      <title>Ubuntu</title>
+      <link>https://winnermeat.github.io/post/ubuntu/</link>
+      <pubDate>Wed, 24 Jul 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://winnermeat.github.io/post/ubuntu/</guid>
+      <description>&lt;table&gt;&lt;tr&gt;&lt;td bgcolor=SkyBlue&gt;Ubuntu18.04下安装搜狗输入法&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</description>
+    </item>
+    
+    <item>
+      <title>尝试</title>
+      <link>https://winnermeat.github.io/post/%E5%B0%9D%E8%AF%95/</link>
+      <pubDate>Wed, 24 Jul 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://winnermeat.github.io/post/%E5%B0%9D%E8%AF%95/</guid>
+      <description>&lt;p&gt;Emoji can be enabled in a Hugo project in a number of ways.&lt;/p&gt;</description>
+    </item>
+    
+    <item>
       <title>Markdown Syntax Guide</title>
       <link>https://winnermeat.github.io/post/markdown-syntax/</link>
-      <pubDate>Tue, 23 Jul 2019 00:00:00 +0000</pubDate>
+      <pubDate>Mon, 11 Mar 2019 00:00:00 +0000</pubDate>
       
       <guid>https://winnermeat.github.io/post/markdown-syntax/</guid>
       <description>&lt;p&gt;This article offers a sample of basic Markdown syntax that can be used in Hugo content files, also it shows whether basic HTML elements are decorated with CSS in a Hugo theme.&lt;/p&gt;</description>
@@ -28,15 +46,6 @@
       <guid>https://winnermeat.github.io/post/placeholder-text/</guid>
       <description>&lt;p&gt;Lorem est tota propiore conpellat pectoribus de
 pectora summo.&lt;/p&gt;</description>
-    </item>
-    
-    <item>
-      <title>Emoji Support</title>
-      <link>https://winnermeat.github.io/post/emoji-support/</link>
-      <pubDate>Tue, 05 Mar 2019 00:00:00 +0000</pubDate>
-      
-      <guid>https://winnermeat.github.io/post/emoji-support/</guid>
-      <description>&lt;p&gt;Emoji can be enabled in a Hugo project in a number of ways.&lt;/p&gt;</description>
     </item>
     
     <item>

@@ -3,66 +3,82 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>https://winnermeat.github.io/categories/</loc>
-    <lastmod>2019-07-23T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://winnermeat.github.io/post/markdown-syntax/</loc>
-    <lastmod>2019-07-23T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
     <loc>https://winnermeat.github.io/post/</loc>
-    <lastmod>2019-07-23T00:00:00+00:00</lastmod>
+    <lastmod>2019-07-24T00:00:00+00:00</lastmod>
   </url>
   
   <url>
     <loc>https://winnermeat.github.io/tags/</loc>
-    <lastmod>2019-07-23T00:00:00+00:00</lastmod>
+    <lastmod>2019-07-24T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
+    <loc>https://winnermeat.github.io/post/ubuntu/</loc>
+    <lastmod>2019-07-24T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://winnermeat.github.io/</loc>
-    <lastmod>2019-07-23T00:00:00+00:00</lastmod>
+    <lastmod>2019-07-24T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>https://winnermeat.github.io/tags/css/</loc>
-    <lastmod>2019-07-23T00:00:00+00:00</lastmod>
+    <lastmod>2019-07-24T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
+    <loc>https://winnermeat.github.io/tags/virtual-machine/</loc>
+    <lastmod>2019-07-24T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://winnermeat.github.io/post/%E5%B0%9D%E8%AF%95/</loc>
+    <lastmod>2019-07-24T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://winnermeat.github.io/categories/</loc>
+    <lastmod>2019-03-11T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://winnermeat.github.io/post/markdown-syntax/</loc>
+    <lastmod>2019-03-11T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://winnermeat.github.io/tags/html/</loc>
-    <lastmod>2019-07-23T00:00:00+00:00</lastmod>
+    <lastmod>2019-03-11T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>https://winnermeat.github.io/tags/markdown/</loc>
-    <lastmod>2019-07-23T00:00:00+00:00</lastmod>
+    <lastmod>2019-03-11T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>https://winnermeat.github.io/categories/syntax/</loc>
-    <lastmod>2019-07-23T00:00:00+00:00</lastmod>
+    <lastmod>2019-03-11T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>https://winnermeat.github.io/categories/themes/</loc>
-    <lastmod>2019-07-23T00:00:00+00:00</lastmod>
+    <lastmod>2019-03-11T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>https://winnermeat.github.io/tags/themes/</loc>
-    <lastmod>2019-07-23T00:00:00+00:00</lastmod>
+    <lastmod>2019-03-11T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -74,17 +90,6 @@
   <url>
     <loc>https://winnermeat.github.io/tags/text/</loc>
     <lastmod>2019-03-09T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://winnermeat.github.io/post/emoji-support/</loc>
-    <lastmod>2019-03-05T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://winnermeat.github.io/tags/emoji/</loc>
-    <lastmod>2019-03-05T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
