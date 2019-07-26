@@ -6,15 +6,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>
-
-tag | test
-
+Ubuntu——搜狗输入法
 </title>
 
   
   
   <meta name="author" content="WinnerMeat" />
-  <meta name="description" content="" />
+  <meta name="description" content="Ubuntu18.04下安装搜狗输入法" />
 
 
 
@@ -23,7 +21,7 @@ tag | test
 <meta name="generator" content="Hugo 0.55.6" />
 
 
-<link rel="canonical" href="https://winnermeat.github.io/tags/test/" />
+<link rel="canonical" href="https://winnermeat.github.io/post/ubuntu%E6%90%9C%E7%8B%97%E8%BE%93%E5%85%A5%E6%B3%95/" />
 <link rel="alternative" href="/index.xml" title="WinnerMeat" type="application/atom+xml" />
 
 <link href="/css/semantic.min.css" rel="stylesheet" />
@@ -38,27 +36,105 @@ tag | test
     <div class="flipper">
       <section class="front">
         
-
-<nav class="ui top secondary menu" style="overflow-x: auto">
+<nav class="ui top secondary menu">
   <div class="item">
     <i class="inverted big link bullseye icon dream-flip-toggle" title="Flip it!"></i>
   </div>
   <div class="item">
-    <a href="/"><i class="inverted big link home icon" title="Home"></i></a>
-  </div>
-  <div class="item">
-    
-    <i class="disabled inverted big arrow alternate circle outline left icon" title="Previous page"></i>
-    
-  </div>
-  <div class="item">
-    
-    <i class="disabled inverted big arrow alternate circle outline right icon" title="Next page"></i>
-    
+    <a href="/">
+      <i class="inverted big link home icon" title="Home"></i>
+    </a>
   </div>
 </nav>
  
 <div class="ui centered grid">
+  <div class="fifteen wide mobile fifteen wide tablet eleven wide computer column post-list post-single-main">
+
+    <section class="ui top attached segment">
+      <a class="ui black right corner label" href="javascript:void(0)" onclick="savePostAsImg()">
+        <i class="save icon"></i>
+      </a>
+      <header>
+        <h1 class="ui header">
+          Ubuntu——搜狗输入法
+          <div class="sub header">@ WinnerMeat · Jul 24, 2019 · 1 min read · Update at Jul 24, 2019</div>
+        </h1>
+      </header>
+      <article class="markdown-body" style="margin-top: 2rem; font-size: 1.4rem;"><table><tr><td bgcolor=SkyBlue>Ubuntu18.04下安装搜狗输入法</td></tr></table>
+
+<p>&emsp;&emsp;<font size=4 face="黑体">因为工作原因要运用到Linux，对于新手来说最容易上手的就是Ubuntu，在安装了Ubuntu之后，第一件事当然就是安装一个可以使用的汉语输入法，在这里我选择的是搜狗输入法的安装。</p>
+
+<p>1.Ctrl+Alt+T，打开终端Terminal；</p>
+
+<p>2.先添加以下源，在终端输入命令：sudo add-apt-repository ppa:fcitx-team/nightly，输入密码<br/>
+<img src="/img/Ubuntu——sogo/添加源.jpg" alt="添加一下源" /></p>
+
+<p>3.更新一下系统给，继续输入命令：sudo apt-get update<br/>
+<img src="/img/Ubuntu——sogo/更新系统给.jpg" alt="更新系统给" /></p>
+
+<p>4.安装fcitx，输入命令：sudo apt-get install fcitx<br/></p>
+
+<pre><code class="language-cmd">sudo apt-get install fcitx
+</code></pre>
+
+<p>5.安装fcitx的配置工具，输入命令：sudo apt-get install fcitx-config-gtk</p>
+
+<p>6.安装fcitx的table-all软件包，输入命令：sudo apt-get install fcitx-table-all，遇到”希望继续执行吗“选择Y</p>
+
+<p>7.安装im-switch切换工具，输入命令：sudo apt-get install im-switch，遇到”希望继续执行吗“选择Y</p>
+
+<p>8.安装完成了，然后点击桌面左上角在计算机中搜索fcitx，如果能找到说明安装成功了<br/>
+<img src="/img/Ubuntu——sogo/fcitx.jpg" alt="更新系统给" /></p>
+
+<p>9.安装所有依赖，输入命令：sudo apt-get install -f</p>
+
+<p>10.安装搜狗输入法：假设你的安装包放在Downloads文件夹下，那么在终端输入命令：<br/>
+(1) ls<br/>
+(2) cd Downloads/<br/>
+(3) ls  (这个时候就会列出你的Downloads文件夹下都有哪些安装包)<br/>
+(4) sudo dpkg -i sogoupinyin_XXXX.deb(安装包名)<br/>
+<img src="/img/Ubuntu——sogo/安装sogo.jpg" alt="安装sogo" /></p>
+
+<p>11.安装成功后，进入设置，根据红色箭头进入语言安装界面，安装语言（会自动安装中文语言）
+<img src="/img/Ubuntu——sogo/进入设置.jpg" alt="进入设置" />
+<img src="/img/Ubuntu——sogo/选择语言.jpg" alt="选择语言" /></p>
+
+<p>12.根据下方箭头更爱输入框架为fcitx，然后点击上面的Apply System-Wide应用到全局。然后将当前用户进行注销后再进行登录（注销没有效果，重启就可以了）。
+<img src="/img/Ubuntu——sogo/安装语言.jpg" alt="安装语言" /></p>
+
+<p>13.登陆后在右上角出现一个键盘标志，点击进入，选择Configure Current Input Method
+<img src="/img/Ubuntu——sogo/Configure_Current.jpg" alt="Configure_Current" /></p>
+
+<p>14.进入以下界面后选择 &ldquo;+&rdquo; 号
+<img src="/img/Ubuntu——sogo/+.jpg" alt="+" /><br/>
+进入到Add input method界面，将下面的Only Show Current Language 点掉后，在搜索栏搜索搜狗拼音，选中之后进行添加
+<img src="/img/Ubuntu——sogo/sogo_添加.jpg" alt="sogo" /><br/>
+添加成功后，将搜狗拼音移到第一位
+<img src="/img/Ubuntu——sogo/sogo添加成功.jpg" alt="sogo添加成功" /><br/>
+成功之后，打开浏览器随便输入，可以看到输入结果，同时成功后下方还会出现搜狗输入法的标志，这时候就可以通过shirt键切换中英文。<br/>
+<img src="/img/Ubuntu——sogo/成功运用.jpg" alt="成功运用" /></p>
+
+<p>另外，我们在转换时会出现简体中文与繁体中文，下面可以进行它们之间的转换，也可以用Ctrl+Shift+F进行转换<br/>
+<img src="/img/Ubuntu——sogo/简体中文.jpg" alt="简体中文" /></p>
+
+<p><br/><br/></p>
+
+<p></font></p></article>
+    </section>
+
+    <footer class="ui attached segment dream-tags">
+      
+      
+      <a class="ui label" href="/tags/virtual-machine" title="virtual machine">virtual machine</a>
+      
+      
+    </footer>
+
+    
+
+    
+
+  </div>
   <div class="fifteen wide mobile fifteen wide tablet four wide computer column">
 
     
@@ -177,49 +253,6 @@ tag | test
 
 
   </div>
-  <div class="fifteen wide mobile fifteen wide tablet eleven wide computer column post-list">
-
-    <div class="ui two stackable cards">
-      
-      
-
-        <article class="card" style="box-shadow: none;">
-  <div class="image">
-    
-    <div class="ui dimmer">
-    
-      <div class="content">
-        <div class="center">
-          
-          <div class="display-content">
-          
-            <a href="https://winnermeat.github.io/post/test/">
-              
-              <h2 class="ui header" style="color: white;">test</h2>
-              
-            </a>
-            <p style="padding: 5px;">Just a test.
-</p>
-            <p>@ g1eny0ung</p>
-          </div>
-          
-          <div class="ui top right attached black label">1 min read</div>
-          <div class="ui bottom left attached black label">Feb 22, 2018</div>
-          
-        </div>
-      </div>
-    </div>
-    
-    <img src="/img/default2.jpg" alt="test">
-    
-  </div>
-</article>
-
-
-      
-    </div>
-
-  </div>
 </div>
 
       </section>
@@ -280,7 +313,6 @@ tag | test
       
 
       
-        
       
     </section>
 
