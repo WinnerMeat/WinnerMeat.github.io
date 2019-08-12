@@ -4,30 +4,47 @@
   
   <url>
     <loc>https://winnermeat.github.io/categories/</loc>
-    <lastmod>2019-07-26T00:00:00+00:00</lastmod>
+    <lastmod>2019-08-12T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>https://winnermeat.github.io/post/</loc>
-    <lastmod>2019-07-26T00:00:00+00:00</lastmod>
+    <lastmod>2019-08-12T00:00:00+00:00</lastmod>
   </url>
   
   <url>
     <loc>https://winnermeat.github.io/tags/</loc>
-    <lastmod>2019-07-26T00:00:00+00:00</lastmod>
+    <lastmod>2019-08-12T00:00:00+00:00</lastmod>
     <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://winnermeat.github.io/</loc>
+    <lastmod>2019-08-12T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://winnermeat.github.io/categories/virtual-machine/</loc>
+    <lastmod>2019-08-12T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://winnermeat.github.io/tags/virtual-machine/</loc>
+    <lastmod>2019-08-12T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://winnermeat.github.io/post/%E6%90%AD%E5%BB%BAubuntu/</loc>
+    <lastmod>2019-08-12T00:00:00+00:00</lastmod>
   </url>
   
   <url>
     <loc>https://winnermeat.github.io/post/ubuntu%E4%B8%AD%E6%96%87%E8%AE%BE%E7%BD%AE/</loc>
     <lastmod>2019-07-26T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://winnermeat.github.io/</loc>
-    <lastmod>2019-07-26T00:00:00+00:00</lastmod>
-    <priority>0</priority>
   </url>
   
   <url>
@@ -37,24 +54,7 @@
   </url>
   
   <url>
-    <loc>https://winnermeat.github.io/tags/virtual-machine/</loc>
-    <lastmod>2019-07-26T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
     <loc>https://winnermeat.github.io/post/ubuntu%E6%90%9C%E7%8B%97%E8%BE%93%E5%85%A5%E6%B3%95/</loc>
-    <lastmod>2019-07-24T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://winnermeat.github.io/tags/css/</loc>
-    <lastmod>2019-07-24T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://winnermeat.github.io/post/%E5%B0%9D%E8%AF%95/</loc>
     <lastmod>2019-07-24T00:00:00+00:00</lastmod>
   </url>
   
@@ -73,23 +73,6 @@
     <loc>https://winnermeat.github.io/tags/text/</loc>
     <lastmod>2019-03-09T00:00:00+00:00</lastmod>
     <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://winnermeat.github.io/categories/test/</loc>
-    <lastmod>2018-02-22T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://winnermeat.github.io/tags/test/</loc>
-    <lastmod>2018-02-22T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://winnermeat.github.io/post/test/</loc>
-    <lastmod>2018-02-22T00:00:00+00:00</lastmod>
   </url>
   
   <url>

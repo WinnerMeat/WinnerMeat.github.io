@@ -6,10 +6,19 @@
     <description>Recent content in Categories on WinnerMeat</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Fri, 26 Jul 2019 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 12 Aug 2019 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://winnermeat.github.io/categories/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>virtual machine</title>
+      <link>https://winnermeat.github.io/categories/virtual-machine/</link>
+      <pubDate>Mon, 12 Aug 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://winnermeat.github.io/categories/virtual-machine/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>computer</title>
@@ -17,15 +26,6 @@
       <pubDate>Fri, 26 Jul 2019 00:00:00 +0000</pubDate>
       
       <guid>https://winnermeat.github.io/categories/computer/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>test</title>
-      <link>https://winnermeat.github.io/categories/test/</link>
-      <pubDate>Thu, 22 Feb 2018 00:00:00 +0000</pubDate>
-      
-      <guid>https://winnermeat.github.io/categories/test/</guid>
       <description></description>
     </item>
     

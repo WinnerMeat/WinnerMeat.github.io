@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>
+搭建Ubuntu
+</title>
+
+  
+  
+  <meta name="author" content="WinnerMeat" />
+  <meta name="description" content="如何在电脑上面搭建Ubuntu" />
+
+
+
+
+
+<meta name="generator" content="Hugo 0.55.6" />
+
+
+<link rel="canonical" href="https://winnermeat.github.io/post/%E6%90%AD%E5%BB%BAubuntu/" />
+<link rel="alternative" href="/index.xml" title="WinnerMeat" type="application/atom+xml" />
+
+<link href="/css/semantic.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="/css/site.css" />
+<link rel="stylesheet" href="/css/github-markdown.css" />
+
+
+</head>
+
+<body>
+  <div class="flip-container">
+    <div class="flipper">
+      <section class="front">
+        
+<nav class="ui top secondary menu">
+  <div class="item">
+    <i class="inverted big link bullseye icon dream-flip-toggle" title="Flip it!"></i>
+  </div>
+  <div class="item">
+    <a href="/">
+      <i class="inverted big link home icon" title="Home"></i>
+    </a>
+  </div>
+</nav>
+ 
+<div class="ui centered grid">
+  <div class="fifteen wide mobile fifteen wide tablet eleven wide computer column post-list post-single-main">
+
+    <section class="ui top attached segment">
+      <a class="ui black right corner label" href="javascript:void(0)" onclick="savePostAsImg()">
+        <i class="save icon"></i>
+      </a>
+      <header>
+        <h1 class="ui header">
+          搭建Ubuntu
+          <div class="sub header">@ WinnerMeat · Aug 12, 2019 · 1 min read · Update at Aug 12, 2019</div>
+        </h1>
+      </header>
+      <article class="markdown-body" style="margin-top: 2rem; font-size: 1.4rem;"><table><tr><td bgcolor=SkyBlue>如何在电脑上面搭建Ubuntu</td></tr></table>
+
+<p><font size=4 face="黑体">
+工具/原料<br/>
+VMware 虚拟机软件<br/>
+Ubuntu安装镜像<br/></p>
+
+<p>&emsp;&emsp;1.安装VMware<br/>
+搜索VMware，进入官网，按照图片提示进入到 Workstation Pro 选择界面，并选择自己需要的版本。<br/>
+<img src="/img/Ubuntu——搭建/官网.jpg" alt="官网" /></p>
+
+<p><img src="/img/Ubuntu——搭建/选择VMware版本.jpg" alt="版本" />
+在下载后按照提示进行安装<br/>
+过程中需要输入激活码直接网上搜索即可 <br/>
+安装完成后虚拟机环境搭建完毕<br/></p>
+
+<p>&emsp;&emsp;2.下载ubuntu镜像<br/>
+搜索ubuntu，进入官网，点击Download,选择自己想要的版本并下载 <br/>
+因为办公需要，为了稳定起见，一般都是选择LTS，即长期稳定支持版本。<br/>
+我这里下载的是18.04的版本<br/>
+<img src="/img/Ubuntu——搭建/Ubuntu镜像下载.jpg" alt="Ubuntu版本" />
+下载完成后将镜像文件放在自己创建的虚拟机文件夹中，如果以后安装其它虚拟机，方便管理<br/>
+<img src="/img/Ubuntu——搭建/Ubuntu镜像.jpg" alt="Ubuntu镜像" /></p>
+
+<p>&emsp;&emsp;3.安装虚拟机<br/>
+打开vmware，点击创建新的虚拟机 <br/>
+<img src="/img/Ubuntu——搭建/创建新的虚拟机.jpg" alt="创建新的虚拟机" />
+选择我们刚才下载的安装镜像，点击浏览按钮，然后在弹出来的窗口中选择刚才下载镜像时候保存的位置。点击下一步&hellip;
+<img src="/img/Ubuntu——搭建/选择Ubuntu镜像.jpg" alt="选择Ubuntu镜像" />
+填写一下主机名称以及一个普通账户的名称和密码。填写完毕后点击下一步&hellip;<br/>
+为虚拟机取个名字，点击浏览，选择虚拟机的安装位置，最后不要选择默认位置。因为默认是安装在C盘，C盘是系统盘，空间比较小，而虚拟机占用的空间比较大。可以选择之前放镜像的文件夹里面，选择好以后点击下一步&hellip;<br/><br/>
+进入硬件配置页面。设置硬盘大小为100g，如果你的硬盘比较大，可以设置的更大一点。并且选择将虚拟机磁盘拆分成多个文件。点击下一步&hellip;<br/><br/>
+选择自定义硬件，根据电脑的配置对虚拟机系统硬件进行分配。内存为主机内存的一半，若主机是8g，那么虚拟机内存就是4g。设置好以后再点完成。<br/><br/>
+然后vmware就会自动启动这台虚拟机，并开始安装。<br/></p>
+
+<p>&emsp;&emsp;4.进入虚拟机<br/>
+安装完毕以后就会自动弹出登陆界面，登陆用户就是刚才创建虚拟机时设置的普通用户名，点击普通用户名称，输入自己配置的密码，就能正常登陆。
+</font></p></article>
+    </section>
+
+    <footer class="ui attached segment dream-tags">
+      
+      
+      <a class="ui label" href="/tags/virtual-machine" title="virtual machine">virtual machine</a>
+      
+      
+    </footer>
+
+    
+
+    
+
+  </div>
+  <div class="fifteen wide mobile fifteen wide tablet four wide computer column">
+
+    
+<section class="ui top attached center aligned inverted segment">
+
+  <a id="tag-category-pop" class="ui right ribbon label" style="width: 1px;">
+    <i class="bars icon" title="Show menu"></i>
+  </a>
+
+  <div class="ui small circular image" style="margin-top: 1rem;">
+    
+    <img src="/img/avatar-ex.svg">
+    
+  </div>
+  
+  <h3 class="ui inverted header">
+  WinnerMeat&#39;s blog<div class="sub header">林深见鲸  海南见鹿</div>
+  </h3>
+
+  
+  <div class="ui inverted horizontal list">
+  
+    
+    <a class="item" href="/post">
+      <i class="archive icon" title="Archives"></i>
+    </a>
+    
+    <a class="item" href="/tags">
+      <i class="tags icon" title="All Tags"></i>
+    </a>
+    <a class="item" href="/categories">
+      <i class="cube icon" title="All Categories"></i>
+    </a>
+  </div>
+</section>
+
+
+
+<section class="ui attached center aligned inverted segment dream-header-tags dream-tags">
+
+  
+  <a class="ui label" href="/tags/markdown" title="markdown">markdown</a>
+  
+  <a class="ui label" href="/tags/text" title="text">text</a>
+  
+  <a class="ui label" href="/tags/virtual-machine" title="virtual-machine">virtual-machine</a>
+  
+</section>
+
+
+
+
+<section class="ui attached inverted segment dream-categories">
+
+  
+  <div class="ui inverted accordion">
+  
+    
+    <div class="title">
+      <i class="dropdown icon"></i>
+      <a href="/categories/computer" class="item">computer</a>
+    </div>
+    <div class="content">
+      <div class="ui link list">
+      
+      <div class="item" style="padding-left: 24px;">
+        <i class="gem outline grey icon"></i>
+        <div class="content">
+          <a href="https://winnermeat.github.io/post/ubuntu%E4%B8%AD%E6%96%87%E8%AE%BE%E7%BD%AE/" class="item">Ubuntu——中文设置</a>
+        </div>
+      </div>
+      
+      <div class="item" style="padding-left: 24px;">
+        <i class="gem outline grey icon"></i>
+        <div class="content">
+          <a href="https://winnermeat.github.io/post/ubuntu%E6%90%9C%E7%8B%97%E8%BE%93%E5%85%A5%E6%B3%95/" class="item">Ubuntu——搜狗输入法</a>
+        </div>
+      </div>
+      
+      </div>
+    </div>
+    
+    <div class="title">
+      <i class="dropdown icon"></i>
+      <a href="/categories/virtual-machine" class="item">virtual-machine</a>
+    </div>
+    <div class="content">
+      <div class="ui link list">
+      
+      <div class="item" style="padding-left: 24px;">
+        <i class="gem outline grey icon"></i>
+        <div class="content">
+          <a href="https://winnermeat.github.io/post/%E6%90%AD%E5%BB%BAubuntu/" class="item">搭建Ubuntu</a>
+        </div>
+      </div>
+      
+      </div>
+    </div>
+    
+  </div>
+</section>
+
+
+
+<section class="ui bottom attached center aligned inverted segment">
+
+    
+    <p>© 2019 WinnerMeat</p>
+    
+    <p>Powered by <a href="https://gohugo.io/" target="_blank">Hugo</a> with theme <a href="https://github.com/g1eny0ung/hugo-theme-dream" target="_blank">Dream</a>.</p>
+</section>
+
+
+  </div>
+</div>
+
+      </section>
+      <section class="back">
+        <nav class="ui top secondary menu" style="overflow-x: auto">
+  <div class="item">
+    <i class="inverted big link bullseye icon dream-flip-toggle" title="Flip it!"></i>
+  </div>
+  
+  <div class="item">
+    <a href="mailto:2220203057@qq.com">
+      <i class="inverted big mail icon" title="email"></i>
+    </a>
+  </div>
+  
+  
+  <div class="item">
+    <a href="https://github.com//WinnerMeat/WinnerMeat.github.io/" target="_blank">
+      <i class="inverted big github icon" title="github"></i>
+    </a>
+  </div>
+  
+  
+  
+  
+</nav>
+
+<div class="ui centered grid about">
+  <div class="fifteen wide mobile fifteen wide tablet fifteen wide computer column">
+
+    <section class="ui stacked segments">
+      
+      <header class="ui inverted segment">
+      
+        <h2 class="ui header">
+          关于我的一切
+        </h2>
+      </header>
+
+      
+      <article class="ui inverted segment markdown-body">
+      
+        <div class="ui stackable three column grid">
+          <div class="column">
+              
+              这是我第一次搭建这个博客，我会不断更新它，将自己的一些学习笔记以及心得传到上面，当然也有一些其他有趣的事可以分享给大家。
+              
+          </div>
+          <div class="column">
+              
+          </div>
+          <div class="column">
+              
+          </div>
+        </div>
+      </article>
+
+      
+
+      
+      
+    </section>
+
+  </div>
+</div>
+
+      </section>
+    </div>
+  </div>
+
+  
+<script src="/js/jquery.min.js"></script>
+<script src="/js/semantic.min.js"></script>
+<script src="/js/html2canvas.min.js"></script>
+<script src="/js/bg.js"></script>
+<script src="/js/site.js"></script>
+
+
+
+</body>
+
+</html>
