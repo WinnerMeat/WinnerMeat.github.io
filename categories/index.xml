@@ -6,10 +6,19 @@
     <description>Recent content in Categories on WinnerMeat</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Mon, 12 Aug 2019 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 11 Oct 2019 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://winnermeat.github.io/categories/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>聚类算法</title>
+      <link>https://winnermeat.github.io/categories/%E8%81%9A%E7%B1%BB%E7%AE%97%E6%B3%95/</link>
+      <pubDate>Fri, 11 Oct 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://winnermeat.github.io/categories/%E8%81%9A%E7%B1%BB%E7%AE%97%E6%B3%95/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>virtual machine</title>

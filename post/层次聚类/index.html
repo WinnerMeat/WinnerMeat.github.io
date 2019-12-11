@@ -6,13 +6,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>
-
+层次聚类
 </title>
 
   
   
   <meta name="author" content="WinnerMeat" />
-  <meta name="description" content="" />
+  <meta name="description" content="层次聚类的原理以及实现" />
 
 
 
@@ -21,7 +21,7 @@
 <meta name="generator" content="Hugo 0.55.6" />
 
 
-<link rel="canonical" href="https://winnermeat.github.io/about/desc/" />
+<link rel="canonical" href="https://winnermeat.github.io/post/%E5%B1%82%E6%AC%A1%E8%81%9A%E7%B1%BB/" />
 <link rel="alternative" href="/index.xml" title="WinnerMeat" type="application/atom+xml" />
 
 <link href="/css/semantic.min.css" rel="stylesheet" />
@@ -56,17 +56,104 @@
       </a>
       <header>
         <h1 class="ui header">
-          
-          <div class="sub header">@ WinnerMeat · Jan 1, 0001 · 1 min read · Update at Jan 1, 0001</div>
+          层次聚类
+          <div class="sub header">@ WinnerMeat · Oct 11, 2019 · 1 min read · Update at Oct 11, 2019</div>
         </h1>
       </header>
-      <article class="markdown-body" style="margin-top: 2rem; font-size: 1.4rem;"><p>这是我第一次搭建这个博客，我会不断更新它，将自己的一些学习笔记以及心得传到上面，当然也有一些其他有趣的事可以分享给大家。</p>
-</article>
+      <article class="markdown-body" style="margin-top: 2rem; font-size: 1.4rem;"><table><tr><td bgcolor=orange>层次聚类的原理以及实现</tr></table>
+
+<p>&emsp;&emsp;<font size=4 face="黑体">层次聚类(Hierarchical Clustering)是聚类算法的一种，同时也是一种无监督的学习（即拿到的数据没有任何分类，不需要被告知要划分的类是哪些，从而完成分组），通过计算不同类别间的相似度来创建一棵有层次的嵌套聚类树。</p>
+
+<p>&emsp;&emsp;在聚类数中，不同类别的原始数据是树的最低层，树的顶层是一个聚类的根节点。</p>
+
+<p>&emsp;&emsp;创建聚类树有自下而上合并和自上而下分裂两种方法，分别为凝聚式聚类与分裂式聚类。<br/></p>
+
+<h3 id="一-层次聚类与k-means的优缺点">一.层次聚类与K_means的优缺点</h3>
+
+<h4 id="1-k-means">1.K_means</h4>
+
+<h5 id="优点">优点</h5>
+
+<p>（1）算法快速、简单</p>
+
+<p>（2）对大数据集有较高的效率</p>
+
+<p>（3）适合处理大规模数据集，时间复杂度接近线性</p>
+
+<p>（4）当结果簇是密集的，簇与簇区别明显时，效果较好</p>
+
+<h5 id="缺点">缺点</h5>
+
+<p>（1）K-means 算法中 K 是事先给定的，这个 K 值的选定是非常难以估计的</p>
+
+<p>（2）对离群点敏感</p>
+
+<h4 id="2-层次聚类">2.层次聚类</h4>
+
+<h5 id="优点-1">优点</h5>
+
+<p>（1）不需要预先定义所需要类的数目</p>
+
+<p>（2）距离和相识度容易定义，限制少</p>
+
+<p>（3）可以发现类的层次关系</p>
+
+<h5 id="缺点-1">缺点</h5>
+
+<p>（1）计算复杂度太高</p>
+
+<p>（2）可能聚类成链状</p>
+
+<h3 id="二-分裂式聚类">二.分裂式聚类</h3>
+
+<h4 id="1-原理">1.原理</h4>
+
+<p>初始时将所有的样本归为一个类，然后依据某种准则进行逐渐的分裂，直到达到某种条件或者达到设定的分类数目。</p>
+
+<h4 id="2-类层次结构">2.类层次结构</h4>
+
+<p>自顶向下生成</p>
+
+<h4 id="3-分裂式聚类步骤">3.分裂式聚类步骤</h4>
+
+<p>（1）.将样本集中的所有的样本归为一个类；</p>
+
+<p>（2）.在同一个类（计为c）中计算两两样本之间的距离，找出距离最远的两个样本a , b；</p>
+
+<p>（3）.将样本a , b分配到不同的类c1和c2中；</p>
+
+<p>（4）.计算原类（c）中剩余的其他样本点和a，b的距离，若是dis(a) &lt; dis(b)，则将样本点归到c1中，否则归到c2中；</p>
+
+<p>Util： 达到聚类的数目或者达到设定的条件</p>
+
+<h4 id="4-示例">4.示例</h4>
+
+<p>在平面上有6个点：p0(1,1), p1(1,2), p2(2,2), p3(4,4), p4(4,5), p5(5,6)，我现在需要对这6个点进行聚类</p>
+
+<p> 1.将所有的点归为一个类c（p0,p1,p2,p3,p4,p5）</p>
+
+<p> 2.在类c中计算他们的距离（欧式距离）我们可以得到：</p>
+
+<p>3.将p0分配到类c1，将p5分配到类c2；</p>
+
+<p>4.得到新的聚类c1=（p1,p2,p3）,c2=(p3,p4,p5);</p>
+
+<p>Util.满足聚类要求</p>
+
+<h4 id="5-截止条件">5.截止条件</h4>
+
+<p>假如要求最大样本距离不大于sqrt(2),那么上述的分类结果没有到达要求，则需要返回到（2）处继续聚类，因为c1中的样本的距离都不大于sqrt（2），所以不需要再分了；而类c2中的dis(p3,p5)=sqrt(5)&gt;sqrt(2),还需要继续分(即到最后各自类的最远距离都小于规定的值sqrt(2)就截止聚类)，c2最后分聚类成两个类（p3,p4）和(p5),这样我们最终得到了三个类（p1,p2,p3）、(p3,p4)和（P5）。</p>
+
+<p>如果要求达到聚类的数目为3，基于之前的每个聚类进行（2）步骤，计算各个聚类两两样本之间的距离，找出距离最远的两个样本的聚类进行分裂，从而达到聚类的数目。</p>
+
+<p></table></p></article>
     </section>
 
     <footer class="ui attached segment dream-tags">
       
-      <span>No Tags</span>
+      
+      <a class="ui label" href="/tags/%E5%B1%82%E6%AC%A1%E8%81%9A%E7%B1%BB" title="层次聚类">层次聚类</a>
+      
       
     </footer>
 
@@ -264,7 +351,6 @@
       
 
       
-        
       
     </section>
 
