@@ -6,10 +6,19 @@
     <description>Recent content in Tags on WinnerMeat</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Fri, 11 Oct 2019 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 10 Feb 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://winnermeat.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>virtual machine</title>
+      <link>https://winnermeat.github.io/tags/virtual-machine/</link>
+      <pubDate>Mon, 10 Feb 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://winnermeat.github.io/tags/virtual-machine/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>层次聚类</title>
@@ -17,15 +26,6 @@
       <pubDate>Fri, 11 Oct 2019 00:00:00 +0000</pubDate>
       
       <guid>https://winnermeat.github.io/tags/%E5%B1%82%E6%AC%A1%E8%81%9A%E7%B1%BB/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>virtual machine</title>
-      <link>https://winnermeat.github.io/tags/virtual-machine/</link>
-      <pubDate>Mon, 12 Aug 2019 00:00:00 +0000</pubDate>
-      
-      <guid>https://winnermeat.github.io/tags/virtual-machine/</guid>
       <description></description>
     </item>
     

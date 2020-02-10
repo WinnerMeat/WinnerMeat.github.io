@@ -6,15 +6,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>
-
-category | computer
-
+Ubuntu——修改源
 </title>
 
   
   
   <meta name="author" content="WinnerMeat" />
-  <meta name="description" content="" />
+  <meta name="description" content="如何在Ubuntu上面修改为清华源" />
 
 
 
@@ -23,7 +21,7 @@ category | computer
 <meta name="generator" content="Hugo 0.55.6" />
 
 
-<link rel="canonical" href="https://winnermeat.github.io/categories/computer/" />
+<link rel="canonical" href="https://winnermeat.github.io/post/ubuntu%E4%BF%AE%E6%94%B9%E6%BA%90/" />
 <link rel="alternative" href="/index.xml" title="WinnerMeat" type="application/atom+xml" />
 
 <link href="/css/semantic.min.css" rel="stylesheet" />
@@ -38,27 +36,88 @@ category | computer
     <div class="flipper">
       <section class="front">
         
-
-<nav class="ui top secondary menu" style="overflow-x: auto">
+<nav class="ui top secondary menu">
   <div class="item">
     <i class="inverted big link bullseye icon dream-flip-toggle" title="Flip it!"></i>
   </div>
   <div class="item">
-    <a href="/"><i class="inverted big link home icon" title="Home"></i></a>
-  </div>
-  <div class="item">
-    
-    <i class="disabled inverted big arrow alternate circle outline left icon" title="Previous page"></i>
-    
-  </div>
-  <div class="item">
-    
-    <i class="disabled inverted big arrow alternate circle outline right icon" title="Next page"></i>
-    
+    <a href="/">
+      <i class="inverted big link home icon" title="Home"></i>
+    </a>
   </div>
 </nav>
  
 <div class="ui centered grid">
+  <div class="fifteen wide mobile fifteen wide tablet eleven wide computer column post-list post-single-main">
+
+    <section class="ui top attached segment">
+      <a class="ui black right corner label" href="javascript:void(0)" onclick="savePostAsImg()">
+        <i class="save icon"></i>
+      </a>
+      <header>
+        <h1 class="ui header">
+          Ubuntu——修改源
+          <div class="sub header">@ WinnerMeat · Feb 10, 2020 · 1 min read · Update at Feb 10, 2020</div>
+        </h1>
+      </header>
+      <article class="markdown-body" style="margin-top: 2rem; font-size: 1.4rem;"><table><tr><td bgcolor=SkyBlue>如何在Ubuntu上面修改为清华源</td></tr></table>
+
+<p><font size=4 face="黑体">
+工具/原料<br/>
+VMware 虚拟机软件<br/>
+Ubuntu<br/></p>
+
+<p>&emsp;&emsp;ubuntu系统中，通过软件源获取软件包是下载安装软件的重要方式，然而系统自带的软件源存在一些问题，一是可能无法满足我们的需求，二是国外的源需要翻墙，导致即使能提供我们需要的软件包也下载不了，所以装完ubuntu系统之后最好先给它换源。
+<br/></p>
+
+<p>&emsp;&emsp;1.进入Ubuntu终端，使用root用户<br/></p>
+
+<pre><code class="language-C">        sudo root
+</code></pre>
+
+<p><br/></p>
+
+<p>&emsp;&emsp;2.将原源码备份<br/></p>
+
+<pre><code class="language-C">        cp /etc/apt/sources.list /etc/apt/sources.list.bak
+</code></pre>
+
+<p><br/></p>
+
+<p>&emsp;&emsp;3.将原源码替换成清华源<br/></p>
+
+<pre><code class="language-C">        sudo gedit /etc/apt/sources.list
+</code></pre>
+
+<p>这里是获取清华源的<a href="https://mirrors.tuna.tsinghua.edu.cn/help/ubuntu/" title="网址">网址</a></p>
+
+<p><br/></p>
+
+<p>&emsp;&emsp;4.更新列表<br/></p>
+
+<pre><code class="language-C">        sudo apt-get update 
+</code></pre>
+
+<p><br/></p>
+
+<p>以上便是Ubuntu修改源的方法。</p>
+
+<p></font></p></article>
+    </section>
+
+    <footer class="ui attached segment dream-tags">
+      
+      
+      <a class="ui label" href="/tags/virtual-machine" title="virtual machine">virtual machine</a>
+      
+      
+    </footer>
+
+    
+
+    
+
+  </div>
   <div class="fifteen wide mobile fifteen wide tablet four wide computer column">
 
     
@@ -195,82 +254,6 @@ category | computer
 
 
   </div>
-  <div class="fifteen wide mobile fifteen wide tablet eleven wide computer column post-list">
-
-    <div class="ui two stackable cards">
-      
-      
-
-        <article class="card" style="box-shadow: none;">
-  <div class="image">
-    
-    <div class="ui dimmer">
-    
-      <div class="content">
-        <div class="center">
-          
-          <div class="display-content">
-          
-            <a href="https://winnermeat.github.io/post/ubuntu%E4%B8%AD%E6%96%87%E8%AE%BE%E7%BD%AE/">
-              
-              <h2 class="ui header" style="color: white;">Ubuntu——中文设置</h2>
-              
-            </a>
-            <p style="padding: 5px;">将英文版的Ubuntu 18.04系统改为中文</p>
-            <p>@ WinnerMeat</p>
-          </div>
-          
-          <div class="ui top right attached black label">1 min read</div>
-          <div class="ui bottom left attached black label">Jul 26, 2019</div>
-          
-        </div>
-      </div>
-    </div>
-    
-    <img src="/img/default4.jpg" alt="Ubuntu——中文设置">
-    
-  </div>
-</article>
-
-
-      
-
-        <article class="card" style="box-shadow: none;">
-  <div class="image">
-    
-    <div class="ui dimmer">
-    
-      <div class="content">
-        <div class="center">
-          
-          <div class="display-content">
-          
-            <a href="https://winnermeat.github.io/post/ubuntu%E6%90%9C%E7%8B%97%E8%BE%93%E5%85%A5%E6%B3%95/">
-              
-              <h2 class="ui header" style="color: white;">Ubuntu——搜狗输入法</h2>
-              
-            </a>
-            <p style="padding: 5px;">Ubuntu18.04下安装搜狗输入法</p>
-            <p>@ WinnerMeat</p>
-          </div>
-          
-          <div class="ui top right attached black label">1 min read</div>
-          <div class="ui bottom left attached black label">Jul 24, 2019</div>
-          
-        </div>
-      </div>
-    </div>
-    
-    <img src="/img/default6.jpg" alt="Ubuntu——搜狗输入法">
-    
-  </div>
-</article>
-
-
-      
-    </div>
-
-  </div>
 </div>
 
       </section>
@@ -331,7 +314,6 @@ category | computer
       
 
       
-        
       
     </section>
 
