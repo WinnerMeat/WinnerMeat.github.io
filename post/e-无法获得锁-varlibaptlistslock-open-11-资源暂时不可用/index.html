@@ -6,13 +6,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>
-Ubuntu——中文设置
+E 无法获得锁 varlibaptlistslock - open (11 资源暂时不可用)
 </title>
 
   
   
   <meta name="author" content="WinnerMeat" />
-  <meta name="description" content="将英文版的Ubuntu 18.04系统改为中文" />
+  <meta name="description" content="解决sudo apt-get update出现异常" />
 
 
 
@@ -21,7 +21,7 @@ Ubuntu——中文设置
 <meta name="generator" content="Hugo 0.55.6" />
 
 
-<link rel="canonical" href="https://winnermeat.github.io/post/ubuntu%E4%B8%AD%E6%96%87%E8%AE%BE%E7%BD%AE/" />
+<link rel="canonical" href="https://winnermeat.github.io/post/e-%E6%97%A0%E6%B3%95%E8%8E%B7%E5%BE%97%E9%94%81-varlibaptlistslock-open-11-%E8%B5%84%E6%BA%90%E6%9A%82%E6%97%B6%E4%B8%8D%E5%8F%AF%E7%94%A8/" />
 <link rel="alternative" href="/index.xml" title="WinnerMeat" type="application/atom+xml" />
 
 <link href="/css/semantic.min.css" rel="stylesheet" />
@@ -56,33 +56,83 @@ Ubuntu——中文设置
       </a>
       <header>
         <h1 class="ui header">
-          Ubuntu——中文设置
-          <div class="sub header">@ WinnerMeat · Jul 26, 2019 · 1 min read · Update at Jul 26, 2019</div>
+          E 无法获得锁 varlibaptlistslock - open (11 资源暂时不可用)
+          <div class="sub header">@ WinnerMeat · Feb 10, 2020 · 1 min read · Update at Feb 10, 2020</div>
         </h1>
       </header>
-      <article class="markdown-body" style="margin-top: 2rem; font-size: 1.4rem;"><table><tr><td bgcolor=orange>将英文版的Ubuntu 18.04系统改为中文</tr></table>
+      <article class="markdown-body" style="margin-top: 2rem; font-size: 1.4rem;"><table><tr><td bgcolor=SkyBlue>解决sudo apt-get update出现异常</td></tr></table>
 
-<p>&emsp;&emsp;<font size=4 face="黑体">我们在安装Ubuntu后是英文的，可怜的小白表示看不懂要怎么办？其实Ubuntu是可以设置成中文的，而且很简单，下面我们就开始将Ubuntu设置成中文吧！<br/></p>
+<p>&emsp;&emsp;<font size=4 face="黑体">因为准备给自己的Ubuntu安装GCC/gfortran等编译器，结果在更新包列表【sudo apt-get update】时出现以下错误。</p>
 
-<p>1.首先打开Ubuntu Setting（设置），点击右上角的三角，然后点击扳手图标
-<img src="/img/Ubuntu——中文/进入设置.jpg" alt="进入设置" /></p>
+<pre><code class="language-cmd">E: 无法获得锁 /var/lib/apt/lists/lock - open (11: 资源暂时不可用)
+E: 无法对目录 /var/lib/apt/lists/ lock
+</code></pre>
 
-<p>2.然后在Ubuntu Setting对话框依次点击点【Region &amp; Language】——&gt;【Manage Installed Languages】
-<img src="/img/Ubuntu——中文/选择语言.jpg" alt="选择语言" /></p>
+<h3 id="原因">原因：</h3>
 
-<p>3.在弹出的窗口再点击【install】设置操作，需要下载语言包，安装Ubuntu语言必须联网
-<img src="/img/Ubuntu——中文/下载语言包.jpg" alt="下载语言包" /></p>
+<p>&amp;emsp&amp;emsp可能是有另外一个程序正在运行，由于它在运行时，会占用软件源更新时的系统锁（以下称“系统更新锁”，此锁文件在“/var/lib/apt/lists/”目录下），而当有新的apt-get进程生成时，就会因为得不到系统更新锁而出现&rdquo;E: 无法获得锁 /var/lib/apt/lists/lock - open (11: 资源暂时不可用)&ldquo;的错误提示！</p>
 
-<p>4.完成设置后点击【install/remove language】，在弹出的窗口搜索【汉语(中国)】，最后点击【apply change】，然后等待下载<br/>
-<img src="/img/Ubuntu——中文/安装中文.jpg" alt="安装中文" /></p>
+<p>&emsp;&emsp;而导致资源被锁的原因，可能是上次安装时没正常完成，而导致出现此状况。</p>
 
-<p>5.下载完成后选项里已经有了中文选项。然后找到【汉语(中国)】，按住【汉语(中国)】，拖动到最上方，关闭设置界面，重启Ubuntu<br/>
-<img src="/img/Ubuntu——中文/应用中文.jpg" alt="应用中文" /></p>
+<p>&emsp;&emsp;因此，我们只要将原先的apt-get进程杀死，从新激活新的apt-get进程，就可以让新的软件管理器正常工作了</p>
 
-<p>6.重启后，弹出提示将标准文件夹更新到当前语言吗？为了便于以后使用保留旧的文件夹命名。如果不想下次再见到此对话框，请勾选“不要再次询问我”选项。
-<img src="/img/Ubuntu——中文/保留名称.jpg" alt="保留名称" /></p>
+<h3 id="解决方法">解决方法</h3>
 
-<p></table></p></article>
+<p><font color=Blue>一：使用命令查看apt-get的相关进程，将原本的apt-get进程杀死</font></p>
+
+<p>1.查看apt-get进程</p>
+
+<pre><code class="language-cmd">ps -aux | grep apt-get
+</code></pre>
+
+<p>查看进程号，比如：</p>
+
+<pre><code class="language-cmd">11235 ? 			00:00:01 apt
+12321 ?				00:11:00 update-apt-get
+</code></pre>
+
+<p>2.执行kill命令杀死apt-get进程<br/></p>
+
+<pre><code class="language-cmd">sudo kill 12321
+</code></pre>
+
+<p>3.然后便可以继续更新列表了<br/></p>
+
+<pre><code class="language-cmd">sudo apt-get update
+</code></pre>
+
+<p><br/>
+<font color=Blue>二：删除相对应文件</font></p>
+
+<pre><code class="language-cmd">sudo rm /var/cache/apt/archives/lock
+sudo rm /var/lib/dpkg/lock
+</code></pre>
+
+<p>此外在更新完成后，可以进行如下清理工作</p>
+
+<pre><code class="language-cmd">sudo apt-get autoclean
+sudo apt-get clean
+sudo apt-get autoremove 
+</code></pre>
+
+<p><br/></p>
+
+<h2 id="对于方法二-当使用命令安装build-essential软件包时">对于方法二，当使用命令安装build-essential软件包时</h2>
+
+<pre><code class="language-cmd">sudo apt install build-essential
+</code></pre>
+
+<p>遇到此问题</p>
+
+<pre><code class="language-cmd">E: 无法获得锁 /var/lib/dpkg/lock - open (11: 资源暂时不可用) 
+E: 无法锁定管理目录(/var/lib/dpkg/)，是否有其他进程正占用它？
+</code></pre>
+
+<p>依然可以解决</p>
+
+<p><br/><br/></p>
+
+<p></font></p></article>
     </section>
 
     <footer class="ui attached segment dream-tags">
