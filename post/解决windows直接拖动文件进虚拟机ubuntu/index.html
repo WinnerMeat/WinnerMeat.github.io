@@ -6,13 +6,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>
-Ubuntu——中文设置
+解决Windows直接拖动文件进虚拟机ubuntu
 </title>
 
   
   
   <meta name="author" content="WinnerMeat" />
-  <meta name="description" content="将英文版的Ubuntu 18.04系统改为中文" />
+  <meta name="description" content="解决Windows直接拖动文件进虚拟机ubuntu" />
 
 
 
@@ -21,7 +21,7 @@ Ubuntu——中文设置
 <meta name="generator" content="Hugo 0.55.6" />
 
 
-<link rel="canonical" href="https://winnermeat.github.io/post/ubuntu%E4%B8%AD%E6%96%87%E8%AE%BE%E7%BD%AE/" />
+<link rel="canonical" href="https://winnermeat.github.io/post/%E8%A7%A3%E5%86%B3windows%E7%9B%B4%E6%8E%A5%E6%8B%96%E5%8A%A8%E6%96%87%E4%BB%B6%E8%BF%9B%E8%99%9A%E6%8B%9F%E6%9C%BAubuntu/" />
 <link rel="alternative" href="/index.xml" title="WinnerMeat" type="application/atom+xml" />
 
 <link href="/css/semantic.min.css" rel="stylesheet" />
@@ -56,33 +56,56 @@ Ubuntu——中文设置
       </a>
       <header>
         <h1 class="ui header">
-          Ubuntu——中文设置
-          <div class="sub header">@ WinnerMeat · Jul 26, 2019 · 1 min read · Update at Jul 26, 2019</div>
+          解决Windows直接拖动文件进虚拟机ubuntu
+          <div class="sub header">@ WinnerMeat · Feb 14, 2020 · 1 min read · Update at Feb 14, 2020</div>
         </h1>
       </header>
-      <article class="markdown-body" style="margin-top: 2rem; font-size: 1.4rem;"><table><tr><td bgcolor=orange>将英文版的Ubuntu 18.04系统改为中文</tr></table>
+      <article class="markdown-body" style="margin-top: 2rem; font-size: 1.4rem;"><table><tr><td bgcolor=SkyBlue>解决Windows直接拖动文件进虚拟机ubuntu</td></tr></table>
 
-<p>&emsp;&emsp;<font size=4 face="黑体">我们在安装Ubuntu后是英文的，可怜的小白表示看不懂要怎么办？其实Ubuntu是可以设置成中文的，而且很简单，下面我们就开始将Ubuntu设置成中文吧！<br/></p>
+<p>&emsp;&emsp;<font size=4 face="黑体">
+<font color="OrangeRed">实现效果：Windows直接拖动文件进虚拟机ubuntu</font></p>
 
-<p>1.首先打开Ubuntu Setting（设置），点击右上角的三角，然后点击扳手图标
-<img src="/img/Ubuntu——中文/进入设置.jpg" alt="进入设置" /></p>
+<p>&emsp;&emsp;因为我在刚学习Ubuntu，需要实现主机Windows与虚拟机ubuntu间文件共享、文件自由拖拽、鼠标在虚拟机与主机间自由移动、实现虚拟系统屏幕全屏化的功能，因此需要在虚拟机VMware中安装VMware Tools。</p>
 
-<p>2.然后在Ubuntu Setting对话框依次点击点【Region &amp; Language】——&gt;【Manage Installed Languages】
-<img src="/img/Ubuntu——中文/选择语言.jpg" alt="选择语言" /></p>
+<p>&emsp;&emsp;解决步骤:</p>
 
-<p>3.在弹出的窗口再点击【install】设置操作，需要下载语言包，安装Ubuntu语言必须联网
-<img src="/img/Ubuntu——中文/下载语言包.jpg" alt="下载语言包" /></p>
+<p>1.这里需要安装“VMware Tools(T)”，如果没有安装，则需要重新安装
+<img src="/img/Ubuntu——解决Windows直接拖动文件进虚拟机ubuntu/安装VM_tools.png" alt="安装VMware_Tools(T)" /></p>
 
-<p>4.完成设置后点击【install/remove language】，在弹出的窗口搜索【汉语(中国)】，最后点击【apply change】，然后等待下载<br/>
-<img src="/img/Ubuntu——中文/安装中文.jpg" alt="安装中文" /></p>
+<p>2.添加ISO映像文件(如果提示有错误，请关闭虚拟机再设置路径，然后再启动Ubuntu)<br/>
+(1)找到IOS文件所在位置
+<img src="/img/Ubuntu——解决Windows直接拖动文件进虚拟机ubuntu/ISO文件.png" alt="ISO文件" />
+(2)在虚拟机设置中选定CD/DVD，添加ISO文件
+<img src="/img/Ubuntu——解决Windows直接拖动文件进虚拟机ubuntu/添加ISO文件.png" alt="添加ISO文件" /></p>
 
-<p>5.下载完成后选项里已经有了中文选项。然后找到【汉语(中国)】，按住【汉语(中国)】，拖动到最上方，关闭设置界面，重启Ubuntu<br/>
-<img src="/img/Ubuntu——中文/应用中文.jpg" alt="应用中文" /></p>
+<p>3.提取VMware Tool安装文件到指定地方(我这里是解压到桌面)<br/>
+(1)找到并提取VMware Tool安装文件到指定地方
+<img src="/img/Ubuntu——解决Windows直接拖动文件进虚拟机ubuntu/安装文件.png" alt="安装文件" />
+(2)若此时出现下列问题，则先将安装文件放到桌面后，再进行提取
+<img src="/img/Ubuntu——解决Windows直接拖动文件进虚拟机ubuntu/安装文件问题.png" alt="安装文件问题" /></p>
 
-<p>6.重启后，弹出提示将标准文件夹更新到当前语言吗？为了便于以后使用保留旧的文件夹命名。如果不想下次再见到此对话框，请勾选“不要再次询问我”选项。
-<img src="/img/Ubuntu——中文/保留名称.jpg" alt="保留名称" /></p>
+<p>4.打开终端命令<br/>
+(1)在解压后的文件夹目录下，打开终端命令
+<img src="/img/Ubuntu——解决Windows直接拖动文件进虚拟机ubuntu/打开终端.png" alt="打开终端命令" />
+(2)获取管理员密码，并执行安装命令<br/></p>
 
-<p></table></p></article>
+<pre><code class="language-cmd">./vmware-install.pl
+</code></pre>
+
+<p><img src="/img/Ubuntu——解决Windows直接拖动文件进虚拟机ubuntu/终端安装命令.png" alt="终端安装命令" /></p>
+
+<p>5.回车和yes命令则系统执行默认位置安装，安装完成后系统提示</p>
+
+<pre><code class="language-cmd">The configuration of VMware Tools ....completely successfully
+</code></pre>
+
+<p>则实现Windows与虚拟机ubuntu间文件自由拖拽，重启系统即可。<br/></p>
+
+<p>6.至此，实现了Windows与虚拟机ubuntu间文件自由拖拽。</p>
+
+<p><br/><br/></p>
+
+<p></font></p></article>
     </section>
 
     <footer class="ui attached segment dream-tags">
