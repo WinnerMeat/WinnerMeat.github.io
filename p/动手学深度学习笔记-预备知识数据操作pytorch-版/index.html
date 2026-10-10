@@ -1,0 +1,571 @@
+<!doctype html><html lang=en-us dir=ltr><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><meta name=description content="本文是《动手学深度学习》PyTorch 实现系列的2 预备知识 -> 2.1 数据操作的学习笔记。"><title>动手学深度学习笔记 · 预备知识：数据操作（PyTorch 版）📘</title><link rel=canonical href=https://WinnerMeat.github.io/p/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86%E6%95%B0%E6%8D%AE%E6%93%8D%E4%BD%9Cpytorch-%E7%89%88/><link rel=preconnect href=https://fonts.googleapis.com><link rel=preconnect href=https://fonts.gstatic.com crossorigin><link rel=preload as=style href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap"><link rel=stylesheet href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap"><link rel=stylesheet href=/scss/style.min.6c875234350e518395efbf51958523b0852fb2215ab8cb81358f9317153eba2d.css><meta property='og:title' content="动手学深度学习笔记 · 预备知识：数据操作（PyTorch 版）📘"><meta property='og:description' content="本文是《动手学深度学习》PyTorch 实现系列的2 预备知识 -> 2.1 数据操作的学习笔记。"><meta property='og:url' content='https://WinnerMeat.github.io/p/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86%E6%95%B0%E6%8D%AE%E6%93%8D%E4%BD%9Cpytorch-%E7%89%88/'><meta property='og:site_name' content='愤怒的大角牛'><meta property='og:type' content='article'><meta property='article:section' content='Post'><meta property='article:tag' content='深度学习-预备知识'><meta property='article:published_time' content='2026-10-09T00:00:00+00:00'><meta property='article:modified_time' content='2026-10-09T00:00:00+00:00'><meta property='og:image' content='https://WinnerMeat.github.io/p/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86%E6%95%B0%E6%8D%AE%E6%93%8D%E4%BD%9Cpytorch-%E7%89%88/wallhaven-yqk2q7_1920x1080.png'><meta name=twitter:title content="动手学深度学习笔记 · 预备知识：数据操作（PyTorch 版）📘"><meta name=twitter:description content="本文是《动手学深度学习》PyTorch 实现系列的2 预备知识 -> 2.1 数据操作的学习笔记。"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content='https://WinnerMeat.github.io/p/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86%E6%95%B0%E6%8D%AE%E6%93%8D%E4%BD%9Cpytorch-%E7%89%88/wallhaven-yqk2q7_1920x1080.png'><link rel="shortcut icon" href=/img/avatar.png></head><body class=article-page><script>(function(){const e="StackColorScheme";localStorage.getItem(e)||localStorage.setItem(e,"auto")})()</script><script>(function(){const t="StackColorScheme",e=localStorage.getItem(t),n=window.matchMedia("(prefers-color-scheme: dark)").matches===!0;e=="dark"||e==="auto"&&n?document.documentElement.dataset.scheme="dark":document.documentElement.dataset.scheme="light"})()</script><div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky"><button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label=切换菜单>
+<span class=hamburger-box><span class=hamburger-inner></span></span></button><header><figure class=site-avatar><a href=/><img src=/img/avatar.png width=1080 height=1080 class=site-logo loading=lazy alt=Avatar>
+</a><span class=emoji>✏️</span></figure><div class=site-meta><h1 class=site-name><a href=/>愤怒的大角牛</a></h1><h2 class=site-description>做正确且富有挑战的事</h2></div></header><ol class=menu-social><li><a href=https://github.com/WinnerMeat title=GitHub rel=me><svg class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6.0 00-1.3-3.2 4.2 4.2.0 00-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3.0 00-6.2.0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2.0 00-.1 3.2A4.6 4.6.0 004 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg></a></li><li><a href=https://weixin.qq.com/ title=weixin rel=me><svg xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24" viewBox="0 0 24 24"><g id="surface1"><path style="fill-rule:nonzero;fill:#525151;fill-opacity:1;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke:#525151;stroke-opacity:1;stroke-miterlimit:4" d="M221.833333 131.166667c-18.583333.0-33.666666 15.083333-33.666666 33.666666.0 18.5 15.083333 33.666667 33.666666 33.666667 18.5.0 33.666667-15.166667 33.666667-33.666667.0-18.583333-15.166667-33.666666-33.666667-33.666666zm0 51.25c-9.75.0-17.666666-7.91666699999999-17.666666-17.583334.0-9.75 7.91666600000002-17.666666 17.666666-17.666666C231.5 147.166667 239.416667 155.083333 239.416667 164.833333 239.416667 174.5 231.5 182.416667 221.833333 182.416667zm0 0" transform="matrix(0.046875,0,0,0.046875,0,0)"/><path style="fill-rule:nonzero;fill:#525151;fill-opacity:1;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke:#525151;stroke-opacity:1;stroke-miterlimit:4" d="M127.75 131.166667c-18.583333.0-33.666667 15.083333-33.666667 33.666666.0 18.5 15.083334 33.666667 33.666667 33.666667 18.583333.0 33.666667-15.166667 33.666667-33.666667.0-18.583333-15.083334-33.666666-33.666667-33.666666zm0 51.25C118 182.416667 110.083333 174.5 110.083333 164.833333c0-9.75 7.916667-17.666666 17.666667-17.666666C137.416667 147.166667 145.333333 155.083333 145.333333 164.833333 145.333333 174.5 137.416667 182.416667 127.75 182.416667zm0 0" transform="matrix(0.046875,0,0,0.046875,0,0)"/><path style="fill-rule:nonzero;fill:#525151;fill-opacity:1;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke:#525151;stroke-opacity:1;stroke-miterlimit:4" d="M512 327.25c0-40.083333-17.916667-77.416667-50.5-105.083333C458.166667 219.333333 453.083333 219.75 450.25 223.083333 447.333333 226.5 447.75 231.583333 451.166667 234.416667 480.083333 258.916667 496 291.916667 496 327.25c0 38.166667-19.083333 74.166667-52.25 98.75C441.166667 427.916667 440 431.083333 440.666667 434.166667L449.333333 473.25l-41.166666-24.666667c-2-1.25-4.41666700000002-1.5-6.66666700000002-.75-16.416667 5.5-33.75 8.25-51.416667 8.25-80.5.0-145.916666-57.75-145.916666-128.833333.0-71 65.416666-128.75 145.916666-128.75 26.416667.0 52.333334 6.25 74.833334 18.166667C428.833333 218.75 433.666667 217.25 435.75 213.333333 437.833333 209.416667 436.333333 204.583333 432.416667 202.5c-24.833334-13.083333-53.333334-20.083333-82.333334-20.083333-.333332999999982.0-.75.0-1.08333299999998.0C349.333333 178.5 349.5 174.5 349.5 170.5c0-86.166667-78.333333-156.25-174.75-156.25C78.416667 14.25.0 84.333333.0 170.5c0 17.916667 3.333333 35.5 10 52.25C11.75 227 16.833333 229 21 227 24.666667 225.25 26.416667 220.666667 24.916667 216.833333 19 202 16 186.416667 16 170.5 16 93.166667 87.25 30.333333 174.75 30.333333S333.5 93.166667 333.5 170.5c0 4.25-.25 8.5-.666667000000018 12.75C257.916667 190.333333 198.083333 243.333333 189.25 310.083333 184.5 310.5 179.583333 310.666667 174.75 310.666667 145.833333 310.666667 117.5 303.75 92.916667 290.583333c-2.416667-1.25-5.166667-1.25-7.58333400000001.0L48.666667 310.166667l12.916666-34.583334C62.75 272.583333 61.916667 269.166667 59.583333 266.916667 51.916667 259.833333 45.083333 252 39.333333 243.666667 36.833333 240 31.833333 239.083333 28.166667 241.583333 24.5 244.166667 23.666667 249.166667 26.166667 252.75 31.583333 260.583333 37.833333 268.083333 44.75 274.916667l-18.583333 49.5C23.666667 331.25 31.083333 337.75 37.416667 334.333333l51.75-27.583333C115.25 319.833333 144.75 326.75 174.75 326.75c4.5.0 8.91666699999999-.166667000000018 13.416667-.5C188.166667 326.583333 188.083333 326.916667 188.083333 327.25c0 79.916667 72.666667 144.833333 162 144.833333C368.25 472.083333 386 469.416667 403 464.166667l54.083333 32.416666C463 500.166667 470.583333 494.75 469.083333 488l-11.666666-52.333333C492.166667 408.166667 512 368.916667 512 327.25zm0 0" transform="matrix(0.046875,0,0,0.046875,0,0)"/><path style="fill-rule:nonzero;fill:#525151;fill-opacity:1;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke:#525151;stroke-opacity:1;stroke-miterlimit:4" d="M298.75 293.583333c-18.583333.0-33.666667 15.083334-33.666667 33.666667S280.166667 360.916667 298.75 360.916667 332.416667 345.833333 332.416667 327.25 317.333333 293.583333 298.75 293.583333zm0 51.333334C289 344.916667 281.083333 337 281.083333 327.25 281.083333 317.583333 289 309.666667 298.75 309.666667S316.416667 317.583333 316.416667 327.25C316.416667 337 308.5 344.916667 298.75 344.916667zm0 0" transform="matrix(0.046875,0,0,0.046875,0,0)"/><path style="fill-rule:nonzero;fill:#525151;fill-opacity:1;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke:#525151;stroke-opacity:1;stroke-miterlimit:4" d="M401.333333 293.583333c-18.5.0-33.666666 15.083334-33.666666 33.666667s15.166666 33.666667 33.666666 33.666667C419.916667 360.916667 435 345.833333 435 327.25s-15.083333-33.666667-33.666667-33.666667zm0 51.333334C391.666667 344.916667 383.75 337 383.75 327.25 383.75 317.583333 391.666667 309.666667 401.333333 309.666667 411.083333 309.666667 419 317.583333 419 327.25 419 337 411.083333 344.916667 401.333333 344.916667zm0 0" transform="matrix(0.046875,0,0,0.046875,0,0)"/></g></svg></a></li></ol><ol class=menu id=main-menu><li><a href=/><svg class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="5 12 3 12 12 3 21 12 19 12"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/><path d="M9 21v-6a2 2 0 012-2h2a2 2 0 012 2v6"/></svg>
+<span>主页</span></a></li><li><a href=/%E5%85%B3%E4%BA%8E/><svg class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="7" r="4"/><path d="M6 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg>
+<span>关于</span></a></li><li><a href=/archives/><svg class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>归档</span></a></li><li><a href=/search/><svg class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
+<span>搜索</span></a></li><li><a href=/%E9%93%BE%E6%8E%A5/><svg class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M10 14a3.5 3.5.0 005 0l4-4a3.5 3.5.0 00-5-5l-.5.5"/><path d="M14 10a3.5 3.5.0 00-5 0l-4 4a3.5 3.5.0 005 5l.5-.5"/></svg>
+<span>链接</span></a></li><li class=menu-bottom-section><ol class=menu><li id=i18n-switch><svg class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 5h7"/><path d="M9 3v2c0 4.418-2.239 8-5 8"/><path d="M5 9c-.003 2.144 2.952 3.908 6.7 4"/><path d="M12 20l4-9 4 9"/><path d="M19.1 18h-6.2"/></svg>
+<select name=language title=language onchange="window.location.href=this.selectedOptions[0].value"><option value=/p/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86%E6%95%B0%E6%8D%AE%E6%93%8D%E4%BD%9Cpytorch-%E7%89%88/ selected>简体中文</option><option value=/en/>English</option><option value=/zh-hant-tw/>正體中文</option><option value=/ja/>日本語</option></select></li><li id=dark-mode-toggle><svg class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<svg class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<span>暗色模式</span></li></ol></li></ol></aside><aside class="sidebar right-sidebar sticky"><section class="widget archives"><div class=widget-icon><svg class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="5" y1="9" x2="19" y2="9"/><line x1="5" y1="15" x2="19" y2="15"/><line x1="11" y1="4" x2="7" y2="20"/><line x1="17" y1="4" x2="13" y2="20"/></svg></div><h2 class="widget-title section-title">目录</h2><div class=widget--toc><nav class=toc-nav id=TableOfContents><ol><li><a href=#写在前面>写在前面</a></li><li><a href=#一环境准备>一、环境准备</a></li><li><a href=#二张量的创建>二、张量的创建</a><ol><li><a href=#21-从数据直接创建>2.1 从数据直接创建</a></li><li><a href=#22-从-numpy-数组创建>2.2 从 NumPy 数组创建</a></li><li><a href=#23-按指定形状创建>2.3 按指定形状创建</a></li><li><a href=#24-指定数据类型>2.4 指定数据类型</a></li></ol></li><li><a href=#三张量的属性>三、张量的属性</a></li><li><a href=#四索引与切片>四、索引与切片</a><ol><li><a href=#41-基本索引>4.1 基本索引</a></li><li><a href=#42-切片操作>4.2 切片操作</a></li><li><a href=#43-花式索引与布尔索引>4.3 花式索引与布尔索引</a></li></ol></li><li><a href=#五形状操作>五、形状操作</a><ol><li><a href=#51-reshape-与-view>5.1 reshape 与 view</a></li><li><a href=#52-转置>5.2 转置</a></li><li><a href=#53-拼接与堆叠>5.3 拼接与堆叠</a></li></ol></li><li><a href=#六基本数学运算>六、基本数学运算</a><ol><li><a href=#61-求和与均值>6.1 求和与均值</a></li></ol></li><li><a href=#七广播机制broadcasting>七、广播机制（Broadcasting）📡</a></li><li><a href=#八内存管理与原地操作>八、内存管理与原地操作</a><ol><li><a href=#81-为什么需要关注内存>8.1 为什么需要关注内存？</a></li><li><a href=#82-原地操作>8.2 原地操作</a></li><li><a href=#83-内存共享与视图>8.3 内存共享与视图</a></li></ol></li><li><a href=#九张量与-numpy-互转>九、张量与 NumPy 互转</a><ol><li><a href=#标量提取>标量提取</a></li></ol></li><li><a href=#十综合实战张量操作练习>十、综合实战：张量操作练习</a></li><li><a href=#十一常见踩坑记录>十一、常见踩坑记录</a></li><li><a href=#十二小结>十二、小结</a></li></ol></nav></div></section></aside><main class="main full-width"><article class="has-image main-article"><header class=article-header><div class=article-image><a href=/p/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86%E6%95%B0%E6%8D%AE%E6%93%8D%E4%BD%9Cpytorch-%E7%89%88/><img alt="Featured image of post 动手学深度学习笔记 · 预备知识：数据操作（PyTorch 版）📘" height=1080 loading=lazy sizes="(max-width: 767px) calc(100vw - 30px), (max-width: 1023px) 700px, (max-width: 1279px) 950px, 1232px" src=/p/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86%E6%95%B0%E6%8D%AE%E6%93%8D%E4%BD%9Cpytorch-%E7%89%88/wallhaven-yqk2q7_1920x1080.png srcset="/p/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86%E6%95%B0%E6%8D%AE%E6%93%8D%E4%BD%9Cpytorch-%E7%89%88/wallhaven-yqk2q7_1920x1080_hu_a51663b98b01435c.png 800w, /p/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86%E6%95%B0%E6%8D%AE%E6%93%8D%E4%BD%9Cpytorch-%E7%89%88/wallhaven-yqk2q7_1920x1080_hu_e8d6361628b3b1ef.png 1600w, /p/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86%E6%95%B0%E6%8D%AE%E6%93%8D%E4%BD%9Cpytorch-%E7%89%88/wallhaven-yqk2q7_1920x1080.png 1920w" width=1920></a></div><div class=article-details><header class=article-category><a href=/categories/deep-learning/ style=background-color:#2a9d8f;color:#fff>深度学习</a></header><div class=article-title-wrapper><h2 class=article-title><a href=/p/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86%E6%95%B0%E6%8D%AE%E6%93%8D%E4%BD%9Cpytorch-%E7%89%88/>动手学深度学习笔记 · 预备知识：数据操作（PyTorch 版）📘</a></h2><h3 class=article-subtitle>本文是《动手学深度学习》PyTorch 实现系列的2 预备知识 -> 2.1 数据操作的学习笔记。</h3></div><footer class=article-meta><div class=inline-meta><svg class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published datetime=2026-10-09T00:00:00Z>Friday, October 9, 2026</time>
+<svg class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>阅读时长: 8 分钟</time></div></footer></div></header><aside class=article-toc><details><summary><div class=article-toc-title><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-chevron-right"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 6l6 6-6 6"/></svg>
+<span>目录</span></div></summary><nav class=toc-nav><ol><li><a href=#写在前面>写在前面</a></li><li><a href=#一环境准备>一、环境准备</a></li><li><a href=#二张量的创建>二、张量的创建</a><ol><li><a href=#21-从数据直接创建>2.1 从数据直接创建</a></li><li><a href=#22-从-numpy-数组创建>2.2 从 NumPy 数组创建</a></li><li><a href=#23-按指定形状创建>2.3 按指定形状创建</a></li><li><a href=#24-指定数据类型>2.4 指定数据类型</a></li></ol></li><li><a href=#三张量的属性>三、张量的属性</a></li><li><a href=#四索引与切片>四、索引与切片</a><ol><li><a href=#41-基本索引>4.1 基本索引</a></li><li><a href=#42-切片操作>4.2 切片操作</a></li><li><a href=#43-花式索引与布尔索引>4.3 花式索引与布尔索引</a></li></ol></li><li><a href=#五形状操作>五、形状操作</a><ol><li><a href=#51-reshape-与-view>5.1 reshape 与 view</a></li><li><a href=#52-转置>5.2 转置</a></li><li><a href=#53-拼接与堆叠>5.3 拼接与堆叠</a></li></ol></li><li><a href=#六基本数学运算>六、基本数学运算</a><ol><li><a href=#61-求和与均值>6.1 求和与均值</a></li></ol></li><li><a href=#七广播机制broadcasting>七、广播机制（Broadcasting）📡</a></li><li><a href=#八内存管理与原地操作>八、内存管理与原地操作</a><ol><li><a href=#81-为什么需要关注内存>8.1 为什么需要关注内存？</a></li><li><a href=#82-原地操作>8.2 原地操作</a></li><li><a href=#83-内存共享与视图>8.3 内存共享与视图</a></li></ol></li><li><a href=#九张量与-numpy-互转>九、张量与 NumPy 互转</a><ol><li><a href=#标量提取>标量提取</a></li></ol></li><li><a href=#十综合实战张量操作练习>十、综合实战：张量操作练习</a></li><li><a href=#十一常见踩坑记录>十一、常见踩坑记录</a></li><li><a href=#十二小结>十二、小结</a></li></ol></nav></details></aside><section class=article-content><h1 id=动手学深度学习--预备知识数据操作pytorch-版>动手学深度学习 · 预备知识：数据操作（PyTorch 版）📘</h1><blockquote><p>本文是《动手学深度学习》PyTorch 实现系列的第一篇，从最基础的张量操作讲起。代码全部基于 PyTorch 2.x，可直接在 Jupyter Notebook 或 Python 脚本中运行。</p></blockquote><hr><h2 id=写在前面>写在前面</h2><p>深度学习本质上是<strong>对多维数组进行大量的数学运算</strong>。无论你之后要搭建卷积神经网络还是 Transformer，第一步永远是：<strong>把数据变成张量，然后学会操作张量</strong>。</p><p>这篇文章会覆盖以下内容：</p><ul><li>张量的创建与初始化</li><li>索引、切片与形状操作</li><li>基本数学运算与广播机制</li><li>内存管理与原地操作（这是初学者最容易踩坑的地方）</li><li>张量与 NumPy 之间的互转</li><li>一个完整的综合实战练习</li></ul><p>准备好了吗？直接开搞。🐂</p><h2 id=一环境准备>一、环境准备</h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=kn>import</span> <span class=nn>torch</span>
+</span></span><span class=line><span class=cl><span class=kn>import</span> <span class=nn>numpy</span> <span class=k>as</span> <span class=nn>np</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=sa>f</span><span class=s2>&#34;PyTorch 版本：</span><span class=si>{</span><span class=n>torch</span><span class=o>.</span><span class=n>__version__</span><span class=si>}</span><span class=s2>&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=sa>f</span><span class=s2>&#34;CUDA 是否可用：</span><span class=si>{</span><span class=n>torch</span><span class=o>.</span><span class=n>cuda</span><span class=o>.</span><span class=n>is_available</span><span class=p>()</span><span class=si>}</span><span class=s2>&#34;</span><span class=p>)</span>
+</span></span></code></pre></td></tr></table></div></div><p>如果输出显示 CUDA 不可用也没关系，本文所有操作在 CPU 上都能正常运行。</p><h2 id=二张量的创建>二、张量的创建</h2><h3 id=21-从数据直接创建>2.1 从数据直接创建</h3><p>张量表示一个由数值组成的数组，这个数组可能有多个维度。具有一个轴的张量对应数学上的<strong>向量</strong>，具有两个轴的张量对应数学上的<strong>矩阵</strong>，两个轴以上的张量没有特殊的数学名称。</p><p>创建张量最简单的方式是使用 <code>torch.tensor()</code>：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=c1># 从 Python 列表创建</span>
+</span></span><span class=line><span class=cl><span class=n>data</span> <span class=o>=</span> <span class=p>[[</span><span class=mi>1</span><span class=p>,</span> <span class=mi>2</span><span class=p>],</span> <span class=p>[</span><span class=mi>3</span><span class=p>,</span> <span class=mi>4</span><span class=p>]]</span>
+</span></span><span class=line><span class=cl><span class=n>x_data</span> <span class=o>=</span> <span class=n>torch</span><span class=o>.</span><span class=n>tensor</span><span class=p>(</span><span class=n>data</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=n>x_data</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=c1># tensor([[1, 2],</span>
+</span></span><span class=line><span class=cl><span class=c1>#         [3, 4]])</span>
+</span></span></code></pre></td></tr></table></div></div><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=c1># 创建行向量：包含以 0 开始的前 12 个整数</span>
+</span></span><span class=line><span class=cl><span class=n>x</span> <span class=o>=</span> <span class=n>torch</span><span class=o>.</span><span class=n>arange</span><span class=p>(</span><span class=mi>12</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=n>x</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=c1># tensor([ 0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11])</span>
+</span></span></code></pre></td></tr></table></div></div><blockquote><p>💡 <strong>小提示</strong>：虽然框架叫 PyTorch，但代码中导入的是 <code>torch</code> 而不是 <code>pytorch</code>。</p></blockquote><h3 id=22-从-numpy-数组创建>2.2 从 NumPy 数组创建</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=n>np_array</span> <span class=o>=</span> <span class=n>np</span><span class=o>.</span><span class=n>array</span><span class=p>([[</span><span class=mi>1</span><span class=p>,</span> <span class=mi>2</span><span class=p>],</span> <span class=p>[</span><span class=mi>3</span><span class=p>,</span> <span class=mi>4</span><span class=p>]])</span>
+</span></span><span class=line><span class=cl><span class=n>x_np</span> <span class=o>=</span> <span class=n>torch</span><span class=o>.</span><span class=n>from_numpy</span><span class=p>(</span><span class=n>np_array</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=n>x_np</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=c1># tensor([[1, 2],</span>
+</span></span><span class=line><span class=cl><span class=c1>#         [3, 4]])</span>
+</span></span></code></pre></td></tr></table></div></div><h3 id=23-按指定形状创建>2.3 按指定形状创建</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=c1># 全 0 张量</span>
+</span></span><span class=line><span class=cl><span class=n>x_zeros</span> <span class=o>=</span> <span class=n>torch</span><span class=o>.</span><span class=n>zeros</span><span class=p>((</span><span class=mi>2</span><span class=p>,</span> <span class=mi>3</span><span class=p>,</span> <span class=mi>4</span><span class=p>))</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=n>x_zeros</span><span class=o>.</span><span class=n>shape</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=c1># torch.Size([2, 3, 4])</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 全 1 张量</span>
+</span></span><span class=line><span class=cl><span class=n>x_ones</span> <span class=o>=</span> <span class=n>torch</span><span class=o>.</span><span class=n>ones</span><span class=p>((</span><span class=mi>2</span><span class=p>,</span> <span class=mi>3</span><span class=p>,</span> <span class=mi>4</span><span class=p>))</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 随机初始化（标准正态分布）</span>
+</span></span><span class=line><span class=cl><span class=n>x_randn</span> <span class=o>=</span> <span class=n>torch</span><span class=o>.</span><span class=n>randn</span><span class=p>(</span><span class=mi>3</span><span class=p>,</span> <span class=mi>4</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=n>x_randn</span><span class=p>)</span>
+</span></span></code></pre></td></tr></table></div></div><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=c1># 根据已有张量的形状创建</span>
+</span></span><span class=line><span class=cl><span class=n>x_like</span> <span class=o>=</span> <span class=n>torch</span><span class=o>.</span><span class=n>randn_like</span><span class=p>(</span><span class=n>x_randn</span><span class=p>,</span> <span class=n>dtype</span><span class=o>=</span><span class=n>torch</span><span class=o>.</span><span class=n>float</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=n>x_like</span><span class=o>.</span><span class=n>shape</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=c1># torch.Size([3, 4])</span>
+</span></span></code></pre></td></tr></table></div></div><h3 id=24-指定数据类型>2.4 指定数据类型</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=c1># Python 默认使用整型，深度学习通常建议使用浮点数</span>
+</span></span><span class=line><span class=cl><span class=n>x_int</span> <span class=o>=</span> <span class=n>torch</span><span class=o>.</span><span class=n>arange</span><span class=p>(</span><span class=mi>6</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=n>x_int</span><span class=o>.</span><span class=n>dtype</span><span class=p>)</span>  <span class=c1># torch.int64</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>x_float</span> <span class=o>=</span> <span class=n>torch</span><span class=o>.</span><span class=n>arange</span><span class=p>(</span><span class=mi>6</span><span class=p>,</span> <span class=n>dtype</span><span class=o>=</span><span class=n>torch</span><span class=o>.</span><span class=n>float32</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=n>x_float</span><span class=o>.</span><span class=n>dtype</span><span class=p>)</span>  <span class=c1># torch.float32</span>
+</span></span></code></pre></td></tr></table></div></div><blockquote><p>⚠️ <strong>注意</strong>：建议在深度学习中统一使用 <code>float32</code>，否则后续某些运算可能会出现类型不匹配的问题。</p></blockquote><h2 id=三张量的属性>三、张量的属性</h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=n>x</span> <span class=o>=</span> <span class=n>torch</span><span class=o>.</span><span class=n>arange</span><span class=p>(</span><span class=mi>12</span><span class=p>)</span><span class=o>.</span><span class=n>reshape</span><span class=p>(</span><span class=mi>3</span><span class=p>,</span> <span class=mi>4</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 形状</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=n>x</span><span class=o>.</span><span class=n>shape</span><span class=p>)</span>      <span class=c1># torch.Size([3, 4])</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 元素总数</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=n>x</span><span class=o>.</span><span class=n>numel</span><span class=p>())</span>    <span class=c1># 12</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 数据类型</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=n>x</span><span class=o>.</span><span class=n>dtype</span><span class=p>)</span>      <span class=c1># torch.int64</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 查看元素总数另一种写法</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=n>x</span><span class=o>.</span><span class=n>size</span><span class=p>())</span>     <span class=c1># torch.Size([3, 4])</span>
+</span></span></code></pre></td></tr></table></div></div><h2 id=四索引与切片>四、索引与切片</h2><h3 id=41-基本索引>4.1 基本索引</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=n>x</span> <span class=o>=</span> <span class=n>torch</span><span class=o>.</span><span class=n>arange</span><span class=p>(</span><span class=mi>12</span><span class=p>)</span><span class=o>.</span><span class=n>reshape</span><span class=p>(</span><span class=mi>3</span><span class=p>,</span> <span class=mi>4</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=n>x</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=c1># tensor([[ 0,  1,  2,  3],</span>
+</span></span><span class=line><span class=cl><span class=c1>#         [ 4,  5,  6,  7],</span>
+</span></span><span class=line><span class=cl><span class=c1>#         [ 8,  9, 10, 11]])</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 访问单个元素</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=n>x</span><span class=p>[</span><span class=mi>1</span><span class=p>,</span> <span class=mi>2</span><span class=p>])</span>   <span class=c1># tensor(6)</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=n>x</span><span class=p>[</span><span class=mi>1</span><span class=p>][</span><span class=mi>2</span><span class=p>])</span>   <span class=c1># tensor(6)，等价写法</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 修改单个元素</span>
+</span></span><span class=line><span class=cl><span class=n>x</span><span class=p>[</span><span class=mi>1</span><span class=p>,</span> <span class=mi>2</span><span class=p>]</span> <span class=o>=</span> <span class=mi>99</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=n>x</span><span class=p>[</span><span class=mi>1</span><span class=p>,</span> <span class=mi>2</span><span class=p>])</span>   <span class=c1># tensor(99)</span>
+</span></span></code></pre></td></tr></table></div></div><h3 id=42-切片操作>4.2 切片操作</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=n>x</span> <span class=o>=</span> <span class=n>torch</span><span class=o>.</span><span class=n>arange</span><span class=p>(</span><span class=mi>12</span><span class=p>)</span><span class=o>.</span><span class=n>reshape</span><span class=p>(</span><span class=mi>3</span><span class=p>,</span> <span class=mi>4</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 取前两行</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=n>x</span><span class=p>[:</span><span class=mi>2</span><span class=p>])</span>
+</span></span><span class=line><span class=cl><span class=c1># tensor([[0, 1, 2, 3],</span>
+</span></span><span class=line><span class=cl><span class=c1>#         [4, 5, 6, 7]])</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 取所有行的后两列</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=n>x</span><span class=p>[:,</span> <span class=mi>2</span><span class=p>:])</span>
+</span></span><span class=line><span class=cl><span class=c1># tensor([[ 2,  3],</span>
+</span></span><span class=line><span class=cl><span class=c1>#         [ 6,  7],</span>
+</span></span><span class=line><span class=cl><span class=c1>#         [10, 11]])</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 取第一行</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=n>x</span><span class=p>[</span><span class=mi>0</span><span class=p>,</span> <span class=p>:])</span>
+</span></span><span class=line><span class=cl><span class=c1># tensor([0, 1, 2, 3])</span>
+</span></span></code></pre></td></tr></table></div></div><h3 id=43-花式索引与布尔索引>4.3 花式索引与布尔索引</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=n>x</span> <span class=o>=</span> <span class=n>torch</span><span class=o>.</span><span class=n>arange</span><span class=p>(</span><span class=mi>12</span><span class=p>)</span><span class=o>.</span><span class=n>reshape</span><span class=p>(</span><span class=mi>3</span><span class=p>,</span> <span class=mi>4</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 花式索引：按指定索引取值</span>
+</span></span><span class=line><span class=cl><span class=n>indices</span> <span class=o>=</span> <span class=n>torch</span><span class=o>.</span><span class=n>tensor</span><span class=p>([</span><span class=mi>0</span><span class=p>,</span> <span class=mi>2</span><span class=p>])</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=n>x</span><span class=p>[</span><span class=n>indices</span><span class=p>])</span>
+</span></span><span class=line><span class=cl><span class=c1># tensor([[ 0,  1,  2,  3],</span>
+</span></span><span class=line><span class=cl><span class=c1>#         [ 8,  9, 10, 11]])</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 布尔索引</span>
+</span></span><span class=line><span class=cl><span class=n>mask</span> <span class=o>=</span> <span class=n>x</span> <span class=o>&gt;</span> <span class=mi>5</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=n>x</span><span class=p>[</span><span class=n>mask</span><span class=p>])</span>
+</span></span><span class=line><span class=cl><span class=c1># tensor([ 6,  7,  8,  9, 10, 11])</span>
+</span></span></code></pre></td></tr></table></div></div><h2 id=五形状操作>五、形状操作</h2><h3 id=51-reshape-与-view>5.1 reshape 与 view</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=n>x</span> <span class=o>=</span> <span class=n>torch</span><span class=o>.</span><span class=n>arange</span><span class=p>(</span><span class=mi>12</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># reshape：改变形状，元素不变</span>
+</span></span><span class=line><span class=cl><span class=n>X</span> <span class=o>=</span> <span class=n>x</span><span class=o>.</span><span class=n>reshape</span><span class=p>(</span><span class=mi>3</span><span class=p>,</span> <span class=mi>4</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=n>X</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=c1># tensor([[ 0,  1,  2,  3],</span>
+</span></span><span class=line><span class=cl><span class=c1>#         [ 4,  5,  6,  7],</span>
+</span></span><span class=line><span class=cl><span class=c1>#         [ 8,  9, 10, 11]])</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 自动推断维度：-1 表示自动计算</span>
+</span></span><span class=line><span class=cl><span class=n>X2</span> <span class=o>=</span> <span class=n>x</span><span class=o>.</span><span class=n>reshape</span><span class=p>(</span><span class=o>-</span><span class=mi>1</span><span class=p>,</span> <span class=mi>6</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=n>X2</span><span class=o>.</span><span class=n>shape</span><span class=p>)</span>  <span class=c1># torch.Size([2, 6])</span>
+</span></span></code></pre></td></tr></table></div></div><p><code>view()</code> 和 <code>reshape()</code> 的区别：<code>view()</code> 要求张量在内存中是连续的，而 <code>reshape()</code> 更灵活，它会自动处理内存不连续的情况。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=c1># view 示例</span>
+</span></span><span class=line><span class=cl><span class=n>X3</span> <span class=o>=</span> <span class=n>x</span><span class=o>.</span><span class=n>view</span><span class=p>(</span><span class=mi>3</span><span class=p>,</span> <span class=mi>4</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=n>X3</span><span class=o>.</span><span class=n>shape</span><span class=p>)</span>  <span class=c1># torch.Size([3, 4])</span>
+</span></span></code></pre></td></tr></table></div></div><h3 id=52-转置>5.2 转置</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=n>x</span> <span class=o>=</span> <span class=n>torch</span><span class=o>.</span><span class=n>arange</span><span class=p>(</span><span class=mi>12</span><span class=p>)</span><span class=o>.</span><span class=n>reshape</span><span class=p>(</span><span class=mi>3</span><span class=p>,</span> <span class=mi>4</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=n>x</span><span class=o>.</span><span class=n>T</span><span class=o>.</span><span class=n>shape</span><span class=p>)</span>  <span class=c1># torch.Size([4, 3])</span>
+</span></span></code></pre></td></tr></table></div></div><h3 id=53-拼接与堆叠>5.3 拼接与堆叠</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=n>X</span> <span class=o>=</span> <span class=n>torch</span><span class=o>.</span><span class=n>arange</span><span class=p>(</span><span class=mi>12</span><span class=p>)</span><span class=o>.</span><span class=n>reshape</span><span class=p>(</span><span class=mi>3</span><span class=p>,</span> <span class=mi>4</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=n>Y</span> <span class=o>=</span> <span class=n>torch</span><span class=o>.</span><span class=n>ones</span><span class=p>(</span><span class=mi>3</span><span class=p>,</span> <span class=mi>4</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 按行拼接（dim=0）</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=n>torch</span><span class=o>.</span><span class=n>cat</span><span class=p>((</span><span class=n>X</span><span class=p>,</span> <span class=n>Y</span><span class=p>),</span> <span class=n>dim</span><span class=o>=</span><span class=mi>0</span><span class=p>)</span><span class=o>.</span><span class=n>shape</span><span class=p>)</span>  <span class=c1># torch.Size([6, 4])</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 按列拼接（dim=1）</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=n>torch</span><span class=o>.</span><span class=n>cat</span><span class=p>((</span><span class=n>X</span><span class=p>,</span> <span class=n>Y</span><span class=p>),</span> <span class=n>dim</span><span class=o>=</span><span class=mi>1</span><span class=p>)</span><span class=o>.</span><span class=n>shape</span><span class=p>)</span>  <span class=c1># torch.Size([3, 8])</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 堆叠：增加一个新维度</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=n>torch</span><span class=o>.</span><span class=n>stack</span><span class=p>((</span><span class=n>X</span><span class=p>,</span> <span class=n>Y</span><span class=p>),</span> <span class=n>dim</span><span class=o>=</span><span class=mi>0</span><span class=p>)</span><span class=o>.</span><span class=n>shape</span><span class=p>)</span>  <span class=c1># torch.Size([2, 3, 4])</span>
+</span></span></code></pre></td></tr></table></div></div><h2 id=六基本数学运算>六、基本数学运算</h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=n>x</span> <span class=o>=</span> <span class=n>torch</span><span class=o>.</span><span class=n>tensor</span><span class=p>([</span><span class=mf>1.0</span><span class=p>,</span> <span class=mf>2.0</span><span class=p>,</span> <span class=mf>3.0</span><span class=p>])</span>
+</span></span><span class=line><span class=cl><span class=n>y</span> <span class=o>=</span> <span class=n>torch</span><span class=o>.</span><span class=n>tensor</span><span class=p>([</span><span class=mf>4.0</span><span class=p>,</span> <span class=mf>5.0</span><span class=p>,</span> <span class=mf>6.0</span><span class=p>])</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 逐元素运算</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=n>x</span> <span class=o>+</span> <span class=n>y</span><span class=p>)</span>    <span class=c1># tensor([5., 7., 9.])</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=n>x</span> <span class=o>-</span> <span class=n>y</span><span class=p>)</span>    <span class=c1># tensor([-3., -3., -3.])</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=n>x</span> <span class=o>*</span> <span class=n>y</span><span class=p>)</span>    <span class=c1># tensor([ 4., 10., 18.])</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=n>x</span> <span class=o>/</span> <span class=n>y</span><span class=p>)</span>    <span class=c1># tensor([0.2500, 0.4000, 0.5000])</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=n>x</span> <span class=o>**</span> <span class=mi>2</span><span class=p>)</span>   <span class=c1># tensor([1., 4., 9.])</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 指数运算</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=n>torch</span><span class=o>.</span><span class=n>exp</span><span class=p>(</span><span class=n>x</span><span class=p>))</span>  <span class=c1># tensor([ 2.7183,  7.3891, 20.0855])</span>
+</span></span></code></pre></td></tr></table></div></div><h3 id=61-求和与均值>6.1 求和与均值</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=n>X</span> <span class=o>=</span> <span class=n>torch</span><span class=o>.</span><span class=n>arange</span><span class=p>(</span><span class=mi>12</span><span class=p>,</span> <span class=n>dtype</span><span class=o>=</span><span class=n>torch</span><span class=o>.</span><span class=n>float32</span><span class=p>)</span><span class=o>.</span><span class=n>reshape</span><span class=p>(</span><span class=mi>3</span><span class=p>,</span> <span class=mi>4</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 所有元素求和</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=n>X</span><span class=o>.</span><span class=n>sum</span><span class=p>())</span>  <span class=c1># tensor(66.)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 沿指定轴求和</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=n>X</span><span class=o>.</span><span class=n>sum</span><span class=p>(</span><span class=n>axis</span><span class=o>=</span><span class=mi>0</span><span class=p>))</span>  <span class=c1># tensor([12., 15., 18., 21.])</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=n>X</span><span class=o>.</span><span class=n>sum</span><span class=p>(</span><span class=n>axis</span><span class=o>=</span><span class=mi>1</span><span class=p>))</span>  <span class=c1># tensor([ 6., 22., 38.])</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 保持维度</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=n>X</span><span class=o>.</span><span class=n>sum</span><span class=p>(</span><span class=n>axis</span><span class=o>=</span><span class=mi>0</span><span class=p>,</span> <span class=n>keepdims</span><span class=o>=</span><span class=kc>True</span><span class=p>)</span><span class=o>.</span><span class=n>shape</span><span class=p>)</span>  <span class=c1># torch.Size([1, 4])</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 均值</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=n>X</span><span class=o>.</span><span class=n>mean</span><span class=p>())</span>  <span class=c1># tensor(5.5000)</span>
+</span></span></code></pre></td></tr></table></div></div><h2 id=七广播机制broadcasting>七、广播机制（Broadcasting）📡</h2><p>广播机制是 PyTorch 中一个非常强大的特性。它允许不同形状的张量之间进行运算，而不需要显式地复制数据。</p><p><strong>广播规则</strong>：从尾部维度开始逐对比较，两个维度要么相等，要么其中一个为 1，要么其中一个不存在。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=n>a</span> <span class=o>=</span> <span class=n>torch</span><span class=o>.</span><span class=n>arange</span><span class=p>(</span><span class=mi>3</span><span class=p>)</span><span class=o>.</span><span class=n>reshape</span><span class=p>(</span><span class=mi>3</span><span class=p>,</span> <span class=mi>1</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=n>b</span> <span class=o>=</span> <span class=n>torch</span><span class=o>.</span><span class=n>arange</span><span class=p>(</span><span class=mi>2</span><span class=p>)</span><span class=o>.</span><span class=n>reshape</span><span class=p>(</span><span class=mi>1</span><span class=p>,</span> <span class=mi>2</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=s2>&#34;a 的形状：&#34;</span><span class=p>,</span> <span class=n>a</span><span class=o>.</span><span class=n>shape</span><span class=p>)</span>  <span class=c1># torch.Size([3, 1])</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=s2>&#34;b 的形状：&#34;</span><span class=p>,</span> <span class=n>b</span><span class=o>.</span><span class=n>shape</span><span class=p>)</span>  <span class=c1># torch.Size([1, 2])</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>c</span> <span class=o>=</span> <span class=n>a</span> <span class=o>+</span> <span class=n>b</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=s2>&#34;a + b 的形状：&#34;</span><span class=p>,</span> <span class=n>c</span><span class=o>.</span><span class=n>shape</span><span class=p>)</span>  <span class=c1># torch.Size([3, 2])</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=n>c</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=c1># tensor([[0, 1],</span>
+</span></span><span class=line><span class=cl><span class=c1>#         [1, 2],</span>
+</span></span><span class=line><span class=cl><span class=c1>#         [2, 3]])</span>
+</span></span></code></pre></td></tr></table></div></div><p><strong>广播的执行过程</strong>：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>a: (3, 1)  →  (3, 2)  （沿第二个维度复制）
+</span></span><span class=line><span class=cl>b: (1, 2)  →  (3, 2)  （沿第一个维度复制）
+</span></span></code></pre></td></tr></table></div></div><blockquote><p>⚠️ <strong>易错点</strong>：如果你不小心把不同形状的向量相加，触发了广播机制，可能会得到意想不到的结果，而不是报错。建议在运算前先用 <code>print(tensor.shape)</code> 确认形状。</p></blockquote><h2 id=八内存管理与原地操作>八、内存管理与原地操作</h2><h3 id=81-为什么需要关注内存>8.1 为什么需要关注内存？</h3><p>在 PyTorch 中，<code>Y = Y + X</code> 并不是把结果写回 <code>Y</code> 原来的内存，而是<strong>新建了一个张量</strong>，再让 <code>Y</code> 指向它。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span><span class=lnt>9
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=n>X</span> <span class=o>=</span> <span class=n>torch</span><span class=o>.</span><span class=n>tensor</span><span class=p>([</span><span class=mi>1</span><span class=p>,</span> <span class=mi>2</span><span class=p>,</span> <span class=mi>3</span><span class=p>,</span> <span class=mi>4</span><span class=p>,</span> <span class=mi>5</span><span class=p>])</span>
+</span></span><span class=line><span class=cl><span class=n>Y</span> <span class=o>=</span> <span class=n>torch</span><span class=o>.</span><span class=n>tensor</span><span class=p>([</span><span class=mi>1</span><span class=p>,</span> <span class=mi>2</span><span class=p>,</span> <span class=mi>3</span><span class=p>,</span> <span class=mi>4</span><span class=p>,</span> <span class=mi>5</span><span class=p>])</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>before</span> <span class=o>=</span> <span class=nb>id</span><span class=p>(</span><span class=n>Y</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=n>Y</span> <span class=o>=</span> <span class=n>Y</span> <span class=o>+</span> <span class=n>X</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=sa>f</span><span class=s2>&#34;运算前 Y 的 id：</span><span class=si>{</span><span class=n>before</span><span class=si>}</span><span class=s2>&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=sa>f</span><span class=s2>&#34;运算后 Y 的 id：</span><span class=si>{</span><span class=nb>id</span><span class=p>(</span><span class=n>Y</span><span class=p>)</span><span class=si>}</span><span class=s2>&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=sa>f</span><span class=s2>&#34;id 是否相同：</span><span class=si>{</span><span class=nb>id</span><span class=p>(</span><span class=n>Y</span><span class=p>)</span> <span class=o>==</span> <span class=n>before</span><span class=si>}</span><span class=s2>&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=c1># id 是否相同：False</span>
+</span></span></code></pre></td></tr></table></div></div><p>这意味着每次普通运算都会<strong>分配新内存</strong>。在处理大张量时，这会造成不必要的内存开销。</p><h3 id=82-原地操作>8.2 原地操作</h3><p>使用<strong>原地操作</strong>可以避免分配新内存：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=n>X</span> <span class=o>=</span> <span class=n>torch</span><span class=o>.</span><span class=n>tensor</span><span class=p>([</span><span class=mi>1</span><span class=p>,</span> <span class=mi>2</span><span class=p>,</span> <span class=mi>3</span><span class=p>,</span> <span class=mi>4</span><span class=p>,</span> <span class=mi>5</span><span class=p>])</span>
+</span></span><span class=line><span class=cl><span class=n>Y</span> <span class=o>=</span> <span class=n>torch</span><span class=o>.</span><span class=n>tensor</span><span class=p>([</span><span class=mi>1</span><span class=p>,</span> <span class=mi>2</span><span class=p>,</span> <span class=mi>3</span><span class=p>,</span> <span class=mi>4</span><span class=p>,</span> <span class=mi>5</span><span class=p>])</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>before</span> <span class=o>=</span> <span class=nb>id</span><span class=p>(</span><span class=n>Y</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=n>Y</span><span class=p>[:]</span> <span class=o>=</span> <span class=n>Y</span> <span class=o>+</span> <span class=n>X</span>      <span class=c1># 方式一：切片赋值</span>
+</span></span><span class=line><span class=cl><span class=c1># 或者</span>
+</span></span><span class=line><span class=cl><span class=n>Y</span> <span class=o>+=</span> <span class=n>X</span>            <span class=c1># 方式二：原地加法</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=sa>f</span><span class=s2>&#34;id 是否相同：</span><span class=si>{</span><span class=nb>id</span><span class=p>(</span><span class=n>Y</span><span class=p>)</span> <span class=o>==</span> <span class=n>before</span><span class=si>}</span><span class=s2>&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=c1># id 是否相同：True</span>
+</span></span></code></pre></td></tr></table></div></div><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=c1># 再举一个更清晰的例子</span>
+</span></span><span class=line><span class=cl><span class=n>x</span> <span class=o>=</span> <span class=n>torch</span><span class=o>.</span><span class=n>tensor</span><span class=p>([</span><span class=mf>1.0</span><span class=p>,</span> <span class=mf>2.0</span><span class=p>,</span> <span class=mf>3.0</span><span class=p>])</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 普通运算：创建新张量</span>
+</span></span><span class=line><span class=cl><span class=n>y</span> <span class=o>=</span> <span class=n>x</span><span class=o>.</span><span class=n>add</span><span class=p>(</span><span class=mi>1</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=nb>id</span><span class=p>(</span><span class=n>x</span><span class=p>)</span> <span class=o>==</span> <span class=nb>id</span><span class=p>(</span><span class=n>y</span><span class=p>))</span>  <span class=c1># False</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 原地运算：修改原张量</span>
+</span></span><span class=line><span class=cl><span class=n>z</span> <span class=o>=</span> <span class=n>x</span><span class=o>.</span><span class=n>add_</span><span class=p>(</span><span class=mi>1</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=nb>id</span><span class=p>(</span><span class=n>x</span><span class=p>)</span> <span class=o>==</span> <span class=nb>id</span><span class=p>(</span><span class=n>z</span><span class=p>))</span>  <span class=c1># True</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=n>x</span><span class=p>)</span>  <span class=c1># tensor([2., 3., 4.])</span>
+</span></span></code></pre></td></tr></table></div></div><blockquote><p>💡 <strong>经验法则</strong>：如果后续计算中不再需要原来的 <code>X</code>，可以使用 <code>X += Y</code> 或 <code>X[:] = X + Y</code> 来减少内存开销。但要注意，原地操作可能会影响自动求导，在训练过程中要谨慎使用。</p></blockquote><h3 id=83-内存共享与视图>8.3 内存共享与视图</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=c1># 切片操作返回的是原张量的视图，修改会影响原张量</span>
+</span></span><span class=line><span class=cl><span class=n>X</span> <span class=o>=</span> <span class=n>torch</span><span class=o>.</span><span class=n>arange</span><span class=p>(</span><span class=mi>12</span><span class=p>)</span><span class=o>.</span><span class=n>reshape</span><span class=p>(</span><span class=mi>3</span><span class=p>,</span> <span class=mi>4</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=n>Y</span> <span class=o>=</span> <span class=n>X</span><span class=p>[</span><span class=mi>1</span><span class=p>,</span> <span class=p>:]</span>       <span class=c1># Y 是 X 的视图</span>
+</span></span><span class=line><span class=cl><span class=n>Y</span> <span class=o>+=</span> <span class=mi>100</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=n>X</span><span class=p>[</span><span class=mi>1</span><span class=p>,</span> <span class=p>:])</span>
+</span></span><span class=line><span class=cl><span class=c1># tensor([104, 105, 106, 107])  ← X 也被修改了</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 使用 clone() 创建副本</span>
+</span></span><span class=line><span class=cl><span class=n>Z</span> <span class=o>=</span> <span class=n>X</span><span class=o>.</span><span class=n>clone</span><span class=p>()</span>
+</span></span><span class=line><span class=cl><span class=n>Z</span> <span class=o>+=</span> <span class=mi>1000</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=n>X</span><span class=p>[</span><span class=mi>1</span><span class=p>,</span> <span class=p>:])</span>
+</span></span><span class=line><span class=cl><span class=c1># tensor([104, 105, 106, 107])  ← X 没有被修改</span>
+</span></span></code></pre></td></tr></table></div></div><h2 id=九张量与-numpy-互转>九、张量与 NumPy 互转</h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=c1># Tensor → NumPy</span>
+</span></span><span class=line><span class=cl><span class=n>x</span> <span class=o>=</span> <span class=n>torch</span><span class=o>.</span><span class=n>tensor</span><span class=p>([</span><span class=mf>1.0</span><span class=p>,</span> <span class=mf>2.0</span><span class=p>,</span> <span class=mf>3.0</span><span class=p>])</span>
+</span></span><span class=line><span class=cl><span class=n>a</span> <span class=o>=</span> <span class=n>x</span><span class=o>.</span><span class=n>numpy</span><span class=p>()</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=nb>type</span><span class=p>(</span><span class=n>a</span><span class=p>))</span>  <span class=c1># &lt;class &#39;numpy.ndarray&#39;&gt;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># NumPy → Tensor</span>
+</span></span><span class=line><span class=cl><span class=n>b</span> <span class=o>=</span> <span class=n>torch</span><span class=o>.</span><span class=n>tensor</span><span class=p>(</span><span class=n>a</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=nb>type</span><span class=p>(</span><span class=n>b</span><span class=p>))</span>  <span class=c1># &lt;class &#39;torch.Tensor&#39;&gt;</span>
+</span></span></code></pre></td></tr></table></div></div><blockquote><p>⚠️ <strong>重要提醒</strong>：<code>torch.tensor()</code> 和 NumPy 数组之间转换时，它们会<strong>共享底层内存</strong>，修改一个会影响另一个。如果需要独立副本，使用 <code>.clone()</code>。</p></blockquote><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=c1># 验证内存共享</span>
+</span></span><span class=line><span class=cl><span class=n>np_arr</span> <span class=o>=</span> <span class=n>np</span><span class=o>.</span><span class=n>array</span><span class=p>([</span><span class=mf>1.0</span><span class=p>,</span> <span class=mf>2.0</span><span class=p>,</span> <span class=mf>3.0</span><span class=p>])</span>
+</span></span><span class=line><span class=cl><span class=n>torch_arr</span> <span class=o>=</span> <span class=n>torch</span><span class=o>.</span><span class=n>from_numpy</span><span class=p>(</span><span class=n>np_arr</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=n>np_arr</span><span class=p>[</span><span class=mi>0</span><span class=p>]</span> <span class=o>=</span> <span class=mi>100</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=n>torch_arr</span><span class=p>)</span>  <span class=c1># tensor([100.,   2.,   3.])  ← 被同步修改了</span>
+</span></span></code></pre></td></tr></table></div></div><h3 id=标量提取>标量提取</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=n>a</span> <span class=o>=</span> <span class=n>torch</span><span class=o>.</span><span class=n>tensor</span><span class=p>([</span><span class=mf>3.5</span><span class=p>])</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=n>a</span><span class=o>.</span><span class=n>item</span><span class=p>())</span>   <span class=c1># 3.5  ← Python 标量</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=nb>float</span><span class=p>(</span><span class=n>a</span><span class=p>))</span>   <span class=c1># 3.5</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=nb>int</span><span class=p>(</span><span class=n>a</span><span class=p>))</span>     <span class=c1># 3</span>
+</span></span></code></pre></td></tr></table></div></div><h2 id=十综合实战张量操作练习>十、综合实战：张量操作练习</h2><p>让我们用一个完整的例子把上面的知识串起来。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=kn>import</span> <span class=nn>torch</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 1. 创建一个 4×5 的随机张量</span>
+</span></span><span class=line><span class=cl><span class=n>A</span> <span class=o>=</span> <span class=n>torch</span><span class=o>.</span><span class=n>randn</span><span class=p>(</span><span class=mi>4</span><span class=p>,</span> <span class=mi>5</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=s2>&#34;A 的形状：&#34;</span><span class=p>,</span> <span class=n>A</span><span class=o>.</span><span class=n>shape</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 2. 创建一个 4×5 的全 1 张量</span>
+</span></span><span class=line><span class=cl><span class=n>B</span> <span class=o>=</span> <span class=n>torch</span><span class=o>.</span><span class=n>ones</span><span class=p>(</span><span class=mi>4</span><span class=p>,</span> <span class=mi>5</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 3. 按列拼接</span>
+</span></span><span class=line><span class=cl><span class=n>C</span> <span class=o>=</span> <span class=n>torch</span><span class=o>.</span><span class=n>cat</span><span class=p>((</span><span class=n>A</span><span class=p>,</span> <span class=n>B</span><span class=p>),</span> <span class=n>dim</span><span class=o>=</span><span class=mi>1</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=s2>&#34;C 的形状：&#34;</span><span class=p>,</span> <span class=n>C</span><span class=o>.</span><span class=n>shape</span><span class=p>)</span>  <span class=c1># torch.Size([4, 10])</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 4. 计算 C 每列的和</span>
+</span></span><span class=line><span class=cl><span class=n>col_sum</span> <span class=o>=</span> <span class=n>C</span><span class=o>.</span><span class=n>sum</span><span class=p>(</span><span class=n>axis</span><span class=o>=</span><span class=mi>0</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=s2>&#34;每列之和的形状：&#34;</span><span class=p>,</span> <span class=n>col_sum</span><span class=o>.</span><span class=n>shape</span><span class=p>)</span>  <span class=c1># torch.Size([10])</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 5. 广播：将列和从每行中减去（中心化）</span>
+</span></span><span class=line><span class=cl><span class=n>C_centered</span> <span class=o>=</span> <span class=n>C</span> <span class=o>-</span> <span class=n>col_sum</span><span class=o>.</span><span class=n>reshape</span><span class=p>(</span><span class=mi>1</span><span class=p>,</span> <span class=o>-</span><span class=mi>1</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=s2>&#34;中心化后每列均值：&#34;</span><span class=p>,</span> <span class=n>C_centered</span><span class=o>.</span><span class=n>mean</span><span class=p>(</span><span class=n>axis</span><span class=o>=</span><span class=mi>0</span><span class=p>))</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 6. 统计信息</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=sa>f</span><span class=s2>&#34;C 的总和：</span><span class=si>{</span><span class=n>C</span><span class=o>.</span><span class=n>sum</span><span class=p>()</span><span class=si>:</span><span class=s2>.4f</span><span class=si>}</span><span class=s2>&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=sa>f</span><span class=s2>&#34;C 的均值：</span><span class=si>{</span><span class=n>C</span><span class=o>.</span><span class=n>mean</span><span class=p>()</span><span class=si>:</span><span class=s2>.4f</span><span class=si>}</span><span class=s2>&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=sa>f</span><span class=s2>&#34;C 的标准差：</span><span class=si>{</span><span class=n>C</span><span class=o>.</span><span class=n>std</span><span class=p>()</span><span class=si>:</span><span class=s2>.4f</span><span class=si>}</span><span class=s2>&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 7. 找出大于均值的元素</span>
+</span></span><span class=line><span class=cl><span class=n>mask</span> <span class=o>=</span> <span class=n>C</span> <span class=o>&gt;</span> <span class=n>C</span><span class=o>.</span><span class=n>mean</span><span class=p>()</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=sa>f</span><span class=s2>&#34;大于均值的元素个数：</span><span class=si>{</span><span class=n>mask</span><span class=o>.</span><span class=n>sum</span><span class=p>()</span><span class=o>.</span><span class=n>item</span><span class=p>()</span><span class=si>}</span><span class=s2>&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 8. 原地操作演示</span>
+</span></span><span class=line><span class=cl><span class=n>before_id</span> <span class=o>=</span> <span class=nb>id</span><span class=p>(</span><span class=n>A</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=n>A</span> <span class=o>+=</span> <span class=mi>1</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=sa>f</span><span class=s2>&#34;A 的 id 是否变化：</span><span class=si>{</span><span class=nb>id</span><span class=p>(</span><span class=n>A</span><span class=p>)</span> <span class=o>!=</span> <span class=n>before_id</span><span class=si>}</span><span class=s2>&#34;</span><span class=p>)</span>
+</span></span></code></pre></td></tr></table></div></div><h2 id=十一常见踩坑记录>十一、常见踩坑记录</h2><p>这里整理几个初学者最容易踩的坑：</p><div class=table-wrapper><table><thead><tr><th>坑点</th><th>错误写法</th><th>正确写法</th><th>原因</th></tr></thead><tbody><tr><td>类型不匹配</td><td><code>torch.arange(6) / 2</code> 返回整型</td><td><code>torch.arange(6, dtype=torch.float32) / 2</code></td><td>整型除法会截断</td></tr><tr><td>意外广播</td><td><code>(3,1) + (1,2)</code> 期望报错</td><td>先用 <code>.shape</code> 确认形状</td><td>PyTorch 会自动广播</td></tr><tr><td>内存意外共享</td><td>修改 <code>Y = X[:]</code> 影响 <code>X</code></td><td>用 <code>X.clone()</code> 创建副本</td><td>切片返回视图</td></tr><tr><td>id 判断失误</td><td><code>Y = Y + X</code> 后 id 改变</td><td>用 <code>Y += X</code> 或 <code>Y[:] = Y + X</code></td><td>普通运算分配新内存</td></tr><tr><td>NumPy 互转</td><td>修改一方影响另一方</td><td>用 <code>.clone()</code> 断开共享</td><td>底层内存共享</td></tr></tbody></table></div><h2 id=十二小结>十二、小结</h2><p>这篇文章覆盖了 PyTorch 数据操作的核心内容，用一张图总结一下：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span><span class=lnt>9
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>张量操作全景
+</span></span><span class=line><span class=cl>├── 创建：tensor / zeros / ones / randn / arange
+</span></span><span class=line><span class=cl>├── 属性：shape / dtype / numel
+</span></span><span class=line><span class=cl>├── 索引：基本索引 / 切片 / 花式索引 / 布尔索引
+</span></span><span class=line><span class=cl>├── 形状：reshape / view / T / cat / stack
+</span></span><span class=line><span class=cl>├── 运算：逐元素运算 / 求和 / 均值
+</span></span><span class=line><span class=cl>├── 广播：自动扩展维度进行运算
+</span></span><span class=line><span class=cl>├── 内存：原地操作 / 视图 / 副本
+</span></span><span class=line><span class=cl>└── 互转：Tensor ↔ NumPy
+</span></span></code></pre></td></tr></table></div></div><p><strong>几个关键原则</strong>：</p><ol><li><strong>能用向量化就用向量化</strong>，避免写 Python 循环。</li><li><strong>操作前检查形状</strong>，尤其是涉及广播的时候。</li><li><strong>大张量优先用原地操作</strong>，但要小心自动求导的影响。</li><li><strong>NumPy 和 Tensor 互转时注意内存共享</strong>。</li></ol><p>数据操作是深度学习的“地基”。把这些操作练熟了，后面搭建模型的时候就不会手忙脚乱。</p><p>下一篇我们会进入<strong>数据预处理</strong>的部分，继续打地基。🐂</p><p>如需详细学习，可前往<a class=link href=https://zh.d2l.ai/ target=_blank rel=noopener>《动手学深度学习》</a>研究。</p><p><em>—— 愤怒的大角牛</em></p></section><footer class="article-meta article-footer"><section class=article-tags><a href=/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86/>深度学习-预备知识</a></section><section class="article-copyright inline-meta"><svg class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>Licensed under <a class=link href=https://creativecommons.org/licenses/by-nc-sa/4.0/ target=_blank rel=noopener>CC BY-NC-SA 4.0</a></span></section></footer></article><script src=https://utteranc.es/client.js repo=winnermeat/winnermeat.github.io issue-term=pathname crossorigin=anonymous async></script><style>.utterances{max-width:unset}</style><script>let utterancesLoaded=!1;function setUtterancesTheme(e){let t=document.querySelector(".utterances iframe");t&&t.contentWindow.postMessage({type:"set-theme",theme:`github-${e}`},"https://utteranc.es")}addEventListener("message",e=>{if(e.origin!=="https://utteranc.es")return;utterancesLoaded=!0,setUtterancesTheme(document.documentElement.dataset.scheme)}),window.addEventListener("onColorSchemeChange",e=>{if(!utterancesLoaded)return;setUtterancesTheme(e.detail)})</script><footer class=site-footer><section class=copyright>&copy;
+2026 愤怒的大角牛</section><section class=powerby>使用 <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a> 构建<br>主题 <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=4.0.3>Stack</a></b> 由 <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a> 设计</section></footer><script type=module>
+    import gallery from '\/ts\/gallery.js';
+
+    const articleContent = document.querySelector('.article-content');
+    const shouldLoad = articleContent && (articleContent.querySelectorAll('figure').length > 0 || articleContent.querySelectorAll('img.gallery-image').length > 0);
+    
+    if (shouldLoad) {
+        gallery(articleContent);
+
+        const PhotoSwipeLightbox = (await import("https:\/\/cdn.jsdelivr.net\/npm\/photoswipe@5.4.4\/dist\/photoswipe-lightbox.esm.min.js")).default;
+        const styleHref = "https:\/\/cdn.jsdelivr.net\/npm\/photoswipe@5.4.4\/dist\/photoswipe.css";
+
+        const styleTag = document.createElement('link');
+        styleTag.rel = 'stylesheet';
+        styleTag.href = styleHref;
+        document.head.appendChild(styleTag);
+
+        const lightbox = new PhotoSwipeLightbox({
+            gallerySelector: '.article-content',
+            childSelector: 'figure a.image-link',
+            pswpModule: () => import("https:\/\/cdn.jsdelivr.net\/npm\/photoswipe@5.4.4\/dist\/photoswipe.esm.min.js")
+        });
+        lightbox.init();
+    }
+</script></main></div><script type=text/javascript src=/ts/main.f856840516f7c2ad1769a8f5937e3d08d6cb386e2cd2dd025ae696e0ff207958.js defer></script></body></html>
