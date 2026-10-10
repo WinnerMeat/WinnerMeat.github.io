@@ -1,0 +1,371 @@
+<!doctype html><html lang=en-us dir=ltr><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><meta name=description content="本文是《动手学深度学习》PyTorch 实现系列的2 预备知识 -> 2.2 数据预处理的学习笔记。"><title>动手学深度学习笔记 · 预备知识：数据预处理（PyTorch 版）📘</title><link rel=canonical href=https://WinnerMeat.github.io/p/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86%E6%95%B0%E6%8D%AE%E9%A2%84%E5%A4%84%E7%90%86pytorch-%E7%89%88/><link rel=preconnect href=https://fonts.googleapis.com><link rel=preconnect href=https://fonts.gstatic.com crossorigin><link rel=preload as=style href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap"><link rel=stylesheet href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap"><link rel=stylesheet href=/scss/style.min.6c875234350e518395efbf51958523b0852fb2215ab8cb81358f9317153eba2d.css><meta property='og:title' content="动手学深度学习笔记 · 预备知识：数据预处理（PyTorch 版）📘"><meta property='og:description' content="本文是《动手学深度学习》PyTorch 实现系列的2 预备知识 -> 2.2 数据预处理的学习笔记。"><meta property='og:url' content='https://WinnerMeat.github.io/p/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86%E6%95%B0%E6%8D%AE%E9%A2%84%E5%A4%84%E7%90%86pytorch-%E7%89%88/'><meta property='og:site_name' content='愤怒的大角牛'><meta property='og:type' content='article'><meta property='article:section' content='Post'><meta property='article:tag' content='深度学习-预备知识'><meta property='article:published_time' content='2026-10-10T00:00:00+00:00'><meta property='article:modified_time' content='2026-10-10T00:00:00+00:00'><meta property='og:image' content='https://WinnerMeat.github.io/p/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86%E6%95%B0%E6%8D%AE%E9%A2%84%E5%A4%84%E7%90%86pytorch-%E7%89%88/wallhaven-jel1jq_1920x1080.png'><meta name=twitter:title content="动手学深度学习笔记 · 预备知识：数据预处理（PyTorch 版）📘"><meta name=twitter:description content="本文是《动手学深度学习》PyTorch 实现系列的2 预备知识 -> 2.2 数据预处理的学习笔记。"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content='https://WinnerMeat.github.io/p/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86%E6%95%B0%E6%8D%AE%E9%A2%84%E5%A4%84%E7%90%86pytorch-%E7%89%88/wallhaven-jel1jq_1920x1080.png'><link rel="shortcut icon" href=/img/avatar.png></head><body class=article-page><script>(function(){const e="StackColorScheme";localStorage.getItem(e)||localStorage.setItem(e,"auto")})()</script><script>(function(){const t="StackColorScheme",e=localStorage.getItem(t),n=window.matchMedia("(prefers-color-scheme: dark)").matches===!0;e=="dark"||e==="auto"&&n?document.documentElement.dataset.scheme="dark":document.documentElement.dataset.scheme="light"})()</script><div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky"><button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label=切换菜单>
+<span class=hamburger-box><span class=hamburger-inner></span></span></button><header><figure class=site-avatar><a href=/><img src=/img/avatar.png width=1080 height=1080 class=site-logo loading=lazy alt=Avatar>
+</a><span class=emoji>✏️</span></figure><div class=site-meta><h1 class=site-name><a href=/>愤怒的大角牛</a></h1><h2 class=site-description>做正确且富有挑战的事</h2></div></header><ol class=menu-social><li><a href=https://github.com/WinnerMeat title=GitHub rel=me><svg class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6.0 00-1.3-3.2 4.2 4.2.0 00-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3.0 00-6.2.0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2.0 00-.1 3.2A4.6 4.6.0 004 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg></a></li><li><a href=https://weixin.qq.com/ title=weixin rel=me><svg xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24" viewBox="0 0 24 24"><g id="surface1"><path style="fill-rule:nonzero;fill:#525151;fill-opacity:1;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke:#525151;stroke-opacity:1;stroke-miterlimit:4" d="M221.833333 131.166667c-18.583333.0-33.666666 15.083333-33.666666 33.666666.0 18.5 15.083333 33.666667 33.666666 33.666667 18.5.0 33.666667-15.166667 33.666667-33.666667.0-18.583333-15.166667-33.666666-33.666667-33.666666zm0 51.25c-9.75.0-17.666666-7.91666699999999-17.666666-17.583334.0-9.75 7.91666600000002-17.666666 17.666666-17.666666C231.5 147.166667 239.416667 155.083333 239.416667 164.833333 239.416667 174.5 231.5 182.416667 221.833333 182.416667zm0 0" transform="matrix(0.046875,0,0,0.046875,0,0)"/><path style="fill-rule:nonzero;fill:#525151;fill-opacity:1;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke:#525151;stroke-opacity:1;stroke-miterlimit:4" d="M127.75 131.166667c-18.583333.0-33.666667 15.083333-33.666667 33.666666.0 18.5 15.083334 33.666667 33.666667 33.666667 18.583333.0 33.666667-15.166667 33.666667-33.666667.0-18.583333-15.083334-33.666666-33.666667-33.666666zm0 51.25C118 182.416667 110.083333 174.5 110.083333 164.833333c0-9.75 7.916667-17.666666 17.666667-17.666666C137.416667 147.166667 145.333333 155.083333 145.333333 164.833333 145.333333 174.5 137.416667 182.416667 127.75 182.416667zm0 0" transform="matrix(0.046875,0,0,0.046875,0,0)"/><path style="fill-rule:nonzero;fill:#525151;fill-opacity:1;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke:#525151;stroke-opacity:1;stroke-miterlimit:4" d="M512 327.25c0-40.083333-17.916667-77.416667-50.5-105.083333C458.166667 219.333333 453.083333 219.75 450.25 223.083333 447.333333 226.5 447.75 231.583333 451.166667 234.416667 480.083333 258.916667 496 291.916667 496 327.25c0 38.166667-19.083333 74.166667-52.25 98.75C441.166667 427.916667 440 431.083333 440.666667 434.166667L449.333333 473.25l-41.166666-24.666667c-2-1.25-4.41666700000002-1.5-6.66666700000002-.75-16.416667 5.5-33.75 8.25-51.416667 8.25-80.5.0-145.916666-57.75-145.916666-128.833333.0-71 65.416666-128.75 145.916666-128.75 26.416667.0 52.333334 6.25 74.833334 18.166667C428.833333 218.75 433.666667 217.25 435.75 213.333333 437.833333 209.416667 436.333333 204.583333 432.416667 202.5c-24.833334-13.083333-53.333334-20.083333-82.333334-20.083333-.333332999999982.0-.75.0-1.08333299999998.0C349.333333 178.5 349.5 174.5 349.5 170.5c0-86.166667-78.333333-156.25-174.75-156.25C78.416667 14.25.0 84.333333.0 170.5c0 17.916667 3.333333 35.5 10 52.25C11.75 227 16.833333 229 21 227 24.666667 225.25 26.416667 220.666667 24.916667 216.833333 19 202 16 186.416667 16 170.5 16 93.166667 87.25 30.333333 174.75 30.333333S333.5 93.166667 333.5 170.5c0 4.25-.25 8.5-.666667000000018 12.75C257.916667 190.333333 198.083333 243.333333 189.25 310.083333 184.5 310.5 179.583333 310.666667 174.75 310.666667 145.833333 310.666667 117.5 303.75 92.916667 290.583333c-2.416667-1.25-5.166667-1.25-7.58333400000001.0L48.666667 310.166667l12.916666-34.583334C62.75 272.583333 61.916667 269.166667 59.583333 266.916667 51.916667 259.833333 45.083333 252 39.333333 243.666667 36.833333 240 31.833333 239.083333 28.166667 241.583333 24.5 244.166667 23.666667 249.166667 26.166667 252.75 31.583333 260.583333 37.833333 268.083333 44.75 274.916667l-18.583333 49.5C23.666667 331.25 31.083333 337.75 37.416667 334.333333l51.75-27.583333C115.25 319.833333 144.75 326.75 174.75 326.75c4.5.0 8.91666699999999-.166667000000018 13.416667-.5C188.166667 326.583333 188.083333 326.916667 188.083333 327.25c0 79.916667 72.666667 144.833333 162 144.833333C368.25 472.083333 386 469.416667 403 464.166667l54.083333 32.416666C463 500.166667 470.583333 494.75 469.083333 488l-11.666666-52.333333C492.166667 408.166667 512 368.916667 512 327.25zm0 0" transform="matrix(0.046875,0,0,0.046875,0,0)"/><path style="fill-rule:nonzero;fill:#525151;fill-opacity:1;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke:#525151;stroke-opacity:1;stroke-miterlimit:4" d="M298.75 293.583333c-18.583333.0-33.666667 15.083334-33.666667 33.666667S280.166667 360.916667 298.75 360.916667 332.416667 345.833333 332.416667 327.25 317.333333 293.583333 298.75 293.583333zm0 51.333334C289 344.916667 281.083333 337 281.083333 327.25 281.083333 317.583333 289 309.666667 298.75 309.666667S316.416667 317.583333 316.416667 327.25C316.416667 337 308.5 344.916667 298.75 344.916667zm0 0" transform="matrix(0.046875,0,0,0.046875,0,0)"/><path style="fill-rule:nonzero;fill:#525151;fill-opacity:1;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke:#525151;stroke-opacity:1;stroke-miterlimit:4" d="M401.333333 293.583333c-18.5.0-33.666666 15.083334-33.666666 33.666667s15.166666 33.666667 33.666666 33.666667C419.916667 360.916667 435 345.833333 435 327.25s-15.083333-33.666667-33.666667-33.666667zm0 51.333334C391.666667 344.916667 383.75 337 383.75 327.25 383.75 317.583333 391.666667 309.666667 401.333333 309.666667 411.083333 309.666667 419 317.583333 419 327.25 419 337 411.083333 344.916667 401.333333 344.916667zm0 0" transform="matrix(0.046875,0,0,0.046875,0,0)"/></g></svg></a></li></ol><ol class=menu id=main-menu><li><a href=/><svg class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="5 12 3 12 12 3 21 12 19 12"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/><path d="M9 21v-6a2 2 0 012-2h2a2 2 0 012 2v6"/></svg>
+<span>主页</span></a></li><li><a href=/%E5%85%B3%E4%BA%8E/><svg class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="7" r="4"/><path d="M6 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg>
+<span>关于</span></a></li><li><a href=/archives/><svg class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>归档</span></a></li><li><a href=/search/><svg class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
+<span>搜索</span></a></li><li><a href=/%E9%93%BE%E6%8E%A5/><svg class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M10 14a3.5 3.5.0 005 0l4-4a3.5 3.5.0 00-5-5l-.5.5"/><path d="M14 10a3.5 3.5.0 00-5 0l-4 4a3.5 3.5.0 005 5l.5-.5"/></svg>
+<span>链接</span></a></li><li class=menu-bottom-section><ol class=menu><li id=i18n-switch><svg class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 5h7"/><path d="M9 3v2c0 4.418-2.239 8-5 8"/><path d="M5 9c-.003 2.144 2.952 3.908 6.7 4"/><path d="M12 20l4-9 4 9"/><path d="M19.1 18h-6.2"/></svg>
+<select name=language title=language onchange="window.location.href=this.selectedOptions[0].value"><option value=/p/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86%E6%95%B0%E6%8D%AE%E9%A2%84%E5%A4%84%E7%90%86pytorch-%E7%89%88/ selected>简体中文</option><option value=/en/>English</option><option value=/zh-hant-tw/>正體中文</option><option value=/ja/>日本語</option></select></li><li id=dark-mode-toggle><svg class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<svg class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<span>暗色模式</span></li></ol></li></ol></aside><aside class="sidebar right-sidebar sticky"><section class="widget archives"><div class=widget-icon><svg class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="5" y1="9" x2="19" y2="9"/><line x1="5" y1="15" x2="19" y2="15"/><line x1="11" y1="4" x2="7" y2="20"/><line x1="17" y1="4" x2="13" y2="20"/></svg></div><h2 class="widget-title section-title">目录</h2><div class=widget--toc><nav class=toc-nav id=TableOfContents><ol><li><a href=#1-为什么需要数据预处理>1. 为什么需要数据预处理？</a></li><li><a href=#2-读取数据集>2. 读取数据集</a><ol><li><a href=#21-csv-文件是什么>2.1 CSV 文件是什么？</a></li><li><a href=#22-创建示例-csv-文件>2.2 创建示例 CSV 文件</a></li><li><a href=#23-使用-pandas-读取数据>2.3 使用 pandas 读取数据</a></li></ol></li><li><a href=#3-区分输入特征与预测目标>3. 区分输入特征与预测目标</a></li><li><a href=#4-处理缺失值>4. 处理缺失值</a><ol><li><a href=#41-缺失值的含义与处理思路>4.1 缺失值的含义与处理思路</a></li><li><a href=#42-数值型缺失值使用均值填充>4.2 数值型缺失值：使用均值填充</a></li><li><a href=#43-类别型缺失值把缺失作为一个类别>4.3 类别型缺失值：把缺失作为一个类别</a></li><li><a href=#44-删除缺失值的简单示例>4.4 删除缺失值的简单示例</a></li></ol></li><li><a href=#5-将数据转换为-pytorch-张量>5. 将数据转换为 PyTorch 张量</a><ol><li><a href=#51-为什么要转换为张量>5.1 为什么要转换为张量？</a></li></ol></li><li><a href=#6-完整可运行示例>6. 完整可运行示例</a></li><li><a href=#7-常见问题与注意事项>7. 常见问题与注意事项</a><ol><li><a href=#71-nan-与字符串-na-是一回事吗>7.1 <code>NaN</code> 与字符串 <code>"NA"</code> 是一回事吗？</a></li><li><a href=#72-为什么不能给类别变量直接求均值>7.2 为什么不能给类别变量直接求均值？</a></li><li><a href=#73-为什么数值型填充和类别型编码要分开处理>7.3 为什么数值型填充和类别型编码要分开处理？</a></li><li><a href=#74-为什么转换张量前要检查数据>7.4 为什么转换张量前要检查数据？</a></li><li><a href=#75-为什么训练集与测试集要使用相同的编码规则>7.5 为什么训练集与测试集要使用相同的编码规则？</a></li></ol></li><li><a href=#8-本节小结>8. 本节小结</a></li></ol></nav></div></section></aside><main class="main full-width"><article class="has-image main-article"><header class=article-header><div class=article-image><a href=/p/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86%E6%95%B0%E6%8D%AE%E9%A2%84%E5%A4%84%E7%90%86pytorch-%E7%89%88/><img alt="Featured image of post 动手学深度学习笔记 · 预备知识：数据预处理（PyTorch 版）📘" height=1080 loading=lazy sizes="(max-width: 767px) calc(100vw - 30px), (max-width: 1023px) 700px, (max-width: 1279px) 950px, 1232px" src=/p/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86%E6%95%B0%E6%8D%AE%E9%A2%84%E5%A4%84%E7%90%86pytorch-%E7%89%88/wallhaven-jel1jq_1920x1080.png srcset="/p/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86%E6%95%B0%E6%8D%AE%E9%A2%84%E5%A4%84%E7%90%86pytorch-%E7%89%88/wallhaven-jel1jq_1920x1080_hu_24eb1203006d5e29.png 800w, /p/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86%E6%95%B0%E6%8D%AE%E9%A2%84%E5%A4%84%E7%90%86pytorch-%E7%89%88/wallhaven-jel1jq_1920x1080_hu_967cf831ef8706ea.png 1600w, /p/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86%E6%95%B0%E6%8D%AE%E9%A2%84%E5%A4%84%E7%90%86pytorch-%E7%89%88/wallhaven-jel1jq_1920x1080.png 1920w" width=1920></a></div><div class=article-details><header class=article-category><a href=/categories/deep-learning/ style=background-color:#2a9d8f;color:#fff>深度学习</a></header><div class=article-title-wrapper><h2 class=article-title><a href=/p/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86%E6%95%B0%E6%8D%AE%E9%A2%84%E5%A4%84%E7%90%86pytorch-%E7%89%88/>动手学深度学习笔记 · 预备知识：数据预处理（PyTorch 版）📘</a></h2><h3 class=article-subtitle>本文是《动手学深度学习》PyTorch 实现系列的2 预备知识 -> 2.2 数据预处理的学习笔记。</h3></div><footer class=article-meta><div class=inline-meta><svg class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published datetime=2026-10-10T00:00:00Z>Saturday, October 10, 2026</time>
+<svg class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>阅读时长: 9 分钟</time></div></footer></div></header><aside class=article-toc><details><summary><div class=article-toc-title><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-chevron-right"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 6l6 6-6 6"/></svg>
+<span>目录</span></div></summary><nav class=toc-nav><ol><li><a href=#1-为什么需要数据预处理>1. 为什么需要数据预处理？</a></li><li><a href=#2-读取数据集>2. 读取数据集</a><ol><li><a href=#21-csv-文件是什么>2.1 CSV 文件是什么？</a></li><li><a href=#22-创建示例-csv-文件>2.2 创建示例 CSV 文件</a></li><li><a href=#23-使用-pandas-读取数据>2.3 使用 pandas 读取数据</a></li></ol></li><li><a href=#3-区分输入特征与预测目标>3. 区分输入特征与预测目标</a></li><li><a href=#4-处理缺失值>4. 处理缺失值</a><ol><li><a href=#41-缺失值的含义与处理思路>4.1 缺失值的含义与处理思路</a></li><li><a href=#42-数值型缺失值使用均值填充>4.2 数值型缺失值：使用均值填充</a></li><li><a href=#43-类别型缺失值把缺失作为一个类别>4.3 类别型缺失值：把缺失作为一个类别</a></li><li><a href=#44-删除缺失值的简单示例>4.4 删除缺失值的简单示例</a></li></ol></li><li><a href=#5-将数据转换为-pytorch-张量>5. 将数据转换为 PyTorch 张量</a><ol><li><a href=#51-为什么要转换为张量>5.1 为什么要转换为张量？</a></li></ol></li><li><a href=#6-完整可运行示例>6. 完整可运行示例</a></li><li><a href=#7-常见问题与注意事项>7. 常见问题与注意事项</a><ol><li><a href=#71-nan-与字符串-na-是一回事吗>7.1 <code>NaN</code> 与字符串 <code>"NA"</code> 是一回事吗？</a></li><li><a href=#72-为什么不能给类别变量直接求均值>7.2 为什么不能给类别变量直接求均值？</a></li><li><a href=#73-为什么数值型填充和类别型编码要分开处理>7.3 为什么数值型填充和类别型编码要分开处理？</a></li><li><a href=#74-为什么转换张量前要检查数据>7.4 为什么转换张量前要检查数据？</a></li><li><a href=#75-为什么训练集与测试集要使用相同的编码规则>7.5 为什么训练集与测试集要使用相同的编码规则？</a></li></ol></li><li><a href=#8-本节小结>8. 本节小结</a></li></ol></nav></details></aside><section class=article-content><h1 id=动手学深度学习预备知识数据预处理>《动手学深度学习》预备知识：数据预处理</h1><blockquote><p>本文围绕《动手学深度学习》第 2 章“预备知识”中的 <strong>2.2 数据预处理</strong> 展开，使用 Python、pandas 和 PyTorch 演示如何读取 CSV 数据、处理缺失值、编码类别变量，并将表格数据转换为张量。</p><p>适用读者：正在学习 Python、PyTorch 与深度学习基础的初学者。</p></blockquote><h2 id=1-为什么需要数据预处理>1. 为什么需要数据预处理？</h2><p>真实数据通常不会像数学教材中的例子那样整齐。数据文件可能包含缺失值、文本类别、格式不一致的字段，甚至存在无法直接参与数值运算的内容。而深度学习模型通常需要数值化的输入，因此，在把数据交给模型之前，我们往往需要先进行数据预处理。</p><p>本节以一个小型房屋数据集为例，字段如下：</p><ul><li><code>NumRooms</code>：房间数量，数值型变量；</li><li><code>Alley</code>：巷道类型，类别型变量；</li><li><code>Price</code>：房屋价格，数值型目标变量。</li></ul><p>典型的数据预处理流程可以概括为：</p><p><img alt=数据预处理的立体流程示意图 loading=lazy sizes="(max-width: 767px) calc(100vw - 30px), (max-width: 1023px) 700px, (max-width: 1279px) 950px, 1232px" src=/img/DeepLearning–Prerequisites–DataPreprocessing/CSV数据到PyTorch张量流程-1.png></p><ol><li><strong>读取数据</strong>：从 CSV 等文件载入原始记录。</li><li><strong>识别字段含义</strong>：区分输入特征与预测目标。</li><li><strong>处理缺失值</strong>：根据字段类型选择填充、删除或其他策略。</li><li><strong>编码类别变量</strong>：将文本类别转换为数值表示。</li><li><strong>转换为张量</strong>：将处理后的数值数据转换为 PyTorch Tensor，供后续计算使用。</li></ol><blockquote><p>提醒：预处理方法应根据数据含义和任务目标选择。示例中的均值填充与独热编码是入门方法，并不意味着所有数据都应该这样处理。</p></blockquote><h2 id=2-读取数据集>2. 读取数据集</h2><h3 id=21-csv-文件是什么>2.1 CSV 文件是什么？</h3><p>CSV（Comma-Separated Values，逗号分隔值）是一种常见的表格数据存储格式。通常每一行表示一条记录，每一列表示一个字段，首行常用于存储列名。</p><p>本例会在代码中创建一个名为 <code>house_tiny.csv</code> 的小型数据文件，以保证示例可以独立运行，不依赖外部下载的数据。</p><h3 id=22-创建示例-csv-文件>2.2 创建示例 CSV 文件</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=kn>from</span> <span class=nn>pathlib</span> <span class=kn>import</span> <span class=n>Path</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 在当前目录下创建数据文件</span>
+</span></span><span class=line><span class=cl><span class=n>data_file</span> <span class=o>=</span> <span class=n>Path</span><span class=p>(</span><span class=s2>&#34;house_tiny.csv&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>csv_content</span> <span class=o>=</span> <span class=s2>&#34;&#34;&#34;NumRooms,Alley,Price
+</span></span></span><span class=line><span class=cl><span class=s2>NA,Pave,127500
+</span></span></span><span class=line><span class=cl><span class=s2>2,NA,106000
+</span></span></span><span class=line><span class=cl><span class=s2>4,NA,178100
+</span></span></span><span class=line><span class=cl><span class=s2>NA,NA,140000
+</span></span></span><span class=line><span class=cl><span class=s2>&#34;&#34;&#34;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>data_file</span><span class=o>.</span><span class=n>write_text</span><span class=p>(</span><span class=n>csv_content</span><span class=p>,</span> <span class=n>encoding</span><span class=o>=</span><span class=s2>&#34;utf-8&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=sa>f</span><span class=s2>&#34;数据文件已创建：</span><span class=si>{</span><span class=n>data_file</span><span class=o>.</span><span class=n>resolve</span><span class=p>()</span><span class=si>}</span><span class=s2>&#34;</span><span class=p>)</span>
+</span></span></code></pre></td></tr></table></div></div><p>这里的 <code>NA</code> 表示原始文件中缺少相应字段的值。使用 <code>pandas.read_csv()</code> 读取文件时，pandas 通常会把这类标记识别为缺失值，并显示为 <code>NaN</code>。</p><h3 id=23-使用-pandas-读取数据>2.3 使用 pandas 读取数据</h3><p>先安装所需依赖：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>pip install pandas torch
+</span></span></code></pre></td></tr></table></div></div><p>读取数据：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=kn>import</span> <span class=nn>pandas</span> <span class=k>as</span> <span class=nn>pd</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>data</span> <span class=o>=</span> <span class=n>pd</span><span class=o>.</span><span class=n>read_csv</span><span class=p>(</span><span class=s2>&#34;house_tiny.csv&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=n>data</span><span class=p>)</span>
+</span></span></code></pre></td></tr></table></div></div><p>输出示例：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-text data-lang=text><span class=line><span class=cl>   NumRooms Alley   Price
+</span></span><span class=line><span class=cl>0       NaN  Pave  127500
+</span></span><span class=line><span class=cl>1       2.0   NaN  106000
+</span></span><span class=line><span class=cl>2       4.0   NaN  178100
+</span></span><span class=line><span class=cl>3       NaN   NaN  140000
+</span></span></code></pre></td></tr></table></div></div><p>可以看到，数据集包含 4 条记录、3 个字段。由于 <code>NumRooms</code> 中存在缺失值，该列被 pandas 读取为浮点类型；<code>Alley</code> 是文本类别列；<code>Price</code> 是数值列。</p><p>检查数据的基本信息：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=s2>&#34;数据形状：&#34;</span><span class=p>,</span> <span class=n>data</span><span class=o>.</span><span class=n>shape</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=s2>&#34;各列类型：</span><span class=se>\n</span><span class=s2>&#34;</span><span class=p>,</span> <span class=n>data</span><span class=o>.</span><span class=n>dtypes</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=s2>&#34;各列缺失值数量：</span><span class=se>\n</span><span class=s2>&#34;</span><span class=p>,</span> <span class=n>data</span><span class=o>.</span><span class=n>isna</span><span class=p>()</span><span class=o>.</span><span class=n>sum</span><span class=p>())</span>
+</span></span></code></pre></td></tr></table></div></div><p>其中：</p><ul><li><code>shape</code> 返回行数与列数；</li><li><code>dtypes</code> 显示每一列的数据类型；</li><li><code>isna().sum()</code> 统计每一列缺失值的数量。</li></ul><h2 id=3-区分输入特征与预测目标>3. 区分输入特征与预测目标</h2><p>在监督学习中，通常需要把数据拆分为输入特征和目标值：</p><ul><li><strong>输入特征（inputs）</strong>：提供给模型用于预测的信息；</li><li><strong>目标值（outputs）</strong>：模型希望预测的结果。</li></ul><p>本例将前两列作为输入特征，将最后一列 <code>Price</code> 作为预测目标。pandas 的 <code>iloc</code> 可以按照行列的位置进行索引。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span><span class=lnt>9
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=c1># 取前两列作为输入特征，最后一列作为预测目标</span>
+</span></span><span class=line><span class=cl><span class=n>inputs</span> <span class=o>=</span> <span class=n>data</span><span class=o>.</span><span class=n>iloc</span><span class=p>[:,</span> <span class=mi>0</span><span class=p>:</span><span class=mi>2</span><span class=p>]</span>
+</span></span><span class=line><span class=cl><span class=n>outputs</span> <span class=o>=</span> <span class=n>data</span><span class=o>.</span><span class=n>iloc</span><span class=p>[:,</span> <span class=mi>2</span><span class=p>]</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=s2>&#34;输入特征：&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=n>inputs</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=s2>&#34;</span><span class=se>\n</span><span class=s2>预测目标：&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=n>outputs</span><span class=p>)</span>
+</span></span></code></pre></td></tr></table></div></div><p>输出示例：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-text data-lang=text><span class=line><span class=cl>输入特征：
+</span></span><span class=line><span class=cl>   NumRooms Alley
+</span></span><span class=line><span class=cl>0       NaN  Pave
+</span></span><span class=line><span class=cl>1       2.0   NaN
+</span></span><span class=line><span class=cl>2       4.0   NaN
+</span></span><span class=line><span class=cl>3       NaN   NaN
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>预测目标：
+</span></span><span class=line><span class=cl>0    127500
+</span></span><span class=line><span class=cl>1    106000
+</span></span><span class=line><span class=cl>2    178100
+</span></span><span class=line><span class=cl>3    140000
+</span></span><span class=line><span class=cl>Name: Price, dtype: int64
+</span></span></code></pre></td></tr></table></div></div><p><code>iloc[:, 0:2]</code> 中，第一个冒号表示选取全部行，<code>0:2</code> 表示选取第 0 列和第 1 列，不包含第 2 列。<code>iloc[:, 2]</code> 则选取第 2 列。</p><p>在真实项目中，也可以根据列名选择特征，通常更直观：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=n>inputs_by_name</span> <span class=o>=</span> <span class=n>data</span><span class=p>[[</span><span class=s2>&#34;NumRooms&#34;</span><span class=p>,</span> <span class=s2>&#34;Alley&#34;</span><span class=p>]]</span>
+</span></span><span class=line><span class=cl><span class=n>outputs_by_name</span> <span class=o>=</span> <span class=n>data</span><span class=p>[</span><span class=s2>&#34;Price&#34;</span><span class=p>]</span>
+</span></span></code></pre></td></tr></table></div></div><h2 id=4-处理缺失值>4. 处理缺失值</h2><h3 id=41-缺失值的含义与处理思路>4.1 缺失值的含义与处理思路</h3><p>缺失值表示某个记录的字段没有可用观测值。常见原因包括数据采集失败、用户未填写、传感器故障或数据合并时信息缺失等。</p><p>常见处理思路包括：</p><div class=table-wrapper><table><thead><tr><th>方法</th><th>核心思想</th><th>适用时需要考虑的问题</th></tr></thead><tbody><tr><td>删除</td><td>删除含有缺失值的行或列</td><td>可能损失样本或有用特征</td></tr><tr><td>填充（插补）</td><td>用某个合理值替代缺失值</td><td>填充值会影响数据分布与模型结果</td></tr><tr><td>单独建模缺失状态</td><td>将“是否缺失”作为额外特征</td><td>需要判断缺失本身是否携带信息</td></tr></tbody></table></div><p>本节重点演示填充方法。下图展示了数值型与类别型缺失值的不同处理方式：</p><p><img alt=缺失值处理的立体示意图 loading=lazy sizes="(max-width: 767px) calc(100vw - 30px), (max-width: 1023px) 700px, (max-width: 1279px) 950px, 1232px" src=/img/DeepLearning–Prerequisites–DataPreprocessing/缺失值数据预处理流程图-2.png></p><h3 id=42-数值型缺失值使用均值填充>4.2 数值型缺失值：使用均值填充</h3><p>对于数值型字段，可以根据具体任务使用均值、中位数、固定常数或模型估计值填充。为了与本节的入门示例保持一致，这里使用该列的均值替换缺失值。</p><p><code>NumRooms</code> 中已知的值为 <code>2</code> 和 <code>4</code>，均值为：</p>$$
+\bar{x} = \frac{2+4}{2}=3
+$$<p>使用 pandas 实现：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=c1># 复制一份输入数据，避免修改原始数据</span>
+</span></span><span class=line><span class=cl><span class=n>inputs</span> <span class=o>=</span> <span class=n>data</span><span class=o>.</span><span class=n>iloc</span><span class=p>[:,</span> <span class=mi>0</span><span class=p>:</span><span class=mi>2</span><span class=p>]</span><span class=o>.</span><span class=n>copy</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 仅对数值列使用该列的均值填充缺失值</span>
+</span></span><span class=line><span class=cl><span class=n>numeric_columns</span> <span class=o>=</span> <span class=n>inputs</span><span class=o>.</span><span class=n>select_dtypes</span><span class=p>(</span><span class=n>include</span><span class=o>=</span><span class=s2>&#34;number&#34;</span><span class=p>)</span><span class=o>.</span><span class=n>columns</span>
+</span></span><span class=line><span class=cl><span class=n>inputs</span><span class=p>[</span><span class=n>numeric_columns</span><span class=p>]</span> <span class=o>=</span> <span class=n>inputs</span><span class=p>[</span><span class=n>numeric_columns</span><span class=p>]</span><span class=o>.</span><span class=n>fillna</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>    <span class=n>inputs</span><span class=p>[</span><span class=n>numeric_columns</span><span class=p>]</span><span class=o>.</span><span class=n>mean</span><span class=p>()</span>
+</span></span><span class=line><span class=cl><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=n>inputs</span><span class=p>)</span>
+</span></span></code></pre></td></tr></table></div></div><p>输出示例：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-text data-lang=text><span class=line><span class=cl>   NumRooms Alley
+</span></span><span class=line><span class=cl>0       3.0  Pave
+</span></span><span class=line><span class=cl>1       2.0   NaN
+</span></span><span class=line><span class=cl>2       4.0   NaN
+</span></span><span class=line><span class=cl>3       3.0   NaN
+</span></span></code></pre></td></tr></table></div></div><p>此时，<code>NumRooms</code> 的缺失值已由均值 <code>3.0</code> 填充，但 <code>Alley</code> 中的缺失值仍然存在，因为它是类别型字段，不适合直接用数值均值填充。</p><p><strong>实践注意：</strong> 在机器学习项目中，如果数据需要拆分为训练集和验证集，应只使用训练集计算均值、中位数等填充值，再将同一填充值应用到验证集和测试集，避免数据泄漏。</p><h3 id=43-类别型缺失值把缺失作为一个类别>4.3 类别型缺失值：把缺失作为一个类别</h3><p><code>Alley</code> 表示巷道类型，是类别型变量。类别值不是具有自然数值大小的测量值，因此不能简单地计算“类别均值”。</p><p>一种简单方法是把缺失值作为一个独立类别。pandas 的 <code>get_dummies()</code> 可以将类别列转换为独热编码（One-Hot Encoding）列。参数 <code>dummy_na=True</code> 会为缺失值保留一个类别列。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=c1># 将类别型变量转换为独热编码列，并把缺失值作为一个类别</span>
+</span></span><span class=line><span class=cl><span class=n>inputs</span> <span class=o>=</span> <span class=n>pd</span><span class=o>.</span><span class=n>get_dummies</span><span class=p>(</span><span class=n>inputs</span><span class=p>,</span> <span class=n>dummy_na</span><span class=o>=</span><span class=kc>True</span><span class=p>,</span> <span class=n>dtype</span><span class=o>=</span><span class=nb>int</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=n>inputs</span><span class=p>)</span>
+</span></span></code></pre></td></tr></table></div></div><p>输出示例：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-text data-lang=text><span class=line><span class=cl>   NumRooms  Alley_Pave  Alley_nan
+</span></span><span class=line><span class=cl>0       3.0           1          0
+</span></span><span class=line><span class=cl>1       2.0           0          1
+</span></span><span class=line><span class=cl>2       4.0           0          1
+</span></span><span class=line><span class=cl>3       3.0           0          1
+</span></span></code></pre></td></tr></table></div></div><p>解释：</p><ul><li><code>Alley_Pave = 1</code> 表示该记录的巷道类型为 <code>Pave</code>；</li><li><code>Alley_nan = 1</code> 表示该记录的巷道类型缺失；</li><li>每一行用相应的 0 和 1 表示所属类别。</li></ul><p>这里的列名 <code>Alley_nan</code> 是由 pandas 根据原列名与缺失类别生成的。它是一个普通的特征名称，不代表数值运算中的 <code>NaN</code> 仍然保留在编码结果里。</p><h3 id=44-删除缺失值的简单示例>4.4 删除缺失值的简单示例</h3><p>虽然本节重点介绍填充，但也可以通过 <code>dropna()</code> 删除含缺失值的记录：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=n>data_without_missing_rows</span> <span class=o>=</span> <span class=n>data</span><span class=o>.</span><span class=n>dropna</span><span class=p>()</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=n>data_without_missing_rows</span><span class=p>)</span>
+</span></span></code></pre></td></tr></table></div></div><p>该方法会删除至少有一个字段缺失的行。本例中每一行至少有一个输入字段缺失，因此删除后可能没有可用记录。真实任务中应先统计缺失比例，再决定是否删除。</p><h2 id=5-将数据转换为-pytorch-张量>5. 将数据转换为 PyTorch 张量</h2><h3 id=51-为什么要转换为张量>5.1 为什么要转换为张量？</h3><p>pandas 的 DataFrame 适合读取和整理表格数据；PyTorch Tensor 则是 PyTorch 中进行数值计算与模型训练的核心数据结构。</p><p>在转换前，应确保输入数据中的缺失值已按计划处理，并且类别字段已转成数值。完成上述步骤后，输入特征可以转换为浮点张量，目标值也可以转换为浮点张量。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=kn>import</span> <span class=nn>torch</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 将输入特征转换为 NumPy 数组，再构造 PyTorch 张量</span>
+</span></span><span class=line><span class=cl><span class=n>X</span> <span class=o>=</span> <span class=n>torch</span><span class=o>.</span><span class=n>tensor</span><span class=p>(</span><span class=n>inputs</span><span class=o>.</span><span class=n>to_numpy</span><span class=p>(),</span> <span class=n>dtype</span><span class=o>=</span><span class=n>torch</span><span class=o>.</span><span class=n>float32</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 将目标值转换为形状为 (样本数, 1) 的浮点张量</span>
+</span></span><span class=line><span class=cl><span class=n>y</span> <span class=o>=</span> <span class=n>torch</span><span class=o>.</span><span class=n>tensor</span><span class=p>(</span><span class=n>outputs</span><span class=o>.</span><span class=n>to_numpy</span><span class=p>(),</span> <span class=n>dtype</span><span class=o>=</span><span class=n>torch</span><span class=o>.</span><span class=n>float32</span><span class=p>)</span><span class=o>.</span><span class=n>reshape</span><span class=p>(</span><span class=o>-</span><span class=mi>1</span><span class=p>,</span> <span class=mi>1</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=s2>&#34;输入张量 X：&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=n>X</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=s2>&#34;X 的形状：&#34;</span><span class=p>,</span> <span class=n>X</span><span class=o>.</span><span class=n>shape</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=s2>&#34;X 的数据类型：&#34;</span><span class=p>,</span> <span class=n>X</span><span class=o>.</span><span class=n>dtype</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=s2>&#34;</span><span class=se>\n</span><span class=s2>目标张量 y：&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=n>y</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=s2>&#34;y 的形状：&#34;</span><span class=p>,</span> <span class=n>y</span><span class=o>.</span><span class=n>shape</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=s2>&#34;y 的数据类型：&#34;</span><span class=p>,</span> <span class=n>y</span><span class=o>.</span><span class=n>dtype</span><span class=p>)</span>
+</span></span></code></pre></td></tr></table></div></div><p>输出示例：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-text data-lang=text><span class=line><span class=cl>输入张量 X：
+</span></span><span class=line><span class=cl>tensor([[3., 1., 0.],
+</span></span><span class=line><span class=cl>        [2., 0., 1.],
+</span></span><span class=line><span class=cl>        [4., 0., 1.],
+</span></span><span class=line><span class=cl>        [3., 0., 1.]])
+</span></span><span class=line><span class=cl>X 的形状： torch.Size([4, 3])
+</span></span><span class=line><span class=cl>X 的数据类型： torch.float32
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>目标张量 y：
+</span></span><span class=line><span class=cl>tensor([[127500.],
+</span></span><span class=line><span class=cl>        [106000.],
+</span></span><span class=line><span class=cl>        [178100.],
+</span></span><span class=line><span class=cl>        [140000.]])
+</span></span><span class=line><span class=cl>y 的形状： torch.Size([4, 1])
+</span></span><span class=line><span class=cl>y 的数据类型： torch.float32
+</span></span></code></pre></td></tr></table></div></div><p><code>X</code> 的形状是 <code>(4, 3)</code>，表示有 4 个样本、每个样本有 3 个输入特征；<code>y</code> 的形状是 <code>(4, 1)</code>，表示每个样本对应一个目标值。</p><p>这里将目标值转为 <code>float32</code>，是因为后续若进行房价回归，浮点数通常更方便用于模型计算。分类任务中的类别标签则可能需要使用整数类型，具体取决于损失函数和模型接口的要求。</p><h2 id=6-完整可运行示例>6. 完整可运行示例</h2><p>以下代码从创建 CSV 文件开始，依次完成读取数据、拆分输入与目标、填充数值型缺失值、独热编码类别变量，以及转换为 PyTorch 张量。可以将其保存为 <code>data_preprocessing.py</code> 后直接运行。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span><span class=lnt>45
+</span><span class=lnt>46
+</span><span class=lnt>47
+</span><span class=lnt>48
+</span><span class=lnt>49
+</span><span class=lnt>50
+</span><span class=lnt>51
+</span><span class=lnt>52
+</span><span class=lnt>53
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=kn>from</span> <span class=nn>pathlib</span> <span class=kn>import</span> <span class=n>Path</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kn>import</span> <span class=nn>pandas</span> <span class=k>as</span> <span class=nn>pd</span>
+</span></span><span class=line><span class=cl><span class=kn>import</span> <span class=nn>torch</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>def</span> <span class=nf>main</span><span class=p>():</span>
+</span></span><span class=line><span class=cl>    <span class=c1># 1. 创建示例 CSV 文件</span>
+</span></span><span class=line><span class=cl>    <span class=n>data_file</span> <span class=o>=</span> <span class=n>Path</span><span class=p>(</span><span class=s2>&#34;house_tiny.csv&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=n>csv_content</span> <span class=o>=</span> <span class=s2>&#34;&#34;&#34;NumRooms,Alley,Price
+</span></span></span><span class=line><span class=cl><span class=s2>NA,Pave,127500
+</span></span></span><span class=line><span class=cl><span class=s2>2,NA,106000
+</span></span></span><span class=line><span class=cl><span class=s2>4,NA,178100
+</span></span></span><span class=line><span class=cl><span class=s2>NA,NA,140000
+</span></span></span><span class=line><span class=cl><span class=s2>&#34;&#34;&#34;</span>
+</span></span><span class=line><span class=cl>    <span class=n>data_file</span><span class=o>.</span><span class=n>write_text</span><span class=p>(</span><span class=n>csv_content</span><span class=p>,</span> <span class=n>encoding</span><span class=o>=</span><span class=s2>&#34;utf-8&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=c1># 2. 读取数据</span>
+</span></span><span class=line><span class=cl>    <span class=n>data</span> <span class=o>=</span> <span class=n>pd</span><span class=o>.</span><span class=n>read_csv</span><span class=p>(</span><span class=n>data_file</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=nb>print</span><span class=p>(</span><span class=s2>&#34;原始数据：&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=nb>print</span><span class=p>(</span><span class=n>data</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=c1># 3. 拆分输入特征和预测目标</span>
+</span></span><span class=line><span class=cl>    <span class=n>inputs</span> <span class=o>=</span> <span class=n>data</span><span class=o>.</span><span class=n>iloc</span><span class=p>[:,</span> <span class=mi>0</span><span class=p>:</span><span class=mi>2</span><span class=p>]</span><span class=o>.</span><span class=n>copy</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>    <span class=n>outputs</span> <span class=o>=</span> <span class=n>data</span><span class=o>.</span><span class=n>iloc</span><span class=p>[:,</span> <span class=mi>2</span><span class=p>]</span><span class=o>.</span><span class=n>copy</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=c1># 4. 对数值型输入特征使用列均值填充缺失值</span>
+</span></span><span class=line><span class=cl>    <span class=n>numeric_columns</span> <span class=o>=</span> <span class=n>inputs</span><span class=o>.</span><span class=n>select_dtypes</span><span class=p>(</span><span class=n>include</span><span class=o>=</span><span class=s2>&#34;number&#34;</span><span class=p>)</span><span class=o>.</span><span class=n>columns</span>
+</span></span><span class=line><span class=cl>    <span class=n>inputs</span><span class=p>[</span><span class=n>numeric_columns</span><span class=p>]</span> <span class=o>=</span> <span class=n>inputs</span><span class=p>[</span><span class=n>numeric_columns</span><span class=p>]</span><span class=o>.</span><span class=n>fillna</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>        <span class=n>inputs</span><span class=p>[</span><span class=n>numeric_columns</span><span class=p>]</span><span class=o>.</span><span class=n>mean</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>    <span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=c1># 5. 对类别型变量进行独热编码，并将缺失值作为一个类别</span>
+</span></span><span class=line><span class=cl>    <span class=n>inputs</span> <span class=o>=</span> <span class=n>pd</span><span class=o>.</span><span class=n>get_dummies</span><span class=p>(</span><span class=n>inputs</span><span class=p>,</span> <span class=n>dummy_na</span><span class=o>=</span><span class=kc>True</span><span class=p>,</span> <span class=n>dtype</span><span class=o>=</span><span class=nb>int</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=nb>print</span><span class=p>(</span><span class=s2>&#34;</span><span class=se>\n</span><span class=s2>预处理后的输入特征：&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=nb>print</span><span class=p>(</span><span class=n>inputs</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=c1># 6. 将表格数据转换为 PyTorch 张量</span>
+</span></span><span class=line><span class=cl>    <span class=n>X</span> <span class=o>=</span> <span class=n>torch</span><span class=o>.</span><span class=n>tensor</span><span class=p>(</span><span class=n>inputs</span><span class=o>.</span><span class=n>to_numpy</span><span class=p>(),</span> <span class=n>dtype</span><span class=o>=</span><span class=n>torch</span><span class=o>.</span><span class=n>float32</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=n>y</span> <span class=o>=</span> <span class=n>torch</span><span class=o>.</span><span class=n>tensor</span><span class=p>(</span><span class=n>outputs</span><span class=o>.</span><span class=n>to_numpy</span><span class=p>(),</span> <span class=n>dtype</span><span class=o>=</span><span class=n>torch</span><span class=o>.</span><span class=n>float32</span><span class=p>)</span><span class=o>.</span><span class=n>reshape</span><span class=p>(</span><span class=o>-</span><span class=mi>1</span><span class=p>,</span> <span class=mi>1</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=nb>print</span><span class=p>(</span><span class=s2>&#34;</span><span class=se>\n</span><span class=s2>输入张量 X：&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=nb>print</span><span class=p>(</span><span class=n>X</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=nb>print</span><span class=p>(</span><span class=s2>&#34;X.shape =&#34;</span><span class=p>,</span> <span class=n>X</span><span class=o>.</span><span class=n>shape</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=nb>print</span><span class=p>(</span><span class=s2>&#34;</span><span class=se>\n</span><span class=s2>目标张量 y：&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=nb>print</span><span class=p>(</span><span class=n>y</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=nb>print</span><span class=p>(</span><span class=s2>&#34;y.shape =&#34;</span><span class=p>,</span> <span class=n>y</span><span class=o>.</span><span class=n>shape</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>if</span> <span class=vm>__name__</span> <span class=o>==</span> <span class=s2>&#34;__main__&#34;</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>    <span class=n>main</span><span class=p>()</span>
+</span></span></code></pre></td></tr></table></div></div><p>运行前安装依赖：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>pip install pandas torch
+</span></span></code></pre></td></tr></table></div></div><p>运行：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>python data_preprocessing.py
+</span></span></code></pre></td></tr></table></div></div><p>这段完整示例与前文步骤一致，可以帮助读者把各个知识点串联起来。</p><h2 id=7-常见问题与注意事项>7. 常见问题与注意事项</h2><h3 id=71-nan-与字符串-na-是一回事吗>7.1 <code>NaN</code> 与字符串 <code>"NA"</code> 是一回事吗？</h3><p>不完全相同。<code>"NA"</code> 是文本；<code>NaN</code> 是常用的缺失值表示之一。读取 CSV 时，pandas 会根据默认规则或自定义参数将某些文本标记识别为缺失值。若某个字段中的 <code>"NA"</code> 本身具有业务含义，应检查并调整读取参数，避免误把有效文本当成缺失值。</p><h3 id=72-为什么不能给类别变量直接求均值>7.2 为什么不能给类别变量直接求均值？</h3><p>类别标签通常只代表不同类别，不具有可进行加减运算的数量意义。例如，把巷道类型编码成 <code>Pave=1</code>、<code>Gravel=2</code>，并不意味着 <code>Gravel</code> 是 <code>Pave</code> 的两倍。对于无自然顺序的类别变量，独热编码是一种常见选择。</p><h3 id=73-为什么数值型填充和类别型编码要分开处理>7.3 为什么数值型填充和类别型编码要分开处理？</h3><p>因为它们的语义不同：数值型字段可以考虑均值或中位数等统计量；类别型字段通常需要保留类别身份。混用处理方式可能制造错误的数值含义。</p><h3 id=74-为什么转换张量前要检查数据>7.4 为什么转换张量前要检查数据？</h3><p>PyTorch 的张量数值运算要求输入类型与形状符合相应算子的规则。如果 DataFrame 中仍有文本或缺失值，直接转换成浮点张量可能失败，或导致结果不符合预期。因此，转换前应确认数据已数值化，并检查缺失值、数据类型和形状。</p><h3 id=75-为什么训练集与测试集要使用相同的编码规则>7.5 为什么训练集与测试集要使用相同的编码规则？</h3><p>模型训练和推理阶段的特征列必须保持一致。如果训练数据有 <code>Alley_Pave</code>、<code>Alley_nan</code> 两列，而测试数据经过独立编码后产生了不同列，模型就无法按原有特征顺序正确处理输入。实际项目中应在训练集上拟合预处理规则，并将相同规则应用于验证集、测试集和线上数据。</p><h2 id=8-本节小结>8. 本节小结</h2><p>本节介绍了从原始表格数据到 PyTorch 张量的基本流程：</p><ol><li>使用 <code>pandas.read_csv()</code> 读取 CSV 数据；</li><li>使用 <code>iloc</code> 或列名将数据拆分为输入特征和预测目标；</li><li>识别缺失值，并根据字段类型选择合适的处理方法；</li><li>对数值型字段使用均值等统计量填充缺失值；</li><li>使用 <code>pd.get_dummies()</code> 将类别变量转换为独热编码；</li><li>使用 <code>torch.tensor()</code> 将数值数据转换为 PyTorch 张量；</li><li>在实际机器学习流程中，避免数据泄漏，并确保训练与推理阶段的预处理规则一致。</li></ol><p>数据预处理并非简单地把所有空值填满、把所有文本变成数字，而是要尽可能保留数据的有效信息，并让数据表示方式符合后续模型的要求。掌握这一流程后，就可以进一步学习数据集划分、批量加载、特征缩放以及模型训练等内容。</p><p>如需详细学习，可前往<a class=link href=https://zh.d2l.ai/ target=_blank rel=noopener>《动手学深度学习》</a>研究。</p></section><footer class="article-meta article-footer"><section class=article-tags><a href=/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86/>深度学习-预备知识</a></section><section class="article-copyright inline-meta"><svg class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>Licensed under <a class=link href=https://creativecommons.org/licenses/by-nc-sa/4.0/ target=_blank rel=noopener>CC BY-NC-SA 4.0</a></span></section></footer><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css integrity=sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV crossorigin=anonymous><script src=https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js integrity=sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG+vnGctmUb0ZY0l8 crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js integrity=sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05 crossorigin=anonymous defer></script><script>window.addEventListener("DOMContentLoaded",()=>{const e=[".main-article",".widget--toc"];e.forEach(e=>{const t=document.querySelector(e);t&&renderMathInElement(t,{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1},{left:"\\(",right:"\\)",display:!1},{left:"\\[",right:"\\]",display:!0}],ignoredClasses:["gist"]})})})</script></article><aside><h2 class=section-title>相关文章</h2><div class=subsection-list><div class=article-list--tile><article class=has-image><a href=/p/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86%E6%95%B0%E6%8D%AE%E6%93%8D%E4%BD%9Cpytorch-%E7%89%88/><div class=article-image><img alt="Featured image of post 动手学深度学习笔记 · 预备知识：数据操作（PyTorch 版）📘" height=150 loading=lazy src=/p/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86%E6%95%B0%E6%8D%AE%E6%93%8D%E4%BD%9Cpytorch-%E7%89%88/wallhaven-yqk2q7_1920x1080_hu_2cd030583da73779.png srcset="/p/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86%E6%95%B0%E6%8D%AE%E6%93%8D%E4%BD%9Cpytorch-%E7%89%88/wallhaven-yqk2q7_1920x1080_hu_2cd030583da73779.png 1x, /p/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86%E6%95%B0%E6%8D%AE%E6%93%8D%E4%BD%9Cpytorch-%E7%89%88/wallhaven-yqk2q7_1920x1080_hu_7735136d8b22175b.png 2x" width=250></div><div class=article-details style="background:linear-gradient(0deg,#ca9d9480 0%,#39291bC0 100%)"><h2 class=article-title>动手学深度学习笔记 · 预备知识：数据操作（PyTorch 版）📘</h2></div></a></article></div></div></aside><script src=https://utteranc.es/client.js repo=winnermeat/winnermeat.github.io issue-term=pathname crossorigin=anonymous async></script><style>.utterances{max-width:unset}</style><script>let utterancesLoaded=!1;function setUtterancesTheme(e){let t=document.querySelector(".utterances iframe");t&&t.contentWindow.postMessage({type:"set-theme",theme:`github-${e}`},"https://utteranc.es")}addEventListener("message",e=>{if(e.origin!=="https://utteranc.es")return;utterancesLoaded=!0,setUtterancesTheme(document.documentElement.dataset.scheme)}),window.addEventListener("onColorSchemeChange",e=>{if(!utterancesLoaded)return;setUtterancesTheme(e.detail)})</script><footer class=site-footer><section class=copyright>&copy;
+2026 愤怒的大角牛</section><section class=powerby>使用 <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a> 构建<br>主题 <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=4.0.3>Stack</a></b> 由 <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a> 设计</section></footer><script type=module>
+    import gallery from '\/ts\/gallery.js';
+
+    const articleContent = document.querySelector('.article-content');
+    const shouldLoad = articleContent && (articleContent.querySelectorAll('figure').length > 0 || articleContent.querySelectorAll('img.gallery-image').length > 0);
+    
+    if (shouldLoad) {
+        gallery(articleContent);
+
+        const PhotoSwipeLightbox = (await import("https:\/\/cdn.jsdelivr.net\/npm\/photoswipe@5.4.4\/dist\/photoswipe-lightbox.esm.min.js")).default;
+        const styleHref = "https:\/\/cdn.jsdelivr.net\/npm\/photoswipe@5.4.4\/dist\/photoswipe.css";
+
+        const styleTag = document.createElement('link');
+        styleTag.rel = 'stylesheet';
+        styleTag.href = styleHref;
+        document.head.appendChild(styleTag);
+
+        const lightbox = new PhotoSwipeLightbox({
+            gallerySelector: '.article-content',
+            childSelector: 'figure a.image-link',
+            pswpModule: () => import("https:\/\/cdn.jsdelivr.net\/npm\/photoswipe@5.4.4\/dist\/photoswipe.esm.min.js")
+        });
+        lightbox.init();
+    }
+</script></main></div><script type=text/javascript src=/ts/main.f856840516f7c2ad1769a8f5937e3d08d6cb386e2cd2dd025ae696e0ff207958.js defer></script></body></html>
