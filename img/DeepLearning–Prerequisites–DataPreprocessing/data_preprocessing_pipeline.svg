@@ -1,0 +1,136 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="650" viewBox="0 0 1400 650"><rect width="1400" height="650" fill="white"/>
+<text x="700" y="42" text-anchor="middle" font-family="Arial,sans-serif" font-size="29" fill="#17365d" font-weight="bold">数据预处理流程：严格对应本文示例</text>
+<text x="700" y="75" text-anchor="middle" font-family="Arial,sans-serif" font-size="17" fill="#17365d" font-weight="normal">原始文件 house_tiny.csv：4 条记录；字段 NumRooms、Alley、Price</text>
+<rect x="20" y="105" width="320" height="480" rx="16" fill="#eaf5ff" stroke="#4698e0" stroke-width="2"/>
+<text x="180.0" y="140" text-anchor="middle" font-family="Arial,sans-serif" font-size="20" fill="#4698e0" font-weight="bold">1. 原始数据</text>
+<rect x="370" y="105" width="320" height="480" rx="16" fill="#eafff4" stroke="#2aaf83" stroke-width="2"/>
+<text x="530.0" y="140" text-anchor="middle" font-family="Arial,sans-serif" font-size="20" fill="#2aaf83" font-weight="bold">2. 数值缺失值填充</text>
+<rect x="720" y="105" width="320" height="480" rx="16" fill="#fff5e2" stroke="#e59b2c" stroke-width="2"/>
+<text x="880.0" y="140" text-anchor="middle" font-family="Arial,sans-serif" font-size="20" fill="#e59b2c" font-weight="bold">3. 类别独热编码</text>
+<rect x="1070" y="105" width="310" height="480" rx="16" fill="#f1ecff" stroke="#8c70df" stroke-width="2"/>
+<text x="1225.0" y="140" text-anchor="middle" font-family="Arial,sans-serif" font-size="20" fill="#8c70df" font-weight="bold">4. PyTorch 张量</text>
+<rect x="40" y="175" width="95" height="38" fill="#4698e0" stroke="white"/>
+<text x="87.5" y="200" text-anchor="middle" font-family="Arial,sans-serif" font-size="13" fill="white" font-weight="bold">NumRooms</text>
+<rect x="135" y="175" width="85" height="38" fill="#4698e0" stroke="white"/>
+<text x="177.5" y="200" text-anchor="middle" font-family="Arial,sans-serif" font-size="13" fill="white" font-weight="bold">Alley</text>
+<rect x="220" y="175" width="95" height="38" fill="#4698e0" stroke="white"/>
+<text x="267.5" y="200" text-anchor="middle" font-family="Arial,sans-serif" font-size="13" fill="white" font-weight="bold">Price</text>
+<rect x="40" y="213" width="95" height="46" fill="#ffe3e3" stroke="#c5d9e8"/>
+<text x="87.5" y="241" text-anchor="middle" font-family="Arial,sans-serif" font-size="14" fill="#17365d" font-weight="normal">NaN</text>
+<rect x="135" y="213" width="85" height="46" fill="white" stroke="#c5d9e8"/>
+<text x="177.5" y="241" text-anchor="middle" font-family="Arial,sans-serif" font-size="14" fill="#17365d" font-weight="normal">Pave</text>
+<rect x="220" y="213" width="95" height="46" fill="white" stroke="#c5d9e8"/>
+<text x="267.5" y="241" text-anchor="middle" font-family="Arial,sans-serif" font-size="14" fill="#17365d" font-weight="normal">127500</text>
+<rect x="40" y="259" width="95" height="46" fill="white" stroke="#c5d9e8"/>
+<text x="87.5" y="287" text-anchor="middle" font-family="Arial,sans-serif" font-size="14" fill="#17365d" font-weight="normal">2</text>
+<rect x="135" y="259" width="85" height="46" fill="#ffe3e3" stroke="#c5d9e8"/>
+<text x="177.5" y="287" text-anchor="middle" font-family="Arial,sans-serif" font-size="14" fill="#17365d" font-weight="normal">NaN</text>
+<rect x="220" y="259" width="95" height="46" fill="white" stroke="#c5d9e8"/>
+<text x="267.5" y="287" text-anchor="middle" font-family="Arial,sans-serif" font-size="14" fill="#17365d" font-weight="normal">106000</text>
+<rect x="40" y="305" width="95" height="46" fill="white" stroke="#c5d9e8"/>
+<text x="87.5" y="333" text-anchor="middle" font-family="Arial,sans-serif" font-size="14" fill="#17365d" font-weight="normal">4</text>
+<rect x="135" y="305" width="85" height="46" fill="#ffe3e3" stroke="#c5d9e8"/>
+<text x="177.5" y="333" text-anchor="middle" font-family="Arial,sans-serif" font-size="14" fill="#17365d" font-weight="normal">NaN</text>
+<rect x="220" y="305" width="95" height="46" fill="white" stroke="#c5d9e8"/>
+<text x="267.5" y="333" text-anchor="middle" font-family="Arial,sans-serif" font-size="14" fill="#17365d" font-weight="normal">178100</text>
+<rect x="40" y="351" width="95" height="46" fill="#ffe3e3" stroke="#c5d9e8"/>
+<text x="87.5" y="379" text-anchor="middle" font-family="Arial,sans-serif" font-size="14" fill="#17365d" font-weight="normal">NaN</text>
+<rect x="135" y="351" width="85" height="46" fill="#ffe3e3" stroke="#c5d9e8"/>
+<text x="177.5" y="379" text-anchor="middle" font-family="Arial,sans-serif" font-size="14" fill="#17365d" font-weight="normal">NaN</text>
+<rect x="220" y="351" width="95" height="46" fill="white" stroke="#c5d9e8"/>
+<text x="267.5" y="379" text-anchor="middle" font-family="Arial,sans-serif" font-size="14" fill="#17365d" font-weight="normal">140000</text>
+<text x="180" y="445" text-anchor="middle" font-family="Arial,sans-serif" font-size="15" fill="#b63e4b" font-weight="bold">NaN 表示缺失值</text>
+<text x="180" y="480" text-anchor="middle" font-family="Arial,sans-serif" font-size="15" fill="#17365d" font-weight="normal">输入特征：前两列</text>
+<text x="180" y="510" text-anchor="middle" font-family="Arial,sans-serif" font-size="15" fill="#17365d" font-weight="normal">目标值：Price</text>
+<rect x="390" y="175" width="95" height="38" fill="#2aaf83" stroke="white"/>
+<text x="437.5" y="200" text-anchor="middle" font-family="Arial,sans-serif" font-size="13" fill="white" font-weight="bold">NumRooms</text>
+<rect x="485" y="175" width="85" height="38" fill="#2aaf83" stroke="white"/>
+<text x="527.5" y="200" text-anchor="middle" font-family="Arial,sans-serif" font-size="13" fill="white" font-weight="bold">Alley</text>
+<rect x="570" y="175" width="95" height="38" fill="#2aaf83" stroke="white"/>
+<text x="617.5" y="200" text-anchor="middle" font-family="Arial,sans-serif" font-size="13" fill="white" font-weight="bold">Price</text>
+<rect x="390" y="213" width="95" height="46" fill="#d8f8e8" stroke="#c5d9e8"/>
+<text x="437.5" y="241" text-anchor="middle" font-family="Arial,sans-serif" font-size="14" fill="#17365d" font-weight="normal">3.0</text>
+<rect x="485" y="213" width="85" height="46" fill="white" stroke="#c5d9e8"/>
+<text x="527.5" y="241" text-anchor="middle" font-family="Arial,sans-serif" font-size="14" fill="#17365d" font-weight="normal">Pave</text>
+<rect x="570" y="213" width="95" height="46" fill="white" stroke="#c5d9e8"/>
+<text x="617.5" y="241" text-anchor="middle" font-family="Arial,sans-serif" font-size="14" fill="#17365d" font-weight="normal">127500</text>
+<rect x="390" y="259" width="95" height="46" fill="white" stroke="#c5d9e8"/>
+<text x="437.5" y="287" text-anchor="middle" font-family="Arial,sans-serif" font-size="14" fill="#17365d" font-weight="normal">2.0</text>
+<rect x="485" y="259" width="85" height="46" fill="#ffe3e3" stroke="#c5d9e8"/>
+<text x="527.5" y="287" text-anchor="middle" font-family="Arial,sans-serif" font-size="14" fill="#17365d" font-weight="normal">NaN</text>
+<rect x="570" y="259" width="95" height="46" fill="white" stroke="#c5d9e8"/>
+<text x="617.5" y="287" text-anchor="middle" font-family="Arial,sans-serif" font-size="14" fill="#17365d" font-weight="normal">106000</text>
+<rect x="390" y="305" width="95" height="46" fill="white" stroke="#c5d9e8"/>
+<text x="437.5" y="333" text-anchor="middle" font-family="Arial,sans-serif" font-size="14" fill="#17365d" font-weight="normal">4.0</text>
+<rect x="485" y="305" width="85" height="46" fill="#ffe3e3" stroke="#c5d9e8"/>
+<text x="527.5" y="333" text-anchor="middle" font-family="Arial,sans-serif" font-size="14" fill="#17365d" font-weight="normal">NaN</text>
+<rect x="570" y="305" width="95" height="46" fill="white" stroke="#c5d9e8"/>
+<text x="617.5" y="333" text-anchor="middle" font-family="Arial,sans-serif" font-size="14" fill="#17365d" font-weight="normal">178100</text>
+<rect x="390" y="351" width="95" height="46" fill="#d8f8e8" stroke="#c5d9e8"/>
+<text x="437.5" y="379" text-anchor="middle" font-family="Arial,sans-serif" font-size="14" fill="#17365d" font-weight="normal">3.0</text>
+<rect x="485" y="351" width="85" height="46" fill="#ffe3e3" stroke="#c5d9e8"/>
+<text x="527.5" y="379" text-anchor="middle" font-family="Arial,sans-serif" font-size="14" fill="#17365d" font-weight="normal">NaN</text>
+<rect x="570" y="351" width="95" height="46" fill="white" stroke="#c5d9e8"/>
+<text x="617.5" y="379" text-anchor="middle" font-family="Arial,sans-serif" font-size="14" fill="#17365d" font-weight="normal">140000</text>
+<text x="530" y="445" text-anchor="middle" font-family="Arial,sans-serif" font-size="15" fill="#16805f" font-weight="bold">均值：(2 + 4) / 2 = 3</text>
+<text x="530" y="480" text-anchor="middle" font-family="Arial,sans-serif" font-size="15" fill="#17365d" font-weight="normal">数值缺失值填为 3.0</text>
+<text x="530" y="510" text-anchor="middle" font-family="Arial,sans-serif" font-size="15" fill="#17365d" font-weight="normal">类别缺失暂时保留</text>
+<rect x="735" y="175" width="80" height="38" fill="#e59b2c" stroke="white"/>
+<text x="775.0" y="200" text-anchor="middle" font-family="Arial,sans-serif" font-size="13" fill="white" font-weight="bold">NumRooms</text>
+<rect x="815" y="175" width="48" height="38" fill="#e59b2c" stroke="white"/>
+<text x="839.0" y="200" text-anchor="middle" font-family="Arial,sans-serif" font-size="13" fill="white" font-weight="bold">Pave</text>
+<rect x="863" y="175" width="48" height="38" fill="#e59b2c" stroke="white"/>
+<text x="887.0" y="200" text-anchor="middle" font-family="Arial,sans-serif" font-size="13" fill="white" font-weight="bold">nan</text>
+<rect x="911" y="175" width="82" height="38" fill="#e59b2c" stroke="white"/>
+<text x="952.0" y="200" text-anchor="middle" font-family="Arial,sans-serif" font-size="13" fill="white" font-weight="bold">Price</text>
+<rect x="735" y="213" width="80" height="46" fill="#d8f8e8" stroke="#c5d9e8"/>
+<text x="775.0" y="241" text-anchor="middle" font-family="Arial,sans-serif" font-size="14" fill="#17365d" font-weight="normal">3.0</text>
+<rect x="815" y="213" width="48" height="46" fill="white" stroke="#c5d9e8"/>
+<text x="839.0" y="241" text-anchor="middle" font-family="Arial,sans-serif" font-size="14" fill="#17365d" font-weight="normal">1</text>
+<rect x="863" y="213" width="48" height="46" fill="white" stroke="#c5d9e8"/>
+<text x="887.0" y="241" text-anchor="middle" font-family="Arial,sans-serif" font-size="14" fill="#17365d" font-weight="normal">0</text>
+<rect x="911" y="213" width="82" height="46" fill="white" stroke="#c5d9e8"/>
+<text x="952.0" y="241" text-anchor="middle" font-family="Arial,sans-serif" font-size="14" fill="#17365d" font-weight="normal">127500</text>
+<rect x="735" y="259" width="80" height="46" fill="white" stroke="#c5d9e8"/>
+<text x="775.0" y="287" text-anchor="middle" font-family="Arial,sans-serif" font-size="14" fill="#17365d" font-weight="normal">2.0</text>
+<rect x="815" y="259" width="48" height="46" fill="white" stroke="#c5d9e8"/>
+<text x="839.0" y="287" text-anchor="middle" font-family="Arial,sans-serif" font-size="14" fill="#17365d" font-weight="normal">0</text>
+<rect x="863" y="259" width="48" height="46" fill="white" stroke="#c5d9e8"/>
+<text x="887.0" y="287" text-anchor="middle" font-family="Arial,sans-serif" font-size="14" fill="#17365d" font-weight="normal">1</text>
+<rect x="911" y="259" width="82" height="46" fill="white" stroke="#c5d9e8"/>
+<text x="952.0" y="287" text-anchor="middle" font-family="Arial,sans-serif" font-size="14" fill="#17365d" font-weight="normal">106000</text>
+<rect x="735" y="305" width="80" height="46" fill="white" stroke="#c5d9e8"/>
+<text x="775.0" y="333" text-anchor="middle" font-family="Arial,sans-serif" font-size="14" fill="#17365d" font-weight="normal">4.0</text>
+<rect x="815" y="305" width="48" height="46" fill="white" stroke="#c5d9e8"/>
+<text x="839.0" y="333" text-anchor="middle" font-family="Arial,sans-serif" font-size="14" fill="#17365d" font-weight="normal">0</text>
+<rect x="863" y="305" width="48" height="46" fill="white" stroke="#c5d9e8"/>
+<text x="887.0" y="333" text-anchor="middle" font-family="Arial,sans-serif" font-size="14" fill="#17365d" font-weight="normal">1</text>
+<rect x="911" y="305" width="82" height="46" fill="white" stroke="#c5d9e8"/>
+<text x="952.0" y="333" text-anchor="middle" font-family="Arial,sans-serif" font-size="14" fill="#17365d" font-weight="normal">178100</text>
+<rect x="735" y="351" width="80" height="46" fill="#d8f8e8" stroke="#c5d9e8"/>
+<text x="775.0" y="379" text-anchor="middle" font-family="Arial,sans-serif" font-size="14" fill="#17365d" font-weight="normal">3.0</text>
+<rect x="815" y="351" width="48" height="46" fill="white" stroke="#c5d9e8"/>
+<text x="839.0" y="379" text-anchor="middle" font-family="Arial,sans-serif" font-size="14" fill="#17365d" font-weight="normal">0</text>
+<rect x="863" y="351" width="48" height="46" fill="white" stroke="#c5d9e8"/>
+<text x="887.0" y="379" text-anchor="middle" font-family="Arial,sans-serif" font-size="14" fill="#17365d" font-weight="normal">1</text>
+<rect x="911" y="351" width="82" height="46" fill="white" stroke="#c5d9e8"/>
+<text x="952.0" y="379" text-anchor="middle" font-family="Arial,sans-serif" font-size="14" fill="#17365d" font-weight="normal">140000</text>
+<text x="875" y="445" text-anchor="middle" font-family="Arial,sans-serif" font-size="14" fill="#9a5b00" font-weight="bold">Alley_Pave / Alley_nan</text>
+<text x="875" y="480" text-anchor="middle" font-family="Arial,sans-serif" font-size="14" fill="#17365d" font-weight="normal">缺失值作为独立类别</text>
+<text x="875" y="510" text-anchor="middle" font-family="Arial,sans-serif" font-size="14" fill="#17365d" font-weight="normal">编码为 0 / 1</text>
+<text x="1225" y="180" text-anchor="middle" font-family="Arial,sans-serif" font-size="18" fill="#6b52bf" font-weight="bold">X：输入张量</text>
+<text x="1225" y="220" text-anchor="middle" font-family="Arial,sans-serif" font-size="17" fill="#17365d" font-weight="normal">形状：4 × 3</text>
+<text x="1225" y="265" text-anchor="middle" font-family="Arial,sans-serif" font-size="16" fill="#17365d" font-weight="normal">[3.0, 1, 0]</text>
+<text x="1225" y="300" text-anchor="middle" font-family="Arial,sans-serif" font-size="16" fill="#17365d" font-weight="normal">[2.0, 0, 1]</text>
+<text x="1225" y="335" text-anchor="middle" font-family="Arial,sans-serif" font-size="16" fill="#17365d" font-weight="normal">[4.0, 0, 1]</text>
+<text x="1225" y="370" text-anchor="middle" font-family="Arial,sans-serif" font-size="16" fill="#17365d" font-weight="normal">[3.0, 0, 1]</text>
+<text x="1225" y="425" text-anchor="middle" font-family="Arial,sans-serif" font-size="18" fill="#6b52bf" font-weight="bold">y：目标张量</text>
+<text x="1225" y="460" text-anchor="middle" font-family="Arial,sans-serif" font-size="17" fill="#17365d" font-weight="normal">形状：4 × 1</text>
+<text x="1225" y="495" text-anchor="middle" font-family="Arial,sans-serif" font-size="14" fill="#17365d" font-weight="normal">127500 · 106000</text>
+<text x="1225" y="525" text-anchor="middle" font-family="Arial,sans-serif" font-size="14" fill="#17365d" font-weight="normal">178100 · 140000</text>
+<text x="1225" y="555" text-anchor="middle" font-family="Arial,sans-serif" font-size="14" fill="#17365d" font-weight="normal">dtype = float32</text>
+<path d="M345,330 h18 v-12 l20,20 -20,20 v-12 h-18z" fill="#538fd4"/>
+<path d="M695,330 h18 v-12 l20,20 -20,20 v-12 h-18z" fill="#538fd4"/>
+<path d="M1045,330 h18 v-12 l20,20 -20,20 v-12 h-18z" fill="#538fd4"/>
+<text x="700" y="625" text-anchor="middle" font-family="Arial,sans-serif" font-size="16" fill="#52667a" font-weight="normal">独热编码列为 Alley_Pave、Alley_nan；所有数字与正文代码输出一致。</text>
+</svg>
