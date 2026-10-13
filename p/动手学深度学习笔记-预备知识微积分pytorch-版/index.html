@@ -1,0 +1,512 @@
+<!doctype html><html lang=en-us dir=ltr><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><meta name=description content="本文是《动手学深度学习》PyTorch 实现系列的2 预备知识 -> 2.4 微积分的学习笔记。"><title>动手学深度学习笔记 · 预备知识：微积分（PyTorch 版）📘</title><link rel=canonical href=https://WinnerMeat.github.io/p/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86%E5%BE%AE%E7%A7%AF%E5%88%86pytorch-%E7%89%88/><link rel=preconnect href=https://fonts.googleapis.com><link rel=preconnect href=https://fonts.gstatic.com crossorigin><link rel=preload as=style href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap"><link rel=stylesheet href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap"><link rel=stylesheet href=/scss/style.min.6c875234350e518395efbf51958523b0852fb2215ab8cb81358f9317153eba2d.css><meta property='og:title' content="动手学深度学习笔记 · 预备知识：微积分（PyTorch 版）📘"><meta property='og:description' content="本文是《动手学深度学习》PyTorch 实现系列的2 预备知识 -> 2.4 微积分的学习笔记。"><meta property='og:url' content='https://WinnerMeat.github.io/p/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86%E5%BE%AE%E7%A7%AF%E5%88%86pytorch-%E7%89%88/'><meta property='og:site_name' content='愤怒的大角牛'><meta property='og:type' content='article'><meta property='article:section' content='Post'><meta property='article:tag' content='深度学习-预备知识'><meta property='article:published_time' content='2026-10-11T00:00:00+00:00'><meta property='article:modified_time' content='2026-10-11T00:00:00+00:00'><meta property='og:image' content='https://WinnerMeat.github.io/p/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86%E5%BE%AE%E7%A7%AF%E5%88%86pytorch-%E7%89%88/wallhaven-vp29op_1920x1080.png'><meta name=twitter:title content="动手学深度学习笔记 · 预备知识：微积分（PyTorch 版）📘"><meta name=twitter:description content="本文是《动手学深度学习》PyTorch 实现系列的2 预备知识 -> 2.4 微积分的学习笔记。"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content='https://WinnerMeat.github.io/p/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86%E5%BE%AE%E7%A7%AF%E5%88%86pytorch-%E7%89%88/wallhaven-vp29op_1920x1080.png'><link rel="shortcut icon" href=/img/avatar.png></head><body class=article-page><script>(function(){const e="StackColorScheme";localStorage.getItem(e)||localStorage.setItem(e,"auto")})()</script><script>(function(){const t="StackColorScheme",e=localStorage.getItem(t),n=window.matchMedia("(prefers-color-scheme: dark)").matches===!0;e=="dark"||e==="auto"&&n?document.documentElement.dataset.scheme="dark":document.documentElement.dataset.scheme="light"})()</script><div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky"><button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label=切换菜单>
+<span class=hamburger-box><span class=hamburger-inner></span></span></button><header><figure class=site-avatar><a href=/><img src=/img/avatar.png width=1080 height=1080 class=site-logo loading=lazy alt=Avatar>
+</a><span class=emoji>✏️</span></figure><div class=site-meta><h1 class=site-name><a href=/>愤怒的大角牛</a></h1><h2 class=site-description>做正确且富有挑战的事</h2></div></header><ol class=menu-social><li><a href=https://github.com/WinnerMeat title=GitHub rel=me><svg class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6.0 00-1.3-3.2 4.2 4.2.0 00-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3.0 00-6.2.0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2.0 00-.1 3.2A4.6 4.6.0 004 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg></a></li><li><a href=https://weixin.qq.com/ title=weixin rel=me><svg xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24" viewBox="0 0 24 24"><g id="surface1"><path style="fill-rule:nonzero;fill:#525151;fill-opacity:1;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke:#525151;stroke-opacity:1;stroke-miterlimit:4" d="M221.833333 131.166667c-18.583333.0-33.666666 15.083333-33.666666 33.666666.0 18.5 15.083333 33.666667 33.666666 33.666667 18.5.0 33.666667-15.166667 33.666667-33.666667.0-18.583333-15.166667-33.666666-33.666667-33.666666zm0 51.25c-9.75.0-17.666666-7.91666699999999-17.666666-17.583334.0-9.75 7.91666600000002-17.666666 17.666666-17.666666C231.5 147.166667 239.416667 155.083333 239.416667 164.833333 239.416667 174.5 231.5 182.416667 221.833333 182.416667zm0 0" transform="matrix(0.046875,0,0,0.046875,0,0)"/><path style="fill-rule:nonzero;fill:#525151;fill-opacity:1;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke:#525151;stroke-opacity:1;stroke-miterlimit:4" d="M127.75 131.166667c-18.583333.0-33.666667 15.083333-33.666667 33.666666.0 18.5 15.083334 33.666667 33.666667 33.666667 18.583333.0 33.666667-15.166667 33.666667-33.666667.0-18.583333-15.083334-33.666666-33.666667-33.666666zm0 51.25C118 182.416667 110.083333 174.5 110.083333 164.833333c0-9.75 7.916667-17.666666 17.666667-17.666666C137.416667 147.166667 145.333333 155.083333 145.333333 164.833333 145.333333 174.5 137.416667 182.416667 127.75 182.416667zm0 0" transform="matrix(0.046875,0,0,0.046875,0,0)"/><path style="fill-rule:nonzero;fill:#525151;fill-opacity:1;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke:#525151;stroke-opacity:1;stroke-miterlimit:4" d="M512 327.25c0-40.083333-17.916667-77.416667-50.5-105.083333C458.166667 219.333333 453.083333 219.75 450.25 223.083333 447.333333 226.5 447.75 231.583333 451.166667 234.416667 480.083333 258.916667 496 291.916667 496 327.25c0 38.166667-19.083333 74.166667-52.25 98.75C441.166667 427.916667 440 431.083333 440.666667 434.166667L449.333333 473.25l-41.166666-24.666667c-2-1.25-4.41666700000002-1.5-6.66666700000002-.75-16.416667 5.5-33.75 8.25-51.416667 8.25-80.5.0-145.916666-57.75-145.916666-128.833333.0-71 65.416666-128.75 145.916666-128.75 26.416667.0 52.333334 6.25 74.833334 18.166667C428.833333 218.75 433.666667 217.25 435.75 213.333333 437.833333 209.416667 436.333333 204.583333 432.416667 202.5c-24.833334-13.083333-53.333334-20.083333-82.333334-20.083333-.333332999999982.0-.75.0-1.08333299999998.0C349.333333 178.5 349.5 174.5 349.5 170.5c0-86.166667-78.333333-156.25-174.75-156.25C78.416667 14.25.0 84.333333.0 170.5c0 17.916667 3.333333 35.5 10 52.25C11.75 227 16.833333 229 21 227 24.666667 225.25 26.416667 220.666667 24.916667 216.833333 19 202 16 186.416667 16 170.5 16 93.166667 87.25 30.333333 174.75 30.333333S333.5 93.166667 333.5 170.5c0 4.25-.25 8.5-.666667000000018 12.75C257.916667 190.333333 198.083333 243.333333 189.25 310.083333 184.5 310.5 179.583333 310.666667 174.75 310.666667 145.833333 310.666667 117.5 303.75 92.916667 290.583333c-2.416667-1.25-5.166667-1.25-7.58333400000001.0L48.666667 310.166667l12.916666-34.583334C62.75 272.583333 61.916667 269.166667 59.583333 266.916667 51.916667 259.833333 45.083333 252 39.333333 243.666667 36.833333 240 31.833333 239.083333 28.166667 241.583333 24.5 244.166667 23.666667 249.166667 26.166667 252.75 31.583333 260.583333 37.833333 268.083333 44.75 274.916667l-18.583333 49.5C23.666667 331.25 31.083333 337.75 37.416667 334.333333l51.75-27.583333C115.25 319.833333 144.75 326.75 174.75 326.75c4.5.0 8.91666699999999-.166667000000018 13.416667-.5C188.166667 326.583333 188.083333 326.916667 188.083333 327.25c0 79.916667 72.666667 144.833333 162 144.833333C368.25 472.083333 386 469.416667 403 464.166667l54.083333 32.416666C463 500.166667 470.583333 494.75 469.083333 488l-11.666666-52.333333C492.166667 408.166667 512 368.916667 512 327.25zm0 0" transform="matrix(0.046875,0,0,0.046875,0,0)"/><path style="fill-rule:nonzero;fill:#525151;fill-opacity:1;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke:#525151;stroke-opacity:1;stroke-miterlimit:4" d="M298.75 293.583333c-18.583333.0-33.666667 15.083334-33.666667 33.666667S280.166667 360.916667 298.75 360.916667 332.416667 345.833333 332.416667 327.25 317.333333 293.583333 298.75 293.583333zm0 51.333334C289 344.916667 281.083333 337 281.083333 327.25 281.083333 317.583333 289 309.666667 298.75 309.666667S316.416667 317.583333 316.416667 327.25C316.416667 337 308.5 344.916667 298.75 344.916667zm0 0" transform="matrix(0.046875,0,0,0.046875,0,0)"/><path style="fill-rule:nonzero;fill:#525151;fill-opacity:1;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke:#525151;stroke-opacity:1;stroke-miterlimit:4" d="M401.333333 293.583333c-18.5.0-33.666666 15.083334-33.666666 33.666667s15.166666 33.666667 33.666666 33.666667C419.916667 360.916667 435 345.833333 435 327.25s-15.083333-33.666667-33.666667-33.666667zm0 51.333334C391.666667 344.916667 383.75 337 383.75 327.25 383.75 317.583333 391.666667 309.666667 401.333333 309.666667 411.083333 309.666667 419 317.583333 419 327.25 419 337 411.083333 344.916667 401.333333 344.916667zm0 0" transform="matrix(0.046875,0,0,0.046875,0,0)"/></g></svg></a></li></ol><ol class=menu id=main-menu><li><a href=/><svg class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="5 12 3 12 12 3 21 12 19 12"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/><path d="M9 21v-6a2 2 0 012-2h2a2 2 0 012 2v6"/></svg>
+<span>主页</span></a></li><li><a href=/%E5%85%B3%E4%BA%8E/><svg class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="7" r="4"/><path d="M6 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg>
+<span>关于</span></a></li><li><a href=/archives/><svg class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>归档</span></a></li><li><a href=/search/><svg class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
+<span>搜索</span></a></li><li><a href=/%E9%93%BE%E6%8E%A5/><svg class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M10 14a3.5 3.5.0 005 0l4-4a3.5 3.5.0 00-5-5l-.5.5"/><path d="M14 10a3.5 3.5.0 00-5 0l-4 4a3.5 3.5.0 005 5l.5-.5"/></svg>
+<span>链接</span></a></li><li class=menu-bottom-section><ol class=menu><li id=i18n-switch><svg class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 5h7"/><path d="M9 3v2c0 4.418-2.239 8-5 8"/><path d="M5 9c-.003 2.144 2.952 3.908 6.7 4"/><path d="M12 20l4-9 4 9"/><path d="M19.1 18h-6.2"/></svg>
+<select name=language title=language onchange="window.location.href=this.selectedOptions[0].value"><option value=/p/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86%E5%BE%AE%E7%A7%AF%E5%88%86pytorch-%E7%89%88/ selected>简体中文</option><option value=/en/>English</option><option value=/zh-hant-tw/>正體中文</option><option value=/ja/>日本語</option></select></li><li id=dark-mode-toggle><svg class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<svg class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<span>暗色模式</span></li></ol></li></ol></aside><aside class="sidebar right-sidebar sticky"><section class="widget archives"><div class=widget-icon><svg class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="5" y1="9" x2="19" y2="9"/><line x1="5" y1="15" x2="19" y2="15"/><line x1="11" y1="4" x2="7" y2="20"/><line x1="17" y1="4" x2="13" y2="20"/></svg></div><h2 class="widget-title section-title">目录</h2><div class=widget--toc><nav class=toc-nav id=TableOfContents><ol><li><a href=#本节导读>本节导读</a></li><li><a href=#目录>目录</a></li><li><a href=#1-微积分在机器学习中的作用>1. 微积分在机器学习中的作用</a></li><li><a href=#2-导数从平均变化到瞬时变化>2. 导数：从平均变化到瞬时变化</a><ol><li><a href=#21-平均变化率>2.1 平均变化率</a></li><li><a href=#22-瞬时变化率与导数>2.2 瞬时变化率与导数</a></li><li><a href=#23-全新例题分析校准函数的变化率>2.3 全新例题：分析校准函数的变化率</a></li><li><a href=#24-常见求导规则>2.4 常见求导规则</a></li><li><a href=#25-可导与连续>2.5 可导与连续</a></li></ol></li><li><a href=#3-偏导数多变量函数的局部变化>3. 偏导数：多变量函数的局部变化</a><ol><li><a href=#31-定义与直觉>3.1 定义与直觉</a></li><li><a href=#32-全新例题二维能耗模型>3.2 全新例题：二维能耗模型</a></li><li><a href=#33-使用-pytorch-验证偏导数>3.3 使用 PyTorch 验证偏导数</a></li><li><a href=#34-二阶偏导与混合偏导>3.4 二阶偏导与混合偏导</a></li></ol></li><li><a href=#4-梯度与方向导数>4. 梯度与方向导数</a><ol><li><a href=#41-梯度的定义>4.1 梯度的定义</a></li><li><a href=#42-梯度的几何含义>4.2 梯度的几何含义</a></li><li><a href=#43-方向导数>4.3 方向导数</a></li><li><a href=#44-用-pytorch-计算梯度>4.4 用 PyTorch 计算梯度</a></li><li><a href=#45-梯度雅可比矩阵与海森矩阵>4.5 梯度、雅可比矩阵与海森矩阵</a></li></ol></li><li><a href=#5-链式法则与复合计算>5. 链式法则与复合计算</a><ol><li><a href=#51-基本形式>5.1 基本形式</a></li><li><a href=#52-全新例题三角函数复合模型>5.2 全新例题：三角函数复合模型</a></li><li><a href=#53-多变量链式法则>5.3 多变量链式法则</a></li></ol></li><li><a href=#6-pytorch-自动求导实战>6. PyTorch 自动求导实战</a><ol><li><a href=#61-基本流程>6.1 基本流程</a></li><li><a href=#62-backward-和-autogradgrad>6.2 <code>backward()</code> 和 <code>autograd.grad()</code></a></li><li><a href=#63-非标量输出的梯度种子>6.3 非标量输出的梯度种子</a></li><li><a href=#64-梯度会累加>6.4 梯度会累加</a></li><li><a href=#65-禁止梯度跟踪与分离计算图>6.5 禁止梯度跟踪与分离计算图</a></li></ol></li><li><a href=#7-梯度下降把导数用于优化>7. 梯度下降：把导数用于优化</a><ol><li><a href=#71-更新公式>7.1 更新公式</a></li><li><a href=#72-全新例题拟合一个目标值>7.2 全新例题：拟合一个目标值</a></li><li><a href=#73-使用优化器管理参数更新>7.3 使用优化器管理参数更新</a></li></ol></li><li><a href=#8-常见错误与数值验证>8. 常见错误与数值验证</a><ol><li><a href=#81-为什么-grad-是-none>8.1 为什么 <code>.grad</code> 是 <code>None</code>？</a></li><li><a href=#82-数值梯度检查>8.2 数值梯度检查</a></li><li><a href=#83-排错清单>8.3 排错清单</a></li><li><a href=#84-三种求导方法的比较>8.4 三种求导方法的比较</a></li></ol></li></ol></nav></div></section></aside><main class="main full-width"><article class="has-image main-article"><header class=article-header><div class=article-image><a href=/p/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86%E5%BE%AE%E7%A7%AF%E5%88%86pytorch-%E7%89%88/><img alt="Featured image of post 动手学深度学习笔记 · 预备知识：微积分（PyTorch 版）📘" height=1080 loading=lazy sizes="(max-width: 767px) calc(100vw - 30px), (max-width: 1023px) 700px, (max-width: 1279px) 950px, 1232px" src=/p/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86%E5%BE%AE%E7%A7%AF%E5%88%86pytorch-%E7%89%88/wallhaven-vp29op_1920x1080.png srcset="/p/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86%E5%BE%AE%E7%A7%AF%E5%88%86pytorch-%E7%89%88/wallhaven-vp29op_1920x1080_hu_9a97a0a648350a36.png 800w, /p/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86%E5%BE%AE%E7%A7%AF%E5%88%86pytorch-%E7%89%88/wallhaven-vp29op_1920x1080_hu_8c8aa046275f4fa5.png 1600w, /p/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86%E5%BE%AE%E7%A7%AF%E5%88%86pytorch-%E7%89%88/wallhaven-vp29op_1920x1080.png 1920w" width=1920></a></div><div class=article-details><header class=article-category><a href=/categories/deep-learning/ style=background-color:#2a9d8f;color:#fff>深度学习</a></header><div class=article-title-wrapper><h2 class=article-title><a href=/p/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86%E5%BE%AE%E7%A7%AF%E5%88%86pytorch-%E7%89%88/>动手学深度学习笔记 · 预备知识：微积分（PyTorch 版）📘</a></h2><h3 class=article-subtitle>本文是《动手学深度学习》PyTorch 实现系列的2 预备知识 -> 2.4 微积分的学习笔记。</h3></div><footer class=article-meta><div class=inline-meta><svg class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published datetime=2026-10-11T00:00:00Z>Sunday, October 11, 2026</time>
+<svg class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>阅读时长: 13 分钟</time></div></footer></div></header><aside class=article-toc><details><summary><div class=article-toc-title><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-chevron-right"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 6l6 6-6 6"/></svg>
+<span>目录</span></div></summary><nav class=toc-nav><ol><li><a href=#本节导读>本节导读</a></li><li><a href=#目录>目录</a></li><li><a href=#1-微积分在机器学习中的作用>1. 微积分在机器学习中的作用</a></li><li><a href=#2-导数从平均变化到瞬时变化>2. 导数：从平均变化到瞬时变化</a><ol><li><a href=#21-平均变化率>2.1 平均变化率</a></li><li><a href=#22-瞬时变化率与导数>2.2 瞬时变化率与导数</a></li><li><a href=#23-全新例题分析校准函数的变化率>2.3 全新例题：分析校准函数的变化率</a></li><li><a href=#24-常见求导规则>2.4 常见求导规则</a></li><li><a href=#25-可导与连续>2.5 可导与连续</a></li></ol></li><li><a href=#3-偏导数多变量函数的局部变化>3. 偏导数：多变量函数的局部变化</a><ol><li><a href=#31-定义与直觉>3.1 定义与直觉</a></li><li><a href=#32-全新例题二维能耗模型>3.2 全新例题：二维能耗模型</a></li><li><a href=#33-使用-pytorch-验证偏导数>3.3 使用 PyTorch 验证偏导数</a></li><li><a href=#34-二阶偏导与混合偏导>3.4 二阶偏导与混合偏导</a></li></ol></li><li><a href=#4-梯度与方向导数>4. 梯度与方向导数</a><ol><li><a href=#41-梯度的定义>4.1 梯度的定义</a></li><li><a href=#42-梯度的几何含义>4.2 梯度的几何含义</a></li><li><a href=#43-方向导数>4.3 方向导数</a></li><li><a href=#44-用-pytorch-计算梯度>4.4 用 PyTorch 计算梯度</a></li><li><a href=#45-梯度雅可比矩阵与海森矩阵>4.5 梯度、雅可比矩阵与海森矩阵</a></li></ol></li><li><a href=#5-链式法则与复合计算>5. 链式法则与复合计算</a><ol><li><a href=#51-基本形式>5.1 基本形式</a></li><li><a href=#52-全新例题三角函数复合模型>5.2 全新例题：三角函数复合模型</a></li><li><a href=#53-多变量链式法则>5.3 多变量链式法则</a></li></ol></li><li><a href=#6-pytorch-自动求导实战>6. PyTorch 自动求导实战</a><ol><li><a href=#61-基本流程>6.1 基本流程</a></li><li><a href=#62-backward-和-autogradgrad>6.2 <code>backward()</code> 和 <code>autograd.grad()</code></a></li><li><a href=#63-非标量输出的梯度种子>6.3 非标量输出的梯度种子</a></li><li><a href=#64-梯度会累加>6.4 梯度会累加</a></li><li><a href=#65-禁止梯度跟踪与分离计算图>6.5 禁止梯度跟踪与分离计算图</a></li></ol></li><li><a href=#7-梯度下降把导数用于优化>7. 梯度下降：把导数用于优化</a><ol><li><a href=#71-更新公式>7.1 更新公式</a></li><li><a href=#72-全新例题拟合一个目标值>7.2 全新例题：拟合一个目标值</a></li><li><a href=#73-使用优化器管理参数更新>7.3 使用优化器管理参数更新</a></li></ol></li><li><a href=#8-常见错误与数值验证>8. 常见错误与数值验证</a><ol><li><a href=#81-为什么-grad-是-none>8.1 为什么 <code>.grad</code> 是 <code>None</code>？</a></li><li><a href=#82-数值梯度检查>8.2 数值梯度检查</a></li><li><a href=#83-排错清单>8.3 排错清单</a></li><li><a href=#84-三种求导方法的比较>8.4 三种求导方法的比较</a></li></ol></li></ol></nav></details></aside><section class=article-content><h1 id=动手学深度学习预备知识微积分>《动手学深度学习》预备知识：微积分</h1><h2 id=本节导读>本节导读</h2><blockquote><p>本文为微积分学习内容，通过函数、场景和 PyTorch 实验，依次学习导数、偏导数、梯度、链式法则与自动求导，并联系参数优化中的梯度下降。</p><p><strong>运行环境建议：</strong> Python 3.10+、PyTorch 2.x。示例只依赖 PyTorch 和 Python 标准功能，可逐段复制运行。</p></blockquote><h2 id=目录>目录</h2><ul><li><a class=link href=#1-%e5%be%ae%e7%a7%af%e5%88%86%e5%9c%a8%e6%9c%ba%e5%99%a8%e5%ad%a6%e4%b9%a0%e4%b8%ad%e7%9a%84%e4%bd%9c%e7%94%a8>1. 微积分在机器学习中的作用</a></li><li><a class=link href=#2-%e5%af%bc%e6%95%b0%e4%bb%8e%e5%b9%b3%e5%9d%87%e5%8f%98%e5%8c%96%e5%88%b0%e7%9e%ac%e6%97%b6%e5%8f%98%e5%8c%96>2. 导数：从平均变化到瞬时变化</a></li><li><a class=link href=#3-%e5%81%8f%e5%af%bc%e6%95%b0%e5%a4%9a%e5%8f%98%e9%87%8f%e5%87%bd%e6%95%b0%e7%9a%84%e5%b1%80%e9%83%a8%e5%8f%98%e5%8c%96>3. 偏导数：多变量函数的局部变化</a></li><li><a class=link href=#4-%e6%a2%af%e5%ba%a6%e4%b8%8e%e6%96%b9%e5%90%91%e5%af%bc%e6%95%b0>4. 梯度与方向导数</a></li><li><a class=link href=#5-%e9%93%be%e5%bc%8f%e6%b3%95%e5%88%99%e4%b8%8e%e5%a4%8d%e5%90%88%e8%ae%a1%e7%ae%97>5. 链式法则与复合计算</a></li><li><a class=link href=#6-pytorch-%e8%87%aa%e5%8a%a8%e6%b1%82%e5%af%bc%e5%ae%9e%e6%88%98>6. PyTorch 自动求导实战</a></li><li><a class=link href=#7-%e6%a2%af%e5%ba%a6%e4%b8%8b%e9%99%8d%e6%8a%8a%e5%af%bc%e6%95%b0%e7%94%a8%e4%ba%8e%e4%bc%98%e5%8c%96>7. 梯度下降：把导数用于优化</a></li><li><a class=link href=#8-%e5%b8%b8%e8%a7%81%e9%94%99%e8%af%af%e4%b8%8e%e6%95%b0%e5%80%bc%e9%aa%8c%e8%af%81>8. 常见错误与数值验证</a></li><li><a class=link href=#9-%e5%a4%8d%e4%b9%a0%e6%8f%90%e7%ba%b2%e4%b8%8e%e7%bb%83%e4%b9%a0>9. 复习提纲与练习</a></li><li><a class=link href=#%e5%8f%82%e8%80%83%e8%b5%84%e6%96%99>参考资料</a></li></ul><hr><h2 id=1-微积分在机器学习中的作用>1. 微积分在机器学习中的作用</h2><p>机器学习模型的训练可以看作一个优化问题：模型根据输入产生预测，再由损失函数衡量预测与目标之间的差距，最后调整参数以减小损失。微积分提供了衡量“参数改变一点点，结果会改变多少”的工具。</p><p>例如，假设某个传感器的读数经过校准函数转换：</p>\[
+s(t)=0.5t^2+2t+1
+\]<p>其中 \(t\) 表示输入读数，\(s(t)\) 表示转换后的数值。导数 \(s'(t)\) 描述输入在某个位置附近轻微变化时，输出大约会变化多少。若系统含有多个参数，偏导数分别描述每个参数的影响；将所有偏导数组合起来，就得到梯度。</p><p>微积分在模型训练中主要用于：</p><ol><li><strong>分析敏感度：</strong> 判断输入或参数的细微变化会造成多大影响。</li><li><strong>处理多参数函数：</strong> 分别计算损失对每个参数的偏导数。</li><li><strong>求复合函数的导数：</strong> 将多个运算步骤的局部导数连接起来。</li><li><strong>指导优化：</strong> 利用梯度方向更新参数，逐步寻找更低的损失值。</li></ol><div class=table-wrapper><table><thead><tr><th>概念</th><th>数学对象</th><th>关键问题</th><th>常见用途</th></tr></thead><tbody><tr><td>导数</td><td>单变量函数</td><td>当前点的瞬时变化率是多少？</td><td>变化率分析、数值优化</td></tr><tr><td>偏导数</td><td>多变量函数</td><td>只改变一个变量时，函数如何变化？</td><td>分析单个参数的影响</td></tr><tr><td>梯度</td><td>多变量标量函数</td><td>函数在哪个方向增长最快？</td><td>梯度下降、敏感度分析</td></tr><tr><td>链式法则</td><td>复合函数</td><td>输入如何经由多步运算影响最终结果？</td><td>神经网络反向传播</td></tr><tr><td>自动微分</td><td>程序计算图</td><td>如何自动组合各个运算的导数？</td><td>使用 PyTorch 计算梯度</td></tr></tbody></table></div><h2 id=2-导数从平均变化到瞬时变化>2. 导数：从平均变化到瞬时变化</h2><h3 id=21-平均变化率>2.1 平均变化率</h3><p>对于单变量函数 \(y=f(x)\)，当输入从 \(x\) 变为 \(x+h\) 时，平均变化率定义为：</p>\[
+\frac{f(x+h)-f(x)}{h},\qquad h\ne 0
+\]<p>它表示输入区间内，输出变化量与输入变化量的比值。几何上，这是函数曲线上两点连线（割线）的斜率。</p><h3 id=22-瞬时变化率与导数>2.2 瞬时变化率与导数</h3><p>若上面的比值在 \(h\) 趋近于 0 时存在极限，就定义函数在 \(x\) 处的导数：</p>\[
+f'(x)=\lim_{h\to 0}\frac{f(x+h)-f(x)}{h}
+\]<p>导数也可写作 \(\frac{dy}{dx}\)。它描述函数在某一点附近的瞬时变化率；从几何角度看，导数是该点切线的斜率。</p><p><img alt=导数、割线与切线的立体示意图 loading=lazy sizes="(max-width: 767px) calc(100vw - 30px), (max-width: 1023px) 700px, (max-width: 1279px) 950px, 1232px" src=/img/DeepLearning–Prerequisites–Calculus/derivative_tangent_3d.png></p><p><strong>图 1：</strong> 当第二个取样点逐渐靠近固定点时，割线斜率趋近于切线斜率；极限值就是该点的导数。</p><h3 id=23-全新例题分析校准函数的变化率>2.3 全新例题：分析校准函数的变化率</h3><p>考虑函数：</p>\[
+f(x)=0.5x^2+2x+1
+\]<p>使用求导规则可得：</p>\[
+f'(x)=x+2
+\]<p>因此，当 \(x=3\) 时，\(f'(3)=5\)。这表示在 \(x=3\) 附近，输入每增加一个很小的量，函数输出约增加该小量的 5 倍。</p><p>可以用有限差分近似导数：</p>\[
+f'(x)\approx \frac{f(x+h)-f(x)}{h}
+\]<p>有限差分是数值近似，不是把极限中的 \(h\) 直接设为某个固定小数。步长太大时，近似误差可能明显；步长过小时，又可能受到浮点舍入误差影响。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=kn>import</span> <span class=nn>torch</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>def</span> <span class=nf>calibration</span><span class=p>(</span><span class=n>x</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>    <span class=s2>&#34;&#34;&#34;一个用于演示导数的校准函数。&#34;&#34;&#34;</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=mf>0.5</span> <span class=o>*</span> <span class=n>x</span><span class=o>**</span><span class=mi>2</span> <span class=o>+</span> <span class=mi>2</span> <span class=o>*</span> <span class=n>x</span> <span class=o>+</span> <span class=mi>1</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>x</span> <span class=o>=</span> <span class=n>torch</span><span class=o>.</span><span class=n>tensor</span><span class=p>(</span><span class=mf>3.0</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=n>h</span> <span class=o>=</span> <span class=mf>1e-4</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 解析导数：f&#39;(x) = x + 2</span>
+</span></span><span class=line><span class=cl><span class=n>exact</span> <span class=o>=</span> <span class=n>x</span> <span class=o>+</span> <span class=mi>2</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 用有限差分近似瞬时变化率</span>
+</span></span><span class=line><span class=cl><span class=n>finite_difference</span> <span class=o>=</span> <span class=p>(</span><span class=n>calibration</span><span class=p>(</span><span class=n>x</span> <span class=o>+</span> <span class=n>h</span><span class=p>)</span> <span class=o>-</span> <span class=n>calibration</span><span class=p>(</span><span class=n>x</span><span class=p>))</span> <span class=o>/</span> <span class=n>h</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=s2>&#34;函数值：&#34;</span><span class=p>,</span> <span class=n>calibration</span><span class=p>(</span><span class=n>x</span><span class=p>)</span><span class=o>.</span><span class=n>item</span><span class=p>())</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=s2>&#34;解析导数：&#34;</span><span class=p>,</span> <span class=n>exact</span><span class=o>.</span><span class=n>item</span><span class=p>())</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=s2>&#34;有限差分近似：&#34;</span><span class=p>,</span> <span class=n>finite_difference</span><span class=o>.</span><span class=n>item</span><span class=p>())</span>
+</span></span></code></pre></td></tr></table></div></div><p>典型输出：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-text data-lang=text><span class=line><span class=cl>函数值： 11.5
+</span></span><span class=line><span class=cl>解析导数： 5.0
+</span></span><span class=line><span class=cl>有限差分近似：约 5.0
+</span></span></code></pre></td></tr></table></div></div><h3 id=24-常见求导规则>2.4 常见求导规则</h3><div class=table-wrapper><table><thead><tr><th>规则</th><th>公式</th><th>示例</th></tr></thead><tbody><tr><td>常数函数</td><td>\(\frac{d}{dx}c=0\)</td><td>\(\frac{d}{dx}8=0\)</td></tr><tr><td>幂函数</td><td>\(\frac{d}{dx}x^n=nx^{n-1}\)</td><td>\(\frac{d}{dx}x^4=4x^3\)</td></tr><tr><td>常数倍</td><td>\((cf)'=cf'\)</td><td>\((7x^2)'=14x\)</td></tr><tr><td>加减法</td><td>\((f\pm g)'=f'\pm g'\)</td><td>\((x^3-x)'=3x^2-1\)</td></tr><tr><td>乘积法则</td><td>\((fg)'=f'g+fg'\)</td><td>两个可导函数相乘</td></tr><tr><td>商法则</td><td>\((f/g)'=(f'g-fg')/g^2\)</td><td>要求 \(g\ne0\)</td></tr><tr><td>链式法则</td><td>\((f(g(x)))'=f'(g(x))g'(x)\)</td><td>复合函数求导</td></tr></tbody></table></div><p>一些常用导数：</p>\[
+\frac{d}{dx}e^x=e^x,\qquad
+\frac{d}{dx}\ln x=\frac{1}{x}\quad (x>0)
+\]\[
+\frac{d}{dx}\sin x=\cos x,\qquad
+\frac{d}{dx}\cos x=-\sin x
+\]<h3 id=25-可导与连续>2.5 可导与连续</h3><p>函数在某点可导，通常可推出它在该点连续；反过来并不成立。以 \(f(x)=|x|\) 为例，函数在 0 处连续，但左导数为 \(-1\)，右导数为 \(1\)，所以它在 0 处没有唯一的普通导数。</p><p>机器学习中常见的分段函数也可能存在不可导点。例如 \(\operatorname{ReLU}(x)=\max(0,x)\) 在 0 处不可导。框架会在相关位置采用约定的梯度处理方式，因此理解数学定义有助于正确解释自动求导结果。</p><h2 id=3-偏导数多变量函数的局部变化>3. 偏导数：多变量函数的局部变化</h2><h3 id=31-定义与直觉>3.1 定义与直觉</h3><p>当函数依赖多个变量时，例如 \(z=f(x,y)\)，我们可以只改变其中一个变量，并暂时把其他变量视为常数。由此得到偏导数：</p>\[
+\frac{\partial f}{\partial x},\qquad
+\frac{\partial f}{\partial y}
+\]<p>偏导数衡量函数沿某个坐标方向的瞬时变化率。符号 \(\partial\) 用于强调这是多变量函数的偏导。</p><h3 id=32-全新例题二维能耗模型>3.2 全新例题：二维能耗模型</h3><p>设一个简化的能耗指标为：</p>\[
+E(a,b)=3a^2+ab+2b^2
+\]<p>其中 \(a,b\) 可以理解为两个可调控制量。分别求偏导：</p>\[
+\frac{\partial E}{\partial a}=6a+b,\qquad
+\frac{\partial E}{\partial b}=a+4b
+\]<p>在 \((a,b)=(1,2)\) 处：</p>\[
+\frac{\partial E}{\partial a}=8,\qquad
+\frac{\partial E}{\partial b}=9
+\]<p>这意味着在该点附近，若只增加 \(a\)，能耗指标的一阶变化率约为 8；若只增加 \(b\)，对应变化率约为 9。</p><p><img alt=多元函数偏导数的立体示意图 loading=lazy sizes="(max-width: 767px) calc(100vw - 30px), (max-width: 1023px) 700px, (max-width: 1279px) 950px, 1232px" src=/img/DeepLearning–Prerequisites–Calculus/partial_derivatives_3d.png></p><p><strong>图 2：</strong> 在曲面上固定其他变量并沿某个坐标方向移动，可以用相应截线的切线斜率理解偏导数。</p><h3 id=33-使用-pytorch-验证偏导数>3.3 使用 PyTorch 验证偏导数</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=kn>import</span> <span class=nn>torch</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>a</span> <span class=o>=</span> <span class=n>torch</span><span class=o>.</span><span class=n>tensor</span><span class=p>(</span><span class=mf>1.0</span><span class=p>,</span> <span class=n>requires_grad</span><span class=o>=</span><span class=kc>True</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=n>b</span> <span class=o>=</span> <span class=n>torch</span><span class=o>.</span><span class=n>tensor</span><span class=p>(</span><span class=mf>2.0</span><span class=p>,</span> <span class=n>requires_grad</span><span class=o>=</span><span class=kc>True</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>energy</span> <span class=o>=</span> <span class=mi>3</span> <span class=o>*</span> <span class=n>a</span><span class=o>**</span><span class=mi>2</span> <span class=o>+</span> <span class=n>a</span> <span class=o>*</span> <span class=n>b</span> <span class=o>+</span> <span class=mi>2</span> <span class=o>*</span> <span class=n>b</span><span class=o>**</span><span class=mi>2</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>dE_da</span><span class=p>,</span> <span class=n>dE_db</span> <span class=o>=</span> <span class=n>torch</span><span class=o>.</span><span class=n>autograd</span><span class=o>.</span><span class=n>grad</span><span class=p>(</span><span class=n>energy</span><span class=p>,</span> <span class=p>(</span><span class=n>a</span><span class=p>,</span> <span class=n>b</span><span class=p>))</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=s2>&#34;能耗指标：&#34;</span><span class=p>,</span> <span class=n>energy</span><span class=o>.</span><span class=n>item</span><span class=p>())</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=s2>&#34;对 a 的偏导：&#34;</span><span class=p>,</span> <span class=n>dE_da</span><span class=o>.</span><span class=n>item</span><span class=p>())</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=s2>&#34;对 b 的偏导：&#34;</span><span class=p>,</span> <span class=n>dE_db</span><span class=o>.</span><span class=n>item</span><span class=p>())</span>
+</span></span></code></pre></td></tr></table></div></div><p>输出：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-text data-lang=text><span class=line><span class=cl>能耗指标： 13.0
+</span></span><span class=line><span class=cl>对 a 的偏导： 8.0
+</span></span><span class=line><span class=cl>对 b 的偏导： 9.0
+</span></span></code></pre></td></tr></table></div></div><h3 id=34-二阶偏导与混合偏导>3.4 二阶偏导与混合偏导</h3><p>对一阶偏导数继续求导，可以得到二阶偏导数。例如：</p>\[
+E_{aa}=\frac{\partial^2 E}{\partial a^2}=6,\qquad
+E_{bb}=\frac{\partial^2 E}{\partial b^2}=4
+\]\[
+E_{ab}=\frac{\partial^2 E}{\partial b\,\partial a}=1
+\]<p>当函数的二阶偏导数在邻域内连续时，混合偏导数通常满足 \(E_{ab}=E_{ba}\)。二阶偏导数可以帮助描述曲率，并用于分析局部极值和更高阶优化算法。</p><h2 id=4-梯度与方向导数>4. 梯度与方向导数</h2><h3 id=41-梯度的定义>4.1 梯度的定义</h3><p>对于可微的标量函数 \(f:\mathbb{R}^n\to\mathbb{R}\)，梯度是所有一阶偏导数组成的向量：</p>\[
+\nabla f(\mathbf{x})=
+\begin{bmatrix}
+\frac{\partial f}{\partial x_1}\\
+\frac{\partial f}{\partial x_2}\\
+\vdots\\
+\frac{\partial f}{\partial x_n}
+\end{bmatrix}
+\]<p>沿用上节能耗模型：</p>\[
+\nabla E(a,b)=
+\begin{bmatrix}
+6a+b\\
+a+4b
+\end{bmatrix}
+\]<p>在 \((1,2)\) 处，梯度为 \((8,9)^\mathsf{T}\)。</p><h3 id=42-梯度的几何含义>4.2 梯度的几何含义</h3><p>梯度有三个重要性质：</p><ol><li><strong>增长方向：</strong> 当梯度不为零且函数可微时，梯度指向函数局部增长最快的方向。</li><li><strong>最大变化率：</strong> 梯度的二范数 \(\|\nabla f\|_2\) 是该点最大方向导数的值。</li><li><strong>等高线关系：</strong> 在梯度非零、等高线光滑等适当条件下，梯度垂直于经过该点的等高线。</li></ol><p><img alt=多元函数梯度的三维示意图 loading=lazy sizes="(max-width: 767px) calc(100vw - 30px), (max-width: 1023px) 700px, (max-width: 1279px) 950px, 1232px" src=/img/DeepLearning–Prerequisites–Calculus/gradient_3d.png></p><p><strong>图 3：</strong> 梯度方向对应函数值上升最快的局部方向，梯度模长对应最大方向变化率。</p><h3 id=43-方向导数>4.3 方向导数</h3><p>若 \(\mathbf{v}\) 是单位向量，函数沿该方向的方向导数为：</p>\[
+D_{\mathbf{v}}f(\mathbf{x})
+=\nabla f(\mathbf{x})^\mathsf{T}\mathbf{v}
+\]<p>由柯西—施瓦茨不等式：</p>\[
+-\|\nabla f\|_2
+\le D_{\mathbf{v}}f
+\le \|\nabla f\|_2
+\]<p>当 \(\mathbf{v}\) 与梯度同向时，方向导数最大；当 \(\mathbf{v}\) 与梯度反向时，方向导数最小。梯度下降正是利用这一性质，尝试沿负梯度方向减小目标函数。</p><h3 id=44-用-pytorch-计算梯度>4.4 用 PyTorch 计算梯度</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=kn>import</span> <span class=nn>torch</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>a</span> <span class=o>=</span> <span class=n>torch</span><span class=o>.</span><span class=n>tensor</span><span class=p>(</span><span class=mf>1.0</span><span class=p>,</span> <span class=n>requires_grad</span><span class=o>=</span><span class=kc>True</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=n>b</span> <span class=o>=</span> <span class=n>torch</span><span class=o>.</span><span class=n>tensor</span><span class=p>(</span><span class=mf>2.0</span><span class=p>,</span> <span class=n>requires_grad</span><span class=o>=</span><span class=kc>True</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>energy</span> <span class=o>=</span> <span class=mi>3</span> <span class=o>*</span> <span class=n>a</span><span class=o>**</span><span class=mi>2</span> <span class=o>+</span> <span class=n>a</span> <span class=o>*</span> <span class=n>b</span> <span class=o>+</span> <span class=mi>2</span> <span class=o>*</span> <span class=n>b</span><span class=o>**</span><span class=mi>2</span>
+</span></span><span class=line><span class=cl><span class=n>energy</span><span class=o>.</span><span class=n>backward</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=s2>&#34;能耗指标：&#34;</span><span class=p>,</span> <span class=n>energy</span><span class=o>.</span><span class=n>item</span><span class=p>())</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=s2>&#34;dE/da：&#34;</span><span class=p>,</span> <span class=n>a</span><span class=o>.</span><span class=n>grad</span><span class=o>.</span><span class=n>item</span><span class=p>())</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=s2>&#34;dE/db：&#34;</span><span class=p>,</span> <span class=n>b</span><span class=o>.</span><span class=n>grad</span><span class=o>.</span><span class=n>item</span><span class=p>())</span>
+</span></span></code></pre></td></tr></table></div></div><p>输出：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-text data-lang=text><span class=line><span class=cl>能耗指标： 13.0
+</span></span><span class=line><span class=cl>dE/da： 8.0
+</span></span><span class=line><span class=cl>dE/db： 9.0
+</span></span></code></pre></td></tr></table></div></div><h3 id=45-梯度雅可比矩阵与海森矩阵>4.5 梯度、雅可比矩阵与海森矩阵</h3><p>当输出是标量时，所有一阶偏导数组成梯度。当函数输出为向量 \(\mathbf{y}=F(\mathbf{x})\) 时，其一阶导数可组织成雅可比矩阵：</p>\[
+J_{ij}=\frac{\partial y_i}{\partial x_j}
+\]<p>对标量函数 \(f(\mathbf{x})\)，二阶偏导数可组成海森矩阵：</p>\[
+H_{ij}=\frac{\partial^2 f}{\partial x_i\partial x_j}
+\]<p>梯度提供一阶变化信息，雅可比矩阵描述向量函数的局部线性变化，海森矩阵描述二阶曲率信息。三者相关，但用途不同。</p><h2 id=5-链式法则与复合计算>5. 链式法则与复合计算</h2><h3 id=51-基本形式>5.1 基本形式</h3><p>若：</p>\[
+u=g(x),\qquad y=f(u)
+\]<p>则复合函数 \(y=f(g(x))\) 的导数满足：</p>\[
+\frac{dy}{dx}
+=\frac{dy}{du}\frac{du}{dx}
+=f'(g(x))g'(x)
+\]<p>可以把它理解为：输入的微小变化先影响中间变量，再通过后续函数影响最终输出，因此总变化率由每一步的局部变化率相乘得到。</p><p><img alt=链式法则与复合函数计算图示意图 loading=lazy sizes="(max-width: 767px) calc(100vw - 30px), (max-width: 1023px) 700px, (max-width: 1279px) 950px, 1232px" src=/img/DeepLearning–Prerequisites–Calculus/chain_rule_graph_3d.png></p><p><strong>图 4：</strong> 链式法则将复合计算的局部导数沿依赖路径相乘；如果输入影响输出的路径不止一条，就需要累加每条路径的贡献。</p><h3 id=52-全新例题三角函数复合模型>5.2 全新例题：三角函数复合模型</h3><p>设：</p>\[
+y=\sin(x^2+1)
+\]<p>令 \(u=x^2+1\)，则 \(y=\sin u\)。所以：</p>\[
+\frac{dy}{du}=\cos u,\qquad
+\frac{du}{dx}=2x
+\]<p>根据链式法则：</p>\[
+\frac{dy}{dx}=2x\cos(x^2+1)
+\]<p>当 \(x=1\) 时：</p>\[
+\frac{dy}{dx}=2\cos 2\approx -0.8323
+\]<div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=kn>import</span> <span class=nn>torch</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>x</span> <span class=o>=</span> <span class=n>torch</span><span class=o>.</span><span class=n>tensor</span><span class=p>(</span><span class=mf>1.0</span><span class=p>,</span> <span class=n>requires_grad</span><span class=o>=</span><span class=kc>True</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=n>u</span> <span class=o>=</span> <span class=n>x</span><span class=o>**</span><span class=mi>2</span> <span class=o>+</span> <span class=mi>1</span>
+</span></span><span class=line><span class=cl><span class=n>y</span> <span class=o>=</span> <span class=n>torch</span><span class=o>.</span><span class=n>sin</span><span class=p>(</span><span class=n>u</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>y</span><span class=o>.</span><span class=n>backward</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=s2>&#34;中间变量 u：&#34;</span><span class=p>,</span> <span class=n>u</span><span class=o>.</span><span class=n>item</span><span class=p>())</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=s2>&#34;函数值 y：&#34;</span><span class=p>,</span> <span class=n>y</span><span class=o>.</span><span class=n>item</span><span class=p>())</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=s2>&#34;dy/dx：&#34;</span><span class=p>,</span> <span class=n>x</span><span class=o>.</span><span class=n>grad</span><span class=o>.</span><span class=n>item</span><span class=p>())</span>
+</span></span></code></pre></td></tr></table></div></div><p>输出近似为：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-text data-lang=text><span class=line><span class=cl>中间变量 u： 2.0
+</span></span><span class=line><span class=cl>函数值 y： 0.9093
+</span></span><span class=line><span class=cl>dy/dx： -0.8323
+</span></span></code></pre></td></tr></table></div></div><h3 id=53-多变量链式法则>5.3 多变量链式法则</h3><p>若最终结果 \(y=f(u_1,\ldots,u_m)\)，而中间变量 \(u_j\) 又依赖输入 \(x_i\)，则：</p>\[
+\frac{\partial y}{\partial x_i}
+=\sum_{j=1}^{m}
+\frac{\partial y}{\partial u_j}
+\frac{\partial u_j}{\partial x_i}
+\]<p>也就是每条依赖路径上的导数相乘，再把各条路径的贡献相加。</p><p>例如：</p>\[
+p=x+y,\qquad q=xy,\qquad r=p^2+2q
+\]<p>则：</p>\[
+\frac{\partial r}{\partial x}
+=2p\frac{\partial p}{\partial x}
++2\frac{\partial q}{\partial x}
+=2(x+y)+2y
+\]\[
+\frac{\partial r}{\partial y}
+=2(x+y)+2x
+\]<p>在 \(x=2,y=3\) 时，\(p=5,q=6,r=37\)，因此：</p>\[
+\frac{\partial r}{\partial x}=16,\qquad
+\frac{\partial r}{\partial y}=14
+\]<div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=kn>import</span> <span class=nn>torch</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>x</span> <span class=o>=</span> <span class=n>torch</span><span class=o>.</span><span class=n>tensor</span><span class=p>(</span><span class=mf>2.0</span><span class=p>,</span> <span class=n>requires_grad</span><span class=o>=</span><span class=kc>True</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=n>y</span> <span class=o>=</span> <span class=n>torch</span><span class=o>.</span><span class=n>tensor</span><span class=p>(</span><span class=mf>3.0</span><span class=p>,</span> <span class=n>requires_grad</span><span class=o>=</span><span class=kc>True</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>p</span> <span class=o>=</span> <span class=n>x</span> <span class=o>+</span> <span class=n>y</span>
+</span></span><span class=line><span class=cl><span class=n>q</span> <span class=o>=</span> <span class=n>x</span> <span class=o>*</span> <span class=n>y</span>
+</span></span><span class=line><span class=cl><span class=n>r</span> <span class=o>=</span> <span class=n>p</span><span class=o>**</span><span class=mi>2</span> <span class=o>+</span> <span class=mi>2</span> <span class=o>*</span> <span class=n>q</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>dr_dx</span><span class=p>,</span> <span class=n>dr_dy</span> <span class=o>=</span> <span class=n>torch</span><span class=o>.</span><span class=n>autograd</span><span class=o>.</span><span class=n>grad</span><span class=p>(</span><span class=n>r</span><span class=p>,</span> <span class=p>(</span><span class=n>x</span><span class=p>,</span> <span class=n>y</span><span class=p>))</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=s2>&#34;r =&#34;</span><span class=p>,</span> <span class=n>r</span><span class=o>.</span><span class=n>item</span><span class=p>())</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=s2>&#34;dr/dx =&#34;</span><span class=p>,</span> <span class=n>dr_dx</span><span class=o>.</span><span class=n>item</span><span class=p>())</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=s2>&#34;dr/dy =&#34;</span><span class=p>,</span> <span class=n>dr_dy</span><span class=o>.</span><span class=n>item</span><span class=p>())</span>
+</span></span></code></pre></td></tr></table></div></div><p>输出：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-text data-lang=text><span class=line><span class=cl>r = 37.0
+</span></span><span class=line><span class=cl>dr/dx = 16.0
+</span></span><span class=line><span class=cl>dr/dy = 14.0
+</span></span></code></pre></td></tr></table></div></div><h2 id=6-pytorch-自动求导实战>6. PyTorch 自动求导实战</h2><h3 id=61-基本流程>6.1 基本流程</h3><p>PyTorch 的自动微分机制会跟踪参与计算的张量操作，并在反向阶段根据链式法则计算梯度。典型流程如下：</p><ol><li>对需要求导的叶子张量设置 <code>requires_grad=True</code>。</li><li>执行前向运算，生成结果或损失。</li><li>对标量结果调用 <code>backward()</code>，或者使用 <code>torch.autograd.grad()</code> 指定需要的导数。</li><li>读取返回值或叶子张量的 <code>.grad</code>。</li><li>进行下一轮计算前，明确是否需要清除已有梯度。</li></ol><h3 id=62-backward-和-autogradgrad>6.2 <code>backward()</code> 和 <code>autograd.grad()</code></h3><ul><li><code>backward()</code> 会把计算得到的梯度累加到相关叶子张量的 <code>.grad</code> 属性。</li><li><code>torch.autograd.grad()</code> 直接返回指定输出对指定输入的梯度，通常更适合临时计算或数学验证。</li></ul><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=kn>import</span> <span class=nn>torch</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>x</span> <span class=o>=</span> <span class=n>torch</span><span class=o>.</span><span class=n>tensor</span><span class=p>(</span><span class=mf>4.0</span><span class=p>,</span> <span class=n>requires_grad</span><span class=o>=</span><span class=kc>True</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=n>y</span> <span class=o>=</span> <span class=n>x</span><span class=o>**</span><span class=mi>3</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>dy_dx</span><span class=p>,</span> <span class=o>=</span> <span class=n>torch</span><span class=o>.</span><span class=n>autograd</span><span class=o>.</span><span class=n>grad</span><span class=p>(</span><span class=n>y</span><span class=p>,</span> <span class=n>x</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=s2>&#34;autograd.grad 返回值：&#34;</span><span class=p>,</span> <span class=n>dy_dx</span><span class=o>.</span><span class=n>item</span><span class=p>())</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=s2>&#34;x.grad：&#34;</span><span class=p>,</span> <span class=n>x</span><span class=o>.</span><span class=n>grad</span><span class=p>)</span>  <span class=c1># None，因为上面没有把梯度累加到 x.grad</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>x</span> <span class=o>=</span> <span class=n>torch</span><span class=o>.</span><span class=n>tensor</span><span class=p>(</span><span class=mf>4.0</span><span class=p>,</span> <span class=n>requires_grad</span><span class=o>=</span><span class=kc>True</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=p>(</span><span class=n>x</span><span class=o>**</span><span class=mi>3</span><span class=p>)</span><span class=o>.</span><span class=n>backward</span><span class=p>()</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=s2>&#34;backward 后的 x.grad：&#34;</span><span class=p>,</span> <span class=n>x</span><span class=o>.</span><span class=n>grad</span><span class=o>.</span><span class=n>item</span><span class=p>())</span>
+</span></span></code></pre></td></tr></table></div></div><p>输出：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-text data-lang=text><span class=line><span class=cl>autograd.grad 返回值： 48.0
+</span></span><span class=line><span class=cl>x.grad： None
+</span></span><span class=line><span class=cl>backward 后的 x.grad： 48.0
+</span></span></code></pre></td></tr></table></div></div><h3 id=63-非标量输出的梯度种子>6.3 非标量输出的梯度种子</h3><p>对于标量输出 \(L\)，调用 <code>L.backward()</code> 默认相当于对输出使用种子 1。若输出是向量，则需要指定与输出形状一致的 <code>gradient</code>，PyTorch 由此计算向量—雅可比积。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span><span class=lnt>9
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=kn>import</span> <span class=nn>torch</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>x</span> <span class=o>=</span> <span class=n>torch</span><span class=o>.</span><span class=n>tensor</span><span class=p>([</span><span class=mf>2.0</span><span class=p>,</span> <span class=mf>3.0</span><span class=p>],</span> <span class=n>requires_grad</span><span class=o>=</span><span class=kc>True</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=n>y</span> <span class=o>=</span> <span class=n>x</span><span class=o>**</span><span class=mi>2</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 计算 y 各元素之和对 x 的梯度</span>
+</span></span><span class=line><span class=cl><span class=n>y</span><span class=o>.</span><span class=n>backward</span><span class=p>(</span><span class=n>gradient</span><span class=o>=</span><span class=n>torch</span><span class=o>.</span><span class=n>ones_like</span><span class=p>(</span><span class=n>y</span><span class=p>))</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=n>x</span><span class=o>.</span><span class=n>grad</span><span class=p>)</span>
+</span></span></code></pre></td></tr></table></div></div><p>输出：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-text data-lang=text><span class=line><span class=cl>tensor([4., 6.])
+</span></span></code></pre></td></tr></table></div></div><p>这里计算的是 \((y_1+y_2)\) 对输入的梯度，并不是一次性返回完整雅可比矩阵。</p><h3 id=64-梯度会累加>6.4 梯度会累加</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=kn>import</span> <span class=nn>torch</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>x</span> <span class=o>=</span> <span class=n>torch</span><span class=o>.</span><span class=n>tensor</span><span class=p>(</span><span class=mf>2.0</span><span class=p>,</span> <span class=n>requires_grad</span><span class=o>=</span><span class=kc>True</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=p>(</span><span class=n>x</span><span class=o>**</span><span class=mi>2</span><span class=p>)</span><span class=o>.</span><span class=n>backward</span><span class=p>()</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=s2>&#34;第一次反向传播：&#34;</span><span class=p>,</span> <span class=n>x</span><span class=o>.</span><span class=n>grad</span><span class=o>.</span><span class=n>item</span><span class=p>())</span>  <span class=c1># 4</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=p>(</span><span class=mi>5</span> <span class=o>*</span> <span class=n>x</span><span class=p>)</span><span class=o>.</span><span class=n>backward</span><span class=p>()</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=s2>&#34;第二次反向传播后：&#34;</span><span class=p>,</span> <span class=n>x</span><span class=o>.</span><span class=n>grad</span><span class=o>.</span><span class=n>item</span><span class=p>())</span>  <span class=c1># 4 + 5 = 9</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>x</span><span class=o>.</span><span class=n>grad</span> <span class=o>=</span> <span class=kc>None</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=s2>&#34;清理后：&#34;</span><span class=p>,</span> <span class=n>x</span><span class=o>.</span><span class=n>grad</span><span class=p>)</span>
+</span></span></code></pre></td></tr></table></div></div><p>输出：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-text data-lang=text><span class=line><span class=cl>第一次反向传播： 4.0
+</span></span><span class=line><span class=cl>第二次反向传播后： 9.0
+</span></span><span class=line><span class=cl>清理后： None
+</span></span></code></pre></td></tr></table></div></div><p>训练神经网络时，优化器的 <code>optimizer.zero_grad()</code> 常用于清理参数梯度。忘记清理会让本轮梯度与此前梯度累加，可能导致更新结果偏离预期。</p><h3 id=65-禁止梯度跟踪与分离计算图>6.5 禁止梯度跟踪与分离计算图</h3><p>推理时若不需要反向传播，可以用 <code>torch.no_grad()</code> 禁止构建梯度图：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=kn>import</span> <span class=nn>torch</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>x</span> <span class=o>=</span> <span class=n>torch</span><span class=o>.</span><span class=n>tensor</span><span class=p>(</span><span class=mf>3.0</span><span class=p>,</span> <span class=n>requires_grad</span><span class=o>=</span><span class=kc>True</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>with</span> <span class=n>torch</span><span class=o>.</span><span class=n>no_grad</span><span class=p>():</span>
+</span></span><span class=line><span class=cl>    <span class=n>y</span> <span class=o>=</span> <span class=n>x</span><span class=o>**</span><span class=mi>2</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=s2>&#34;是否跟踪梯度：&#34;</span><span class=p>,</span> <span class=n>y</span><span class=o>.</span><span class=n>requires_grad</span><span class=p>)</span>
+</span></span></code></pre></td></tr></table></div></div><p>输出：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-text data-lang=text><span class=line><span class=cl>是否跟踪梯度： False
+</span></span></code></pre></td></tr></table></div></div><p><code>detach()</code> 也可以让张量与当前计算图分离。训练时不要在仍需传播梯度的路径上随意使用它，否则梯度将无法通过被分离的部分传回更早的运算。</p><h2 id=7-梯度下降把导数用于优化>7. 梯度下降：把导数用于优化</h2><h3 id=71-更新公式>7.1 更新公式</h3><p>设模型参数为 \(\boldsymbol{\theta}\)，损失函数为 \(L(\boldsymbol{\theta})\)，最基本的梯度下降更新规则为：</p>\[
+\boldsymbol{\theta}_{t+1}
+=\boldsymbol{\theta}_t-\eta\nabla_{\boldsymbol{\theta}}L(\boldsymbol{\theta}_t)
+\]<p>其中 \(\eta>0\) 为学习率。负梯度方向在局部一阶近似下是损失下降最快的方向。学习率过大可能使优化震荡甚至发散；学习率过小则可能导致收敛缓慢。</p><h3 id=72-全新例题拟合一个目标值>7.2 全新例题：拟合一个目标值</h3><p>考虑简单目标函数：</p>\[
+L(w)=(w-6)^2
+\]<p>它在 \(w=6\) 处取得最小值 0，导数为：</p>\[
+\frac{dL}{dw}=2(w-6)
+\]<p>若初始参数 \(w_0=1\)，学习率 \(\eta=0.1\)，则梯度为 \(-10\)，更新后：</p>\[
+w_1=1-0.1(-10)=2
+\]<div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=kn>import</span> <span class=nn>torch</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>w</span> <span class=o>=</span> <span class=n>torch</span><span class=o>.</span><span class=n>tensor</span><span class=p>(</span><span class=mf>1.0</span><span class=p>,</span> <span class=n>requires_grad</span><span class=o>=</span><span class=kc>True</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=n>learning_rate</span> <span class=o>=</span> <span class=mf>0.1</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>loss</span> <span class=o>=</span> <span class=p>(</span><span class=n>w</span> <span class=o>-</span> <span class=mi>6</span><span class=p>)</span><span class=o>**</span><span class=mi>2</span>
+</span></span><span class=line><span class=cl><span class=n>loss</span><span class=o>.</span><span class=n>backward</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=s2>&#34;更新前 w：&#34;</span><span class=p>,</span> <span class=n>w</span><span class=o>.</span><span class=n>item</span><span class=p>())</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=s2>&#34;更新前损失：&#34;</span><span class=p>,</span> <span class=n>loss</span><span class=o>.</span><span class=n>item</span><span class=p>())</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=s2>&#34;梯度 dL/dw：&#34;</span><span class=p>,</span> <span class=n>w</span><span class=o>.</span><span class=n>grad</span><span class=o>.</span><span class=n>item</span><span class=p>())</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>with</span> <span class=n>torch</span><span class=o>.</span><span class=n>no_grad</span><span class=p>():</span>
+</span></span><span class=line><span class=cl>    <span class=n>w</span> <span class=o>-=</span> <span class=n>learning_rate</span> <span class=o>*</span> <span class=n>w</span><span class=o>.</span><span class=n>grad</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=s2>&#34;更新后 w：&#34;</span><span class=p>,</span> <span class=n>w</span><span class=o>.</span><span class=n>item</span><span class=p>())</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=s2>&#34;更新后损失：&#34;</span><span class=p>,</span> <span class=p>((</span><span class=n>w</span> <span class=o>-</span> <span class=mi>6</span><span class=p>)</span><span class=o>**</span><span class=mi>2</span><span class=p>)</span><span class=o>.</span><span class=n>item</span><span class=p>())</span>
+</span></span></code></pre></td></tr></table></div></div><p>输出：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-text data-lang=text><span class=line><span class=cl>更新前 w： 1.0
+</span></span><span class=line><span class=cl>更新前损失： 25.0
+</span></span><span class=line><span class=cl>梯度 dL/dw： -10.0
+</span></span><span class=line><span class=cl>更新后 w： 2.0
+</span></span><span class=line><span class=cl>更新后损失： 16.0
+</span></span></code></pre></td></tr></table></div></div><p>一次更新使损失从 25 降到 16。重复执行“前向计算—反向传播—更新参数”，参数会在合适的学习率下逐步接近最优值。</p><h3 id=73-使用优化器管理参数更新>7.3 使用优化器管理参数更新</h3><p>在实际项目中，通常使用 <code>torch.nn.Parameter</code> 或 <code>torch.nn.Module</code> 管理参数，再使用优化器完成更新。下面给出一个小型示例：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=kn>import</span> <span class=nn>torch</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 将待学习参数注册为可训练参数</span>
+</span></span><span class=line><span class=cl><span class=n>w</span> <span class=o>=</span> <span class=n>torch</span><span class=o>.</span><span class=n>nn</span><span class=o>.</span><span class=n>Parameter</span><span class=p>(</span><span class=n>torch</span><span class=o>.</span><span class=n>tensor</span><span class=p>(</span><span class=mf>1.0</span><span class=p>))</span>
+</span></span><span class=line><span class=cl><span class=n>optimizer</span> <span class=o>=</span> <span class=n>torch</span><span class=o>.</span><span class=n>optim</span><span class=o>.</span><span class=n>SGD</span><span class=p>([</span><span class=n>w</span><span class=p>],</span> <span class=n>lr</span><span class=o>=</span><span class=mf>0.1</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>for</span> <span class=n>step</span> <span class=ow>in</span> <span class=nb>range</span><span class=p>(</span><span class=mi>3</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>    <span class=n>optimizer</span><span class=o>.</span><span class=n>zero_grad</span><span class=p>()</span>       <span class=c1># 清空上一步的梯度</span>
+</span></span><span class=line><span class=cl>    <span class=n>loss</span> <span class=o>=</span> <span class=p>(</span><span class=n>w</span> <span class=o>-</span> <span class=mi>6</span><span class=p>)</span><span class=o>**</span><span class=mi>2</span>           <span class=c1># 前向计算损失</span>
+</span></span><span class=line><span class=cl>    <span class=n>loss</span><span class=o>.</span><span class=n>backward</span><span class=p>()</span>             <span class=c1># 计算梯度</span>
+</span></span><span class=line><span class=cl>    <span class=n>optimizer</span><span class=o>.</span><span class=n>step</span><span class=p>()</span>            <span class=c1># 根据梯度更新参数</span>
+</span></span><span class=line><span class=cl>    <span class=nb>print</span><span class=p>(</span><span class=sa>f</span><span class=s2>&#34;第 </span><span class=si>{</span><span class=n>step</span> <span class=o>+</span> <span class=mi>1</span><span class=si>}</span><span class=s2> 步：w=</span><span class=si>{</span><span class=n>w</span><span class=o>.</span><span class=n>item</span><span class=p>()</span><span class=si>:</span><span class=s2>.4f</span><span class=si>}</span><span class=s2>, loss=</span><span class=si>{</span><span class=n>loss</span><span class=o>.</span><span class=n>item</span><span class=p>()</span><span class=si>:</span><span class=s2>.4f</span><span class=si>}</span><span class=s2>&#34;</span><span class=p>)</span>
+</span></span></code></pre></td></tr></table></div></div><p>每一步都会重新计算当前参数对应的损失和梯度。注意，循环中打印的损失是更新前计算的损失，而参数值已经在 <code>optimizer.step()</code> 后更新；如果需要记录更新后的损失，应再做一次前向计算。</p><h2 id=8-常见错误与数值验证>8. 常见错误与数值验证</h2><h3 id=81-为什么-grad-是-none>8.1 为什么 <code>.grad</code> 是 <code>None</code>？</h3><p>常见原因：</p><ul><li>张量没有设置 <code>requires_grad=True</code>。</li><li>最终输出与目标张量没有计算依赖关系。</li><li>运算位于 <code>torch.no_grad()</code> 环境中，或使用 <code>detach()</code> 切断了计算图。</li><li>目标是非叶子张量；非叶子张量默认不保留 <code>.grad</code>，需要时可调用 <code>retain_grad()</code>。</li><li>使用了 <code>torch.autograd.grad()</code>，但误以为结果会自动写入 <code>.grad</code>。</li></ul><h3 id=82-数值梯度检查>8.2 数值梯度检查</h3><p>对可导函数 \(f(x)\)，可以用中心差分近似：</p>\[
+f'(x)\approx\frac{f(x+h)-f(x-h)}{2h}
+\]<p>中心差分在很多平滑函数上比单侧差分具有更好的误差阶，但仍然是近似。以下代码比较解析导数、PyTorch 自动微分和中心差分。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=kn>import</span> <span class=nn>torch</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>def</span> <span class=nf>f</span><span class=p>(</span><span class=n>x</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=n>torch</span><span class=o>.</span><span class=n>sin</span><span class=p>(</span><span class=n>x</span><span class=p>)</span> <span class=o>+</span> <span class=mf>0.1</span> <span class=o>*</span> <span class=n>x</span><span class=o>**</span><span class=mi>3</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>x</span> <span class=o>=</span> <span class=n>torch</span><span class=o>.</span><span class=n>tensor</span><span class=p>(</span><span class=mf>0.7</span><span class=p>,</span> <span class=n>requires_grad</span><span class=o>=</span><span class=kc>True</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=n>y</span> <span class=o>=</span> <span class=n>f</span><span class=p>(</span><span class=n>x</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=n>y</span><span class=o>.</span><span class=n>backward</span><span class=p>()</span>
+</span></span><span class=line><span class=cl><span class=n>autograd_value</span> <span class=o>=</span> <span class=n>x</span><span class=o>.</span><span class=n>grad</span><span class=o>.</span><span class=n>item</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>h</span> <span class=o>=</span> <span class=mf>1e-3</span>
+</span></span><span class=line><span class=cl><span class=n>x0</span> <span class=o>=</span> <span class=n>torch</span><span class=o>.</span><span class=n>tensor</span><span class=p>(</span><span class=mf>0.7</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=n>finite_difference</span> <span class=o>=</span> <span class=p>((</span><span class=n>f</span><span class=p>(</span><span class=n>x0</span> <span class=o>+</span> <span class=n>h</span><span class=p>)</span> <span class=o>-</span> <span class=n>f</span><span class=p>(</span><span class=n>x0</span> <span class=o>-</span> <span class=n>h</span><span class=p>))</span> <span class=o>/</span> <span class=p>(</span><span class=mi>2</span> <span class=o>*</span> <span class=n>h</span><span class=p>))</span><span class=o>.</span><span class=n>item</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 解析导数：cos(x) + 0.3*x^2</span>
+</span></span><span class=line><span class=cl><span class=n>analytic</span> <span class=o>=</span> <span class=p>(</span><span class=n>torch</span><span class=o>.</span><span class=n>cos</span><span class=p>(</span><span class=n>x0</span><span class=p>)</span> <span class=o>+</span> <span class=mf>0.3</span> <span class=o>*</span> <span class=n>x0</span><span class=o>**</span><span class=mi>2</span><span class=p>)</span><span class=o>.</span><span class=n>item</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=sa>f</span><span class=s2>&#34;解析导数：</span><span class=si>{</span><span class=n>analytic</span><span class=si>:</span><span class=s2>.6f</span><span class=si>}</span><span class=s2>&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=sa>f</span><span class=s2>&#34;自动微分：</span><span class=si>{</span><span class=n>autograd_value</span><span class=si>:</span><span class=s2>.6f</span><span class=si>}</span><span class=s2>&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=sa>f</span><span class=s2>&#34;中心差分：</span><span class=si>{</span><span class=n>finite_difference</span><span class=si>:</span><span class=s2>.6f</span><span class=si>}</span><span class=s2>&#34;</span><span class=p>)</span>
+</span></span></code></pre></td></tr></table></div></div><p>三种结果应当非常接近，但最后几位可能受浮点精度与步长影响。</p><h3 id=83-排错清单>8.3 排错清单</h3><ol><li><strong>先核对公式：</strong> 手算一遍偏导数和链式法则，尤其注意复合函数中的内层导数。</li><li><strong>检查张量属性：</strong> 需要求导的输入是否设置了 <code>requires_grad=True</code>。</li><li><strong>确认输出形式：</strong> 对非标量输出调用 <code>backward()</code> 时是否传入了梯度种子。</li><li><strong>避免梯度意外累加：</strong> 每次参数更新前是否清理梯度。</li><li><strong>留意不可导点：</strong> 分段函数在折点处可能没有唯一导数。</li><li><strong>检查数值精度：</strong> 有限差分步长过大或过小都会引入误差。</li><li><strong>谨慎使用原地操作：</strong> 对参与反向传播的张量进行原地修改，可能破坏自动求导所需的中间信息。</li></ol><h3 id=84-三种求导方法的比较>8.4 三种求导方法的比较</h3><div class=table-wrapper><table><thead><tr><th>方法</th><th>原理</th><th>优点</th><th>局限</th></tr></thead><tbody><tr><td>解析求导</td><td>按数学规则推导公式</td><td>结果清楚，便于解释</td><td>复杂表达式可能难以手推</td></tr><tr><td>有限差分</td><td>用相邻函数值近似极限</td><td>实现简单，适合检查</td><td>有截断误差和浮点误差</td></tr><tr><td>自动微分</td><td>对计算图中的基本运算应用导数规则</td><td>适合复杂程序，通常精度高</td><td>需要正确跟踪计算图，并消耗一定内存</td></tr></tbody></table></div><p>自动微分不是对整个函数简单地做数值差分，而是组合计算图中各运算的局部导数。</p><p>如需详细学习，可前往<a class=link href=https://zh.d2l.ai/ target=_blank rel=noopener>《动手学深度学习》</a>研究。</p></section><footer class="article-meta article-footer"><section class=article-tags><a href=/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86/>深度学习-预备知识</a></section><section class="article-copyright inline-meta"><svg class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>Licensed under <a class=link href=https://creativecommons.org/licenses/by-nc-sa/4.0/ target=_blank rel=noopener>CC BY-NC-SA 4.0</a></span></section></footer><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css integrity=sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV crossorigin=anonymous><script src=https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js integrity=sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG+vnGctmUb0ZY0l8 crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js integrity=sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05 crossorigin=anonymous defer></script><script>window.addEventListener("DOMContentLoaded",()=>{const e=[".main-article",".widget--toc"];e.forEach(e=>{const t=document.querySelector(e);t&&renderMathInElement(t,{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1},{left:"\\(",right:"\\)",display:!1},{left:"\\[",right:"\\]",display:!0}],ignoredClasses:["gist"]})})})</script></article><aside><h2 class=section-title>相关文章</h2><div class=subsection-list><div class=article-list--tile><article class=has-image><a href=/p/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0pytorch-%E7%89%88/><div class=article-image><img alt="Featured image of post 动手学深度学习笔记 · 预备知识：线性代数（PyTorch 版）📘" height=150 loading=lazy src=/p/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0pytorch-%E7%89%88/wallhaven-mlo1k8_1920x1080_hu_c4a2cfea324b5787.png srcset="/p/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0pytorch-%E7%89%88/wallhaven-mlo1k8_1920x1080_hu_c4a2cfea324b5787.png 1x, /p/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0pytorch-%E7%89%88/wallhaven-mlo1k8_1920x1080_hu_e9ce77222586e5a3.png 2x" width=250></div><div class=article-details style="background:linear-gradient(0deg,#c8ced880 0%,#457295C0 100%)"><h2 class=article-title>动手学深度学习笔记 · 预备知识：线性代数（PyTorch 版）📘</h2></div></a></article><article class=has-image><a href=/p/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86%E6%95%B0%E6%8D%AE%E9%A2%84%E5%A4%84%E7%90%86pytorch-%E7%89%88/><div class=article-image><img alt="Featured image of post 动手学深度学习笔记 · 预备知识：数据预处理（PyTorch 版）📘" height=150 loading=lazy src=/p/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86%E6%95%B0%E6%8D%AE%E9%A2%84%E5%A4%84%E7%90%86pytorch-%E7%89%88/wallhaven-jel1jq_1920x1080_hu_caaa4dc17fbadfbf.png srcset="/p/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86%E6%95%B0%E6%8D%AE%E9%A2%84%E5%A4%84%E7%90%86pytorch-%E7%89%88/wallhaven-jel1jq_1920x1080_hu_caaa4dc17fbadfbf.png 1x, /p/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86%E6%95%B0%E6%8D%AE%E9%A2%84%E5%A4%84%E7%90%86pytorch-%E7%89%88/wallhaven-jel1jq_1920x1080_hu_8193ba89f9aef95e.png 2x" width=250></div><div class=article-details style="background:linear-gradient(0deg,#414b9380 0%,#1e202cC0 100%)"><h2 class=article-title>动手学深度学习笔记 · 预备知识：数据预处理（PyTorch 版）📘</h2></div></a></article><article class=has-image><a href=/p/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86%E6%95%B0%E6%8D%AE%E6%93%8D%E4%BD%9Cpytorch-%E7%89%88/><div class=article-image><img alt="Featured image of post 动手学深度学习笔记 · 预备知识：数据操作（PyTorch 版）📘" height=150 loading=lazy src=/p/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86%E6%95%B0%E6%8D%AE%E6%93%8D%E4%BD%9Cpytorch-%E7%89%88/wallhaven-yqk2q7_1920x1080_hu_2cd030583da73779.png srcset="/p/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86%E6%95%B0%E6%8D%AE%E6%93%8D%E4%BD%9Cpytorch-%E7%89%88/wallhaven-yqk2q7_1920x1080_hu_2cd030583da73779.png 1x, /p/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86%E6%95%B0%E6%8D%AE%E6%93%8D%E4%BD%9Cpytorch-%E7%89%88/wallhaven-yqk2q7_1920x1080_hu_7735136d8b22175b.png 2x" width=250></div><div class=article-details style="background:linear-gradient(0deg,#ca9d9480 0%,#39291bC0 100%)"><h2 class=article-title>动手学深度学习笔记 · 预备知识：数据操作（PyTorch 版）📘</h2></div></a></article></div></div></aside><script src=https://utteranc.es/client.js repo=winnermeat/winnermeat.github.io issue-term=pathname crossorigin=anonymous async></script><style>.utterances{max-width:unset}</style><script>let utterancesLoaded=!1;function setUtterancesTheme(e){let t=document.querySelector(".utterances iframe");t&&t.contentWindow.postMessage({type:"set-theme",theme:`github-${e}`},"https://utteranc.es")}addEventListener("message",e=>{if(e.origin!=="https://utteranc.es")return;utterancesLoaded=!0,setUtterancesTheme(document.documentElement.dataset.scheme)}),window.addEventListener("onColorSchemeChange",e=>{if(!utterancesLoaded)return;setUtterancesTheme(e.detail)})</script><footer class=site-footer><section class=copyright>&copy;
+2026 愤怒的大角牛</section><section class=powerby>使用 <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a> 构建<br>主题 <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=4.0.3>Stack</a></b> 由 <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a> 设计</section></footer><script type=module>
+    import gallery from '\/ts\/gallery.js';
+
+    const articleContent = document.querySelector('.article-content');
+    const shouldLoad = articleContent && (articleContent.querySelectorAll('figure').length > 0 || articleContent.querySelectorAll('img.gallery-image').length > 0);
+    
+    if (shouldLoad) {
+        gallery(articleContent);
+
+        const PhotoSwipeLightbox = (await import("https:\/\/cdn.jsdelivr.net\/npm\/photoswipe@5.4.4\/dist\/photoswipe-lightbox.esm.min.js")).default;
+        const styleHref = "https:\/\/cdn.jsdelivr.net\/npm\/photoswipe@5.4.4\/dist\/photoswipe.css";
+
+        const styleTag = document.createElement('link');
+        styleTag.rel = 'stylesheet';
+        styleTag.href = styleHref;
+        document.head.appendChild(styleTag);
+
+        const lightbox = new PhotoSwipeLightbox({
+            gallerySelector: '.article-content',
+            childSelector: 'figure a.image-link',
+            pswpModule: () => import("https:\/\/cdn.jsdelivr.net\/npm\/photoswipe@5.4.4\/dist\/photoswipe.esm.min.js")
+        });
+        lightbox.init();
+    }
+</script></main></div><script type=text/javascript src=/ts/main.f856840516f7c2ad1769a8f5937e3d08d6cb386e2cd2dd025ae696e0ff207958.js defer></script></body></html>
