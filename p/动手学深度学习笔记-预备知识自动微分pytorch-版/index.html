@@ -1,0 +1,452 @@
+<!doctype html><html lang=en-us dir=ltr><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><meta name=description content="本文是《动手学深度学习》PyTorch 实现系列的2 预备知识 -> 2.5 自动微分的学习笔记。"><title>动手学深度学习笔记 · 预备知识：自动微分（PyTorch 版）📘</title><link rel=canonical href=https://WinnerMeat.github.io/p/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86%E8%87%AA%E5%8A%A8%E5%BE%AE%E5%88%86pytorch-%E7%89%88/><link rel=preconnect href=https://fonts.googleapis.com><link rel=preconnect href=https://fonts.gstatic.com crossorigin><link rel=preload as=style href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap"><link rel=stylesheet href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap"><link rel=stylesheet href=/scss/style.min.6c875234350e518395efbf51958523b0852fb2215ab8cb81358f9317153eba2d.css><meta property='og:title' content="动手学深度学习笔记 · 预备知识：自动微分（PyTorch 版）📘"><meta property='og:description' content="本文是《动手学深度学习》PyTorch 实现系列的2 预备知识 -> 2.5 自动微分的学习笔记。"><meta property='og:url' content='https://WinnerMeat.github.io/p/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86%E8%87%AA%E5%8A%A8%E5%BE%AE%E5%88%86pytorch-%E7%89%88/'><meta property='og:site_name' content='愤怒的大角牛'><meta property='og:type' content='article'><meta property='article:section' content='Post'><meta property='article:tag' content='深度学习-预备知识'><meta property='article:published_time' content='2026-10-14T00:00:00+00:00'><meta property='article:modified_time' content='2026-10-14T00:00:00+00:00'><meta property='og:image' content='https://WinnerMeat.github.io/p/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86%E8%87%AA%E5%8A%A8%E5%BE%AE%E5%88%86pytorch-%E7%89%88/%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0.png'><meta name=twitter:title content="动手学深度学习笔记 · 预备知识：自动微分（PyTorch 版）📘"><meta name=twitter:description content="本文是《动手学深度学习》PyTorch 实现系列的2 预备知识 -> 2.5 自动微分的学习笔记。"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content='https://WinnerMeat.github.io/p/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86%E8%87%AA%E5%8A%A8%E5%BE%AE%E5%88%86pytorch-%E7%89%88/%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0.png'><link rel="shortcut icon" href=/img/avatar.png></head><body class=article-page><script>(function(){const e="StackColorScheme";localStorage.getItem(e)||localStorage.setItem(e,"auto")})()</script><script>(function(){const t="StackColorScheme",e=localStorage.getItem(t),n=window.matchMedia("(prefers-color-scheme: dark)").matches===!0;e=="dark"||e==="auto"&&n?document.documentElement.dataset.scheme="dark":document.documentElement.dataset.scheme="light"})()</script><div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky"><button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label=切换菜单>
+<span class=hamburger-box><span class=hamburger-inner></span></span></button><header><figure class=site-avatar><a href=/><img src=/img/avatar.png width=0 height=0 class=site-logo loading=lazy alt=Avatar>
+</a><span class=emoji>✏️</span></figure><div class=site-meta><h1 class=site-name><a href=/>愤怒的大角牛</a></h1><h2 class=site-description>做正确且富有挑战的事</h2></div></header><ol class=menu-social><li><a href=https://github.com/WinnerMeat title=GitHub rel=me><svg class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6.0 00-1.3-3.2 4.2 4.2.0 00-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3.0 00-6.2.0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2.0 00-.1 3.2A4.6 4.6.0 004 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg></a></li><li><a href=https://weixin.qq.com/ title=weixin rel=me><svg xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24" viewBox="0 0 24 24"><g id="surface1"><path style="fill-rule:nonzero;fill:#525151;fill-opacity:1;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke:#525151;stroke-opacity:1;stroke-miterlimit:4" d="M221.833333 131.166667c-18.583333.0-33.666666 15.083333-33.666666 33.666666.0 18.5 15.083333 33.666667 33.666666 33.666667 18.5.0 33.666667-15.166667 33.666667-33.666667.0-18.583333-15.166667-33.666666-33.666667-33.666666zm0 51.25c-9.75.0-17.666666-7.91666699999999-17.666666-17.583334.0-9.75 7.91666600000002-17.666666 17.666666-17.666666C231.5 147.166667 239.416667 155.083333 239.416667 164.833333 239.416667 174.5 231.5 182.416667 221.833333 182.416667zm0 0" transform="matrix(0.046875,0,0,0.046875,0,0)"/><path style="fill-rule:nonzero;fill:#525151;fill-opacity:1;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke:#525151;stroke-opacity:1;stroke-miterlimit:4" d="M127.75 131.166667c-18.583333.0-33.666667 15.083333-33.666667 33.666666.0 18.5 15.083334 33.666667 33.666667 33.666667 18.583333.0 33.666667-15.166667 33.666667-33.666667.0-18.583333-15.083334-33.666666-33.666667-33.666666zm0 51.25C118 182.416667 110.083333 174.5 110.083333 164.833333c0-9.75 7.916667-17.666666 17.666667-17.666666C137.416667 147.166667 145.333333 155.083333 145.333333 164.833333 145.333333 174.5 137.416667 182.416667 127.75 182.416667zm0 0" transform="matrix(0.046875,0,0,0.046875,0,0)"/><path style="fill-rule:nonzero;fill:#525151;fill-opacity:1;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke:#525151;stroke-opacity:1;stroke-miterlimit:4" d="M512 327.25c0-40.083333-17.916667-77.416667-50.5-105.083333C458.166667 219.333333 453.083333 219.75 450.25 223.083333 447.333333 226.5 447.75 231.583333 451.166667 234.416667 480.083333 258.916667 496 291.916667 496 327.25c0 38.166667-19.083333 74.166667-52.25 98.75C441.166667 427.916667 440 431.083333 440.666667 434.166667L449.333333 473.25l-41.166666-24.666667c-2-1.25-4.41666700000002-1.5-6.66666700000002-.75-16.416667 5.5-33.75 8.25-51.416667 8.25-80.5.0-145.916666-57.75-145.916666-128.833333.0-71 65.416666-128.75 145.916666-128.75 26.416667.0 52.333334 6.25 74.833334 18.166667C428.833333 218.75 433.666667 217.25 435.75 213.333333 437.833333 209.416667 436.333333 204.583333 432.416667 202.5c-24.833334-13.083333-53.333334-20.083333-82.333334-20.083333-.333332999999982.0-.75.0-1.08333299999998.0C349.333333 178.5 349.5 174.5 349.5 170.5c0-86.166667-78.333333-156.25-174.75-156.25C78.416667 14.25.0 84.333333.0 170.5c0 17.916667 3.333333 35.5 10 52.25C11.75 227 16.833333 229 21 227 24.666667 225.25 26.416667 220.666667 24.916667 216.833333 19 202 16 186.416667 16 170.5 16 93.166667 87.25 30.333333 174.75 30.333333S333.5 93.166667 333.5 170.5c0 4.25-.25 8.5-.666667000000018 12.75C257.916667 190.333333 198.083333 243.333333 189.25 310.083333 184.5 310.5 179.583333 310.666667 174.75 310.666667 145.833333 310.666667 117.5 303.75 92.916667 290.583333c-2.416667-1.25-5.166667-1.25-7.58333400000001.0L48.666667 310.166667l12.916666-34.583334C62.75 272.583333 61.916667 269.166667 59.583333 266.916667 51.916667 259.833333 45.083333 252 39.333333 243.666667 36.833333 240 31.833333 239.083333 28.166667 241.583333 24.5 244.166667 23.666667 249.166667 26.166667 252.75 31.583333 260.583333 37.833333 268.083333 44.75 274.916667l-18.583333 49.5C23.666667 331.25 31.083333 337.75 37.416667 334.333333l51.75-27.583333C115.25 319.833333 144.75 326.75 174.75 326.75c4.5.0 8.91666699999999-.166667000000018 13.416667-.5C188.166667 326.583333 188.083333 326.916667 188.083333 327.25c0 79.916667 72.666667 144.833333 162 144.833333C368.25 472.083333 386 469.416667 403 464.166667l54.083333 32.416666C463 500.166667 470.583333 494.75 469.083333 488l-11.666666-52.333333C492.166667 408.166667 512 368.916667 512 327.25zm0 0" transform="matrix(0.046875,0,0,0.046875,0,0)"/><path style="fill-rule:nonzero;fill:#525151;fill-opacity:1;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke:#525151;stroke-opacity:1;stroke-miterlimit:4" d="M298.75 293.583333c-18.583333.0-33.666667 15.083334-33.666667 33.666667S280.166667 360.916667 298.75 360.916667 332.416667 345.833333 332.416667 327.25 317.333333 293.583333 298.75 293.583333zm0 51.333334C289 344.916667 281.083333 337 281.083333 327.25 281.083333 317.583333 289 309.666667 298.75 309.666667S316.416667 317.583333 316.416667 327.25C316.416667 337 308.5 344.916667 298.75 344.916667zm0 0" transform="matrix(0.046875,0,0,0.046875,0,0)"/><path style="fill-rule:nonzero;fill:#525151;fill-opacity:1;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke:#525151;stroke-opacity:1;stroke-miterlimit:4" d="M401.333333 293.583333c-18.5.0-33.666666 15.083334-33.666666 33.666667s15.166666 33.666667 33.666666 33.666667C419.916667 360.916667 435 345.833333 435 327.25s-15.083333-33.666667-33.666667-33.666667zm0 51.333334C391.666667 344.916667 383.75 337 383.75 327.25 383.75 317.583333 391.666667 309.666667 401.333333 309.666667 411.083333 309.666667 419 317.583333 419 327.25 419 337 411.083333 344.916667 401.333333 344.916667zm0 0" transform="matrix(0.046875,0,0,0.046875,0,0)"/></g></svg></a></li></ol><ol class=menu id=main-menu><li><a href=/><svg class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="5 12 3 12 12 3 21 12 19 12"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/><path d="M9 21v-6a2 2 0 012-2h2a2 2 0 012 2v6"/></svg>
+<span>主页</span></a></li><li><a href=/%E5%85%B3%E4%BA%8E/><svg class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="7" r="4"/><path d="M6 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg>
+<span>关于</span></a></li><li><a href=/archives/><svg class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>归档</span></a></li><li><a href=/search/><svg class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
+<span>搜索</span></a></li><li><a href=/%E9%93%BE%E6%8E%A5/><svg class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M10 14a3.5 3.5.0 005 0l4-4a3.5 3.5.0 00-5-5l-.5.5"/><path d="M14 10a3.5 3.5.0 00-5 0l-4 4a3.5 3.5.0 005 5l.5-.5"/></svg>
+<span>链接</span></a></li><li class=menu-bottom-section><ol class=menu><li id=i18n-switch><svg class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 5h7"/><path d="M9 3v2c0 4.418-2.239 8-5 8"/><path d="M5 9c-.003 2.144 2.952 3.908 6.7 4"/><path d="M12 20l4-9 4 9"/><path d="M19.1 18h-6.2"/></svg>
+<select name=language title=language onchange="window.location.href=this.selectedOptions[0].value"><option value=/p/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86%E8%87%AA%E5%8A%A8%E5%BE%AE%E5%88%86pytorch-%E7%89%88/ selected>简体中文</option><option value=/en/>English</option><option value=/zh-hant-tw/>正體中文</option><option value=/ja/>日本語</option></select></li><li id=dark-mode-toggle><svg class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<svg class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<span>暗色模式</span></li></ol></li></ol></aside><aside class="sidebar right-sidebar sticky"><section class="widget archives"><div class=widget-icon><svg class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="5" y1="9" x2="19" y2="9"/><line x1="5" y1="15" x2="19" y2="15"/><line x1="11" y1="4" x2="7" y2="20"/><line x1="17" y1="4" x2="13" y2="20"/></svg></div><h2 class="widget-title section-title">目录</h2><div class=widget--toc><nav class=toc-nav id=TableOfContents><ol><li><a href=#本节导读>本节导读</a></li><li><a href=#目录>目录</a></li><li><a href=#1-为什么需要自动微分>1. 为什么需要自动微分</a></li><li><a href=#2-三类求导方法>2. 三类求导方法</a><ol><li><a href=#21-符号求导>2.1 符号求导</a></li><li><a href=#22-数值求导>2.2 数值求导</a></li><li><a href=#23-自动微分>2.3 自动微分</a></li></ol></li><li><a href=#3-计算图记录运算依赖>3. 计算图：记录运算依赖</a><ol><li><a href=#31-计算图是什么>3.1 计算图是什么</a></li><li><a href=#32-计算图为何重要>3.2 计算图为何重要</a></li></ol></li><li><a href=#4-前向计算与反向传播>4. 前向计算与反向传播</a></li><li><a href=#5-pytorch-自动求导基本操作>5. PyTorch 自动求导基本操作</a><ol><li><a href=#51-requires_gradtrue>5.1 <code>requires_grad=True</code></a></li><li><a href=#52-backward-与-grad>5.2 <code>backward()</code> 与 <code>.grad</code></a></li><li><a href=#53-torchautogradgrad>5.3 <code>torch.autograd.grad()</code></a></li><li><a href=#54-非标量输出与梯度种子>5.4 非标量输出与梯度种子</a></li></ol></li><li><a href=#6-梯度累积与计算图生命周期>6. 梯度累积与计算图生命周期</a><ol><li><a href=#61-梯度为什么会累积>6.1 梯度为什么会累积</a></li><li><a href=#62-计算图通常在反向传播后释放>6.2 计算图通常在反向传播后释放</a></li><li><a href=#63-查看中间张量的梯度>6.3 查看中间张量的梯度</a></li><li><a href=#64-梯度累积与小批量>6.4 梯度累积与小批量</a></li></ol></li><li><a href=#7-向量输出雅可比矩阵与向量雅可比积>7. 向量输出、雅可比矩阵与向量—雅可比积</a><ol><li><a href=#71-雅可比矩阵>7.1 雅可比矩阵</a></li><li><a href=#72-向量雅可比积>7.2 向量—雅可比积</a></li></ol></li><li><a href=#8-禁用梯度跟踪与分离计算图>8. 禁用梯度跟踪与分离计算图</a><ol><li><a href=#81-torchno_grad>8.1 <code>torch.no_grad()</code></a></li><li><a href=#82-detach>8.2 <code>detach()</code></a></li><li><a href=#83-modeleval-不会关闭梯度>8.3 <code>model.eval()</code> 不会关闭梯度</a></li></ol></li><li><a href=#9-用自动微分完成参数优化>9. 用自动微分完成参数优化</a></li></ol></nav></div></section></aside><main class="main full-width"><article class="has-image main-article"><header class=article-header><div class=article-image><a href=/p/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86%E8%87%AA%E5%8A%A8%E5%BE%AE%E5%88%86pytorch-%E7%89%88/><img alt="Featured image of post 动手学深度学习笔记 · 预备知识：自动微分（PyTorch 版）📘" height=1024 loading=lazy sizes="(max-width: 767px) calc(100vw - 30px), (max-width: 1023px) 700px, (max-width: 1279px) 950px, 1232px" src=/p/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86%E8%87%AA%E5%8A%A8%E5%BE%AE%E5%88%86pytorch-%E7%89%88/%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0.png srcset="/p/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86%E8%87%AA%E5%8A%A8%E5%BE%AE%E5%88%86pytorch-%E7%89%88/%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0_hu_cfa0fe9082825cce.png 800w, /p/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86%E8%87%AA%E5%8A%A8%E5%BE%AE%E5%88%86pytorch-%E7%89%88/%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0.png 1536w" width=1536></a></div><div class=article-details><header class=article-category><a href=/categories/deep-learning/ style=background-color:#2a9d8f;color:#fff>深度学习</a></header><div class=article-title-wrapper><h2 class=article-title><a href=/p/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86%E8%87%AA%E5%8A%A8%E5%BE%AE%E5%88%86pytorch-%E7%89%88/>动手学深度学习笔记 · 预备知识：自动微分（PyTorch 版）📘</a></h2><h3 class=article-subtitle>本文是《动手学深度学习》PyTorch 实现系列的2 预备知识 -> 2.5 自动微分的学习笔记。</h3></div><footer class=article-meta><div class=inline-meta><svg class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published datetime=2026-10-14T00:00:00Z>Wednesday, October 14, 2026</time>
+<svg class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>阅读时长: 8 分钟</time></div></footer></div></header><aside class=article-toc><details><summary><div class=article-toc-title><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-chevron-right"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 6l6 6-6 6"/></svg>
+<span>目录</span></div></summary><nav class=toc-nav><ol><li><a href=#本节导读>本节导读</a></li><li><a href=#目录>目录</a></li><li><a href=#1-为什么需要自动微分>1. 为什么需要自动微分</a></li><li><a href=#2-三类求导方法>2. 三类求导方法</a><ol><li><a href=#21-符号求导>2.1 符号求导</a></li><li><a href=#22-数值求导>2.2 数值求导</a></li><li><a href=#23-自动微分>2.3 自动微分</a></li></ol></li><li><a href=#3-计算图记录运算依赖>3. 计算图：记录运算依赖</a><ol><li><a href=#31-计算图是什么>3.1 计算图是什么</a></li><li><a href=#32-计算图为何重要>3.2 计算图为何重要</a></li></ol></li><li><a href=#4-前向计算与反向传播>4. 前向计算与反向传播</a></li><li><a href=#5-pytorch-自动求导基本操作>5. PyTorch 自动求导基本操作</a><ol><li><a href=#51-requires_gradtrue>5.1 <code>requires_grad=True</code></a></li><li><a href=#52-backward-与-grad>5.2 <code>backward()</code> 与 <code>.grad</code></a></li><li><a href=#53-torchautogradgrad>5.3 <code>torch.autograd.grad()</code></a></li><li><a href=#54-非标量输出与梯度种子>5.4 非标量输出与梯度种子</a></li></ol></li><li><a href=#6-梯度累积与计算图生命周期>6. 梯度累积与计算图生命周期</a><ol><li><a href=#61-梯度为什么会累积>6.1 梯度为什么会累积</a></li><li><a href=#62-计算图通常在反向传播后释放>6.2 计算图通常在反向传播后释放</a></li><li><a href=#63-查看中间张量的梯度>6.3 查看中间张量的梯度</a></li><li><a href=#64-梯度累积与小批量>6.4 梯度累积与小批量</a></li></ol></li><li><a href=#7-向量输出雅可比矩阵与向量雅可比积>7. 向量输出、雅可比矩阵与向量—雅可比积</a><ol><li><a href=#71-雅可比矩阵>7.1 雅可比矩阵</a></li><li><a href=#72-向量雅可比积>7.2 向量—雅可比积</a></li></ol></li><li><a href=#8-禁用梯度跟踪与分离计算图>8. 禁用梯度跟踪与分离计算图</a><ol><li><a href=#81-torchno_grad>8.1 <code>torch.no_grad()</code></a></li><li><a href=#82-detach>8.2 <code>detach()</code></a></li><li><a href=#83-modeleval-不会关闭梯度>8.3 <code>model.eval()</code> 不会关闭梯度</a></li></ol></li><li><a href=#9-用自动微分完成参数优化>9. 用自动微分完成参数优化</a></li></ol></nav></details></aside><section class=article-content><h1 id=动手学深度学习预备知识自动微分>《动手学深度学习》预备知识：自动微分</h1><h2 id=本节导读>本节导读</h2><blockquote><p>本文系统介绍自动微分的基本思想、计算图、前向计算与反向传播、PyTorch 自动求导接口、梯度累积、向量—雅可比积以及训练中的常见问题。示例均为独立编写，使用 Python 和 PyTorch，可逐段运行。</p><p><strong>建议环境：</strong> Python 3.10+、PyTorch 2.x。示例均可在 CPU 上运行。</p></blockquote><h2 id=目录>目录</h2><ol><li><a class=link href=#1-%e4%b8%ba%e4%bb%80%e4%b9%88%e9%9c%80%e8%a6%81%e8%87%aa%e5%8a%a8%e5%be%ae%e5%88%86>为什么需要自动微分</a></li><li><a class=link href=#2-%e4%b8%89%e7%b1%bb%e6%b1%82%e5%af%bc%e6%96%b9%e6%b3%95>三类求导方法</a></li><li><a class=link href=#3-%e8%ae%a1%e7%ae%97%e5%9b%be%e8%ae%b0%e5%bd%95%e8%bf%90%e7%ae%97%e4%be%9d%e8%b5%96>计算图：记录运算依赖</a></li><li><a class=link href=#4-%e5%89%8d%e5%90%91%e8%ae%a1%e7%ae%97%e4%b8%8e%e5%8f%8d%e5%90%91%e4%bc%a0%e6%92%ad>前向计算与反向传播</a></li><li><a class=link href=#5-pytorch-%e8%87%aa%e5%8a%a8%e6%b1%82%e5%af%bc%e5%9f%ba%e6%9c%ac%e6%93%8d%e4%bd%9c>PyTorch 自动求导基本操作</a></li><li><a class=link href=#6-%e6%a2%af%e5%ba%a6%e7%b4%af%e7%a7%af%e4%b8%8e%e8%ae%a1%e7%ae%97%e5%9b%be%e7%94%9f%e5%91%bd%e5%91%a8%e6%9c%9f>梯度累积与计算图生命周期</a></li><li><a class=link href=#7-%e5%90%91%e9%87%8f%e8%be%93%e5%87%ba%e9%9b%85%e5%8f%af%e6%af%94%e7%9f%a9%e9%98%b5%e4%b8%8e%e5%90%91%e9%87%8f%e9%9b%85%e5%8f%af%e6%af%94%e7%a7%af>向量输出、雅可比矩阵与向量—雅可比积</a></li><li><a class=link href=#8-%e7%a6%81%e7%94%a8%e6%a2%af%e5%ba%a6%e8%b7%9f%e8%b8%aa%e4%b8%8e%e5%88%86%e7%a6%bb%e8%ae%a1%e7%ae%97%e5%9b%be>禁用梯度跟踪与分离计算图</a></li><li><a class=link href=#9-%e7%94%a8%e8%87%aa%e5%8a%a8%e5%be%ae%e5%88%86%e5%ae%8c%e6%88%90%e5%8f%82%e6%95%b0%e4%bc%98%e5%8c%96>用自动微分完成参数优化</a></li></ol><hr><h2 id=1-为什么需要自动微分>1. 为什么需要自动微分</h2><p>深度学习训练通常要最小化一个损失函数 \(L(\boldsymbol{\theta})\)，其中 \(\boldsymbol{\theta}\) 是模型参数。优化器需要计算损失对参数的梯度：</p>\[
+\nabla_{\boldsymbol{\theta}}L=
+\left(\frac{\partial L}{\partial \theta_1},
+\frac{\partial L}{\partial \theta_2},\ldots,
+\frac{\partial L}{\partial \theta_n}\right)
+\]<p>当参数数量很多、计算由许多层运算组成时，手工推导并维护全部导数既困难又容易出错。**自动微分（Automatic Differentiation，AD）**通过跟踪程序执行的基本运算，并组合这些运算的局部导数，自动求出目标输出对输入或参数的导数。</p><p>自动微分可以帮助我们：</p><ul><li>计算损失对模型参数的梯度；</li><li>将链式法则应用到复杂、多层的计算；</li><li>支持动态控制流，例如条件分支与循环；</li><li>为梯度下降及其变体提供参数更新依据；</li><li>计算雅可比积及部分高阶导数。</li></ul><h2 id=2-三类求导方法>2. 三类求导方法</h2><h3 id=21-符号求导>2.1 符号求导</h3><p>符号求导根据数学规则直接推导导数表达式。例如：</p>\[
+f(x)=\sin x+0.1x^3,\qquad
+f'(x)=\cos x+0.3x^2
+\]<p>它的数学含义清晰，但复杂程序中的表达式可能非常庞大。</p><h3 id=22-数值求导>2.2 数值求导</h3><p>中心差分用附近的函数值近似导数：</p>\[
+f'(x)\approx\frac{f(x+h)-f(x-h)}{2h}
+\]<p>它容易实现，适合验证结果，但会受到步长和浮点舍入误差影响。</p><h3 id=23-自动微分>2.3 自动微分</h3><p>自动微分将程序分解为加法、乘法、正弦、矩阵乘法等基本操作，并按各自的微分规则组合导数。它不是对整个函数做简单数值差分，而是根据实际计算路径传播导数。</p><div class=table-wrapper><table><thead><tr><th>方法</th><th>原理</th><th>优点</th><th>局限</th></tr></thead><tbody><tr><td>符号求导</td><td>推导导数公式</td><td>解释直观</td><td>复杂程序难以手工维护</td></tr><tr><td>数值求导</td><td>比较相邻函数值</td><td>实现简单</td><td>近似误差，可能需要多次前向计算</td></tr><tr><td>自动微分</td><td>组合基本运算的局部导数</td><td>适合复杂程序，通常精度较好</td><td>需要正确管理计算图与梯度</td></tr></tbody></table></div><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=kn>import</span> <span class=nn>torch</span>
+</span></span><span class=line><span class=cl><span class=kn>import</span> <span class=nn>math</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>def</span> <span class=nf>f</span><span class=p>(</span><span class=n>x</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=n>math</span><span class=o>.</span><span class=n>sin</span><span class=p>(</span><span class=n>x</span><span class=p>)</span> <span class=o>+</span> <span class=mf>0.1</span> <span class=o>*</span> <span class=n>x</span><span class=o>**</span><span class=mi>3</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>x_value</span> <span class=o>=</span> <span class=mf>0.7</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 手工推导导数后代入</span>
+</span></span><span class=line><span class=cl><span class=n>symbolic</span> <span class=o>=</span> <span class=n>math</span><span class=o>.</span><span class=n>cos</span><span class=p>(</span><span class=n>x_value</span><span class=p>)</span> <span class=o>+</span> <span class=mf>0.3</span> <span class=o>*</span> <span class=n>x_value</span><span class=o>**</span><span class=mi>2</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 中心差分近似</span>
+</span></span><span class=line><span class=cl><span class=n>h</span> <span class=o>=</span> <span class=mf>1e-4</span>
+</span></span><span class=line><span class=cl><span class=n>numeric</span> <span class=o>=</span> <span class=p>(</span><span class=n>f</span><span class=p>(</span><span class=n>x_value</span> <span class=o>+</span> <span class=n>h</span><span class=p>)</span> <span class=o>-</span> <span class=n>f</span><span class=p>(</span><span class=n>x_value</span> <span class=o>-</span> <span class=n>h</span><span class=p>))</span> <span class=o>/</span> <span class=p>(</span><span class=mi>2</span> <span class=o>*</span> <span class=n>h</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># PyTorch 自动微分</span>
+</span></span><span class=line><span class=cl><span class=n>x</span> <span class=o>=</span> <span class=n>torch</span><span class=o>.</span><span class=n>tensor</span><span class=p>(</span><span class=n>x_value</span><span class=p>,</span> <span class=n>dtype</span><span class=o>=</span><span class=n>torch</span><span class=o>.</span><span class=n>float64</span><span class=p>,</span> <span class=n>requires_grad</span><span class=o>=</span><span class=kc>True</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=n>y</span> <span class=o>=</span> <span class=n>torch</span><span class=o>.</span><span class=n>sin</span><span class=p>(</span><span class=n>x</span><span class=p>)</span> <span class=o>+</span> <span class=mf>0.1</span> <span class=o>*</span> <span class=n>x</span><span class=o>**</span><span class=mi>3</span>
+</span></span><span class=line><span class=cl><span class=n>y</span><span class=o>.</span><span class=n>backward</span><span class=p>()</span>
+</span></span><span class=line><span class=cl><span class=n>automatic</span> <span class=o>=</span> <span class=n>x</span><span class=o>.</span><span class=n>grad</span><span class=o>.</span><span class=n>item</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=sa>f</span><span class=s2>&#34;手工公式：</span><span class=si>{</span><span class=n>symbolic</span><span class=si>:</span><span class=s2>.8f</span><span class=si>}</span><span class=s2>&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=sa>f</span><span class=s2>&#34;中心差分：</span><span class=si>{</span><span class=n>numeric</span><span class=si>:</span><span class=s2>.8f</span><span class=si>}</span><span class=s2>&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=sa>f</span><span class=s2>&#34;自动微分：</span><span class=si>{</span><span class=n>automatic</span><span class=si>:</span><span class=s2>.8f</span><span class=si>}</span><span class=s2>&#34;</span><span class=p>)</span>
+</span></span></code></pre></td></tr></table></div></div><p>三种结果应当接近。这里的“手工公式”指先用数学方法推导导数，再代入数值；PyTorch 则跟踪张量运算，并在反向阶段计算梯度。</p><h2 id=3-计算图记录运算依赖>3. 计算图：记录运算依赖</h2><h3 id=31-计算图是什么>3.1 计算图是什么</h3><p>计算图（Computational Graph）用节点和有向边表示一次计算：</p><ul><li><strong>叶子节点：</strong> 输入张量或需要训练的参数；</li><li><strong>运算节点：</strong> 加法、乘法、激活函数等操作；</li><li><strong>中间节点：</strong> 前向计算产生的中间结果；</li><li><strong>输出节点：</strong> 预测值、目标函数或损失。</li></ul><p>例如：</p>\[
+u=xw,\qquad L=u+b
+\]<p>依赖关系为 \((x,w)\to u=xw\)，再由 \((u,b)\to L=u+b\)。前向阶段计算数值，反向阶段沿相反方向传播梯度。</p><p><img alt=计算图与自动微分过程的立体示意图 loading=lazy sizes="(max-width: 767px) calc(100vw - 30px), (max-width: 1023px) 700px, (max-width: 1279px) 950px, 1232px" src=/img/DeepLearning–Prerequisites–LinearAlgebra-Automaticdifferentiation/computational_graph_autodiff_3d.png></p><p><strong>图 1：</strong> 计算图记录输入、中间运算和输出之间的依赖关系。前向计算生成数值，反向传播使用链式法则计算梯度。</p><h3 id=32-计算图为何重要>3.2 计算图为何重要</h3><p>对 \(L=xw+b\)，有：</p>\[
+\frac{\partial L}{\partial x}=w,\qquad
+\frac{\partial L}{\partial w}=x,\qquad
+\frac{\partial L}{\partial b}=1
+\]<p>复杂表达式中，一个变量可能通过多条路径影响最终输出。计算图保存这些依赖，反向传播会将每条路径的梯度贡献累加。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=kn>import</span> <span class=nn>torch</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>x</span> <span class=o>=</span> <span class=n>torch</span><span class=o>.</span><span class=n>tensor</span><span class=p>(</span><span class=mf>2.0</span><span class=p>,</span> <span class=n>requires_grad</span><span class=o>=</span><span class=kc>True</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=n>w</span> <span class=o>=</span> <span class=n>torch</span><span class=o>.</span><span class=n>tensor</span><span class=p>(</span><span class=mf>3.0</span><span class=p>,</span> <span class=n>requires_grad</span><span class=o>=</span><span class=kc>True</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=n>b</span> <span class=o>=</span> <span class=n>torch</span><span class=o>.</span><span class=n>tensor</span><span class=p>(</span><span class=mf>0.5</span><span class=p>,</span> <span class=n>requires_grad</span><span class=o>=</span><span class=kc>True</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>u</span> <span class=o>=</span> <span class=n>x</span> <span class=o>*</span> <span class=n>w</span>
+</span></span><span class=line><span class=cl><span class=n>loss</span> <span class=o>=</span> <span class=n>u</span> <span class=o>+</span> <span class=n>b</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=s2>&#34;u =&#34;</span><span class=p>,</span> <span class=n>u</span><span class=o>.</span><span class=n>item</span><span class=p>())</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=s2>&#34;loss =&#34;</span><span class=p>,</span> <span class=n>loss</span><span class=o>.</span><span class=n>item</span><span class=p>())</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=s2>&#34;x.requires_grad =&#34;</span><span class=p>,</span> <span class=n>x</span><span class=o>.</span><span class=n>requires_grad</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=s2>&#34;loss.grad_fn =&#34;</span><span class=p>,</span> <span class=n>loss</span><span class=o>.</span><span class=n>grad_fn</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=s2>&#34;x.is_leaf =&#34;</span><span class=p>,</span> <span class=n>x</span><span class=o>.</span><span class=n>is_leaf</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=s2>&#34;u.is_leaf =&#34;</span><span class=p>,</span> <span class=n>u</span><span class=o>.</span><span class=n>is_leaf</span><span class=p>)</span>
+</span></span></code></pre></td></tr></table></div></div><p><code>grad_fn</code> 的具体名称可能随 PyTorch 版本或运算类型变化。这里的 <code>x</code>、<code>w</code>、<code>b</code> 是叶子张量，<code>u</code> 是由运算生成的非叶子张量。</p><p>PyTorch 通常在实际执行前向运算时动态记录当前路径，因此条件分支和循环都可以改变本轮计算图的结构。</p><h2 id=4-前向计算与反向传播>4. 前向计算与反向传播</h2><p>考虑：</p>\[
+u=x^2,\qquad v=u+1,\qquad y=v^2
+\]<p>前向阶段依次计算 \(u,v,y\)。反向阶段使用链式法则：</p>\[
+\frac{dy}{dx}=\frac{dy}{dv}\frac{dv}{du}\frac{du}{dx}
+=2v\cdot1\cdot2x=4x(x^2+1)
+\]<p>当 \(x=2\) 时，\(u=4\)、\(v=5\)、\(y=25\)，所以 \(\frac{dy}{dx}=40\)。</p><p><img alt=自动微分的计算图与链式法则立体示意图 loading=lazy sizes="(max-width: 767px) calc(100vw - 30px), (max-width: 1023px) 700px, (max-width: 1279px) 950px, 1232px" src=/img/DeepLearning–Prerequisites–LinearAlgebra-Automaticdifferentiation/chain_rule_backprop_3d.png></p><p><strong>图 2：</strong> 反向传播将输出端的梯度逐层传回输入。每个节点根据自身的局部导数，将收到的梯度转换为传给前一节点的梯度。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=kn>import</span> <span class=nn>torch</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>x</span> <span class=o>=</span> <span class=n>torch</span><span class=o>.</span><span class=n>tensor</span><span class=p>(</span><span class=mf>2.0</span><span class=p>,</span> <span class=n>requires_grad</span><span class=o>=</span><span class=kc>True</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=n>u</span> <span class=o>=</span> <span class=n>x</span><span class=o>**</span><span class=mi>2</span>
+</span></span><span class=line><span class=cl><span class=n>v</span> <span class=o>=</span> <span class=n>u</span> <span class=o>+</span> <span class=mi>1</span>
+</span></span><span class=line><span class=cl><span class=n>y</span> <span class=o>=</span> <span class=n>v</span><span class=o>**</span><span class=mi>2</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>y</span><span class=o>.</span><span class=n>backward</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=s2>&#34;u =&#34;</span><span class=p>,</span> <span class=n>u</span><span class=o>.</span><span class=n>item</span><span class=p>())</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=s2>&#34;v =&#34;</span><span class=p>,</span> <span class=n>v</span><span class=o>.</span><span class=n>item</span><span class=p>())</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=s2>&#34;y =&#34;</span><span class=p>,</span> <span class=n>y</span><span class=o>.</span><span class=n>item</span><span class=p>())</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=s2>&#34;dy/dx =&#34;</span><span class=p>,</span> <span class=n>x</span><span class=o>.</span><span class=n>grad</span><span class=o>.</span><span class=n>item</span><span class=p>())</span>
+</span></span></code></pre></td></tr></table></div></div><p>输出：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-text data-lang=text><span class=line><span class=cl>u = 4.0
+</span></span><span class=line><span class=cl>v = 5.0
+</span></span><span class=line><span class=cl>y = 25.0
+</span></span><span class=line><span class=cl>dy/dx = 40.0
+</span></span></code></pre></td></tr></table></div></div><p>自动微分的核心不是为整个函数手写导数，而是为每个基本操作使用局部导数规则，再沿计算图组合这些局部结果。</p><h2 id=5-pytorch-自动求导基本操作>5. PyTorch 自动求导基本操作</h2><h3 id=51-requires_gradtrue>5.1 <code>requires_grad=True</code></h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=kn>import</span> <span class=nn>torch</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>p</span> <span class=o>=</span> <span class=n>torch</span><span class=o>.</span><span class=n>tensor</span><span class=p>(</span><span class=mf>1.5</span><span class=p>,</span> <span class=n>requires_grad</span><span class=o>=</span><span class=kc>True</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=n>result</span> <span class=o>=</span> <span class=mi>4</span> <span class=o>*</span> <span class=n>p</span><span class=o>**</span><span class=mi>2</span> <span class=o>-</span> <span class=mi>3</span> <span class=o>*</span> <span class=n>p</span> <span class=o>+</span> <span class=mi>2</span>
+</span></span><span class=line><span class=cl><span class=n>result</span><span class=o>.</span><span class=n>backward</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=s2>&#34;result =&#34;</span><span class=p>,</span> <span class=n>result</span><span class=o>.</span><span class=n>item</span><span class=p>())</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=s2>&#34;dresult/dp =&#34;</span><span class=p>,</span> <span class=n>p</span><span class=o>.</span><span class=n>grad</span><span class=o>.</span><span class=n>item</span><span class=p>())</span>
+</span></span></code></pre></td></tr></table></div></div><p>因为 \(\frac{d}{dp}(4p^2-3p+2)=8p-3\)，在 \(p=1.5\) 处梯度为 9。只有需要参与梯度计算的张量才需要跟踪梯度。</p><h3 id=52-backward-与-grad>5.2 <code>backward()</code> 与 <code>.grad</code></h3><p>对标量结果调用 <code>backward()</code> 后，梯度会累加到相关叶子张量的 <code>.grad</code> 属性。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=kn>import</span> <span class=nn>torch</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>a</span> <span class=o>=</span> <span class=n>torch</span><span class=o>.</span><span class=n>tensor</span><span class=p>(</span><span class=mf>2.0</span><span class=p>,</span> <span class=n>requires_grad</span><span class=o>=</span><span class=kc>True</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=n>b</span> <span class=o>=</span> <span class=n>torch</span><span class=o>.</span><span class=n>tensor</span><span class=p>(</span><span class=mf>5.0</span><span class=p>,</span> <span class=n>requires_grad</span><span class=o>=</span><span class=kc>True</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>loss</span> <span class=o>=</span> <span class=n>a</span><span class=o>**</span><span class=mi>2</span> <span class=o>+</span> <span class=mi>3</span> <span class=o>*</span> <span class=n>a</span> <span class=o>*</span> <span class=n>b</span> <span class=o>+</span> <span class=n>b</span><span class=o>**</span><span class=mi>2</span>
+</span></span><span class=line><span class=cl><span class=n>loss</span><span class=o>.</span><span class=n>backward</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># dloss/da = 2a + 3b；dloss/db = 3a + 2b</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=s2>&#34;loss =&#34;</span><span class=p>,</span> <span class=n>loss</span><span class=o>.</span><span class=n>item</span><span class=p>())</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=s2>&#34;dloss/da =&#34;</span><span class=p>,</span> <span class=n>a</span><span class=o>.</span><span class=n>grad</span><span class=o>.</span><span class=n>item</span><span class=p>())</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=s2>&#34;dloss/db =&#34;</span><span class=p>,</span> <span class=n>b</span><span class=o>.</span><span class=n>grad</span><span class=o>.</span><span class=n>item</span><span class=p>())</span>
+</span></span></code></pre></td></tr></table></div></div><p>输出：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-text data-lang=text><span class=line><span class=cl>loss = 59.0
+</span></span><span class=line><span class=cl>dloss/da = 19.0
+</span></span><span class=line><span class=cl>dloss/db = 16.0
+</span></span></code></pre></td></tr></table></div></div><h3 id=53-torchautogradgrad>5.3 <code>torch.autograd.grad()</code></h3><p>若想获取指定输出对指定输入的梯度，可以用 <code>torch.autograd.grad()</code>：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=kn>import</span> <span class=nn>torch</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>a</span> <span class=o>=</span> <span class=n>torch</span><span class=o>.</span><span class=n>tensor</span><span class=p>(</span><span class=mf>2.0</span><span class=p>,</span> <span class=n>requires_grad</span><span class=o>=</span><span class=kc>True</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=n>b</span> <span class=o>=</span> <span class=n>torch</span><span class=o>.</span><span class=n>tensor</span><span class=p>(</span><span class=mf>5.0</span><span class=p>,</span> <span class=n>requires_grad</span><span class=o>=</span><span class=kc>True</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=n>loss</span> <span class=o>=</span> <span class=n>a</span><span class=o>**</span><span class=mi>2</span> <span class=o>+</span> <span class=mi>3</span> <span class=o>*</span> <span class=n>a</span> <span class=o>*</span> <span class=n>b</span> <span class=o>+</span> <span class=n>b</span><span class=o>**</span><span class=mi>2</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>grad_a</span><span class=p>,</span> <span class=n>grad_b</span> <span class=o>=</span> <span class=n>torch</span><span class=o>.</span><span class=n>autograd</span><span class=o>.</span><span class=n>grad</span><span class=p>(</span><span class=n>loss</span><span class=p>,</span> <span class=p>(</span><span class=n>a</span><span class=p>,</span> <span class=n>b</span><span class=p>))</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=s2>&#34;grad_a =&#34;</span><span class=p>,</span> <span class=n>grad_a</span><span class=o>.</span><span class=n>item</span><span class=p>())</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=s2>&#34;grad_b =&#34;</span><span class=p>,</span> <span class=n>grad_b</span><span class=o>.</span><span class=n>item</span><span class=p>())</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=s2>&#34;a.grad =&#34;</span><span class=p>,</span> <span class=n>a</span><span class=o>.</span><span class=n>grad</span><span class=p>)</span>
+</span></span></code></pre></td></tr></table></div></div><p>输出：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-text data-lang=text><span class=line><span class=cl>grad_a = 19.0
+</span></span><span class=line><span class=cl>grad_b = 16.0
+</span></span><span class=line><span class=cl>a.grad = None
+</span></span></code></pre></td></tr></table></div></div><p><code>autograd.grad()</code> 将梯度作为返回值给出；与 <code>backward()</code> 的常见用法不同，它不会自动把这些结果累加到 <code>.grad</code> 属性。</p><h3 id=54-非标量输出与梯度种子>5.4 非标量输出与梯度种子</h3><p>当输出包含多个元素时，需要指定上游梯度。它对应向量—雅可比积，而非完整雅可比矩阵。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=kn>import</span> <span class=nn>torch</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>x</span> <span class=o>=</span> <span class=n>torch</span><span class=o>.</span><span class=n>tensor</span><span class=p>([</span><span class=mf>1.0</span><span class=p>,</span> <span class=mf>2.0</span><span class=p>,</span> <span class=mf>3.0</span><span class=p>],</span> <span class=n>requires_grad</span><span class=o>=</span><span class=kc>True</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=n>y</span> <span class=o>=</span> <span class=n>x</span><span class=o>**</span><span class=mi>2</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 等价于对 y 各元素求和，再对 x 求导</span>
+</span></span><span class=line><span class=cl><span class=n>y</span><span class=o>.</span><span class=n>backward</span><span class=p>(</span><span class=n>gradient</span><span class=o>=</span><span class=n>torch</span><span class=o>.</span><span class=n>ones_like</span><span class=p>(</span><span class=n>y</span><span class=p>))</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=n>x</span><span class=o>.</span><span class=n>grad</span><span class=p>)</span>
+</span></span></code></pre></td></tr></table></div></div><p>输出：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-text data-lang=text><span class=line><span class=cl>tensor([2., 4., 6.])
+</span></span></code></pre></td></tr></table></div></div><h2 id=6-梯度累积与计算图生命周期>6. 梯度累积与计算图生命周期</h2><h3 id=61-梯度为什么会累积>6.1 梯度为什么会累积</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=kn>import</span> <span class=nn>torch</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>x</span> <span class=o>=</span> <span class=n>torch</span><span class=o>.</span><span class=n>tensor</span><span class=p>(</span><span class=mf>3.0</span><span class=p>,</span> <span class=n>requires_grad</span><span class=o>=</span><span class=kc>True</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=p>(</span><span class=n>x</span><span class=o>**</span><span class=mi>2</span><span class=p>)</span><span class=o>.</span><span class=n>backward</span><span class=p>()</span>      <span class=c1># 导数为 2x = 6</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=s2>&#34;第一次：&#34;</span><span class=p>,</span> <span class=n>x</span><span class=o>.</span><span class=n>grad</span><span class=o>.</span><span class=n>item</span><span class=p>())</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=p>(</span><span class=mi>4</span> <span class=o>*</span> <span class=n>x</span><span class=p>)</span><span class=o>.</span><span class=n>backward</span><span class=p>()</span>     <span class=c1># 导数为 4，累加到原有梯度</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=s2>&#34;第二次累积后：&#34;</span><span class=p>,</span> <span class=n>x</span><span class=o>.</span><span class=n>grad</span><span class=o>.</span><span class=n>item</span><span class=p>())</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>x</span><span class=o>.</span><span class=n>grad</span> <span class=o>=</span> <span class=kc>None</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=s2>&#34;清理后：&#34;</span><span class=p>,</span> <span class=n>x</span><span class=o>.</span><span class=n>grad</span><span class=p>)</span>
+</span></span></code></pre></td></tr></table></div></div><p>输出：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-text data-lang=text><span class=line><span class=cl>第一次： 6.0
+</span></span><span class=line><span class=cl>第二次累积后： 10.0
+</span></span><span class=line><span class=cl>清理后： None
+</span></span></code></pre></td></tr></table></div></div><p>训练中通常在每次参数更新前调用 <code>optimizer.zero_grad()</code> 或 <code>model.zero_grad()</code>，避免梯度跨迭代意外累加。</p><h3 id=62-计算图通常在反向传播后释放>6.2 计算图通常在反向传播后释放</h3><p>普通 <code>backward()</code> 通常会释放本次反向传播所需的图中保存信息。若再次对同一输出反向传播，可能出现计算图已释放的错误。一般应重新进行前向计算：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span><span class=lnt>9
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=kn>import</span> <span class=nn>torch</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>x</span> <span class=o>=</span> <span class=n>torch</span><span class=o>.</span><span class=n>tensor</span><span class=p>(</span><span class=mf>2.0</span><span class=p>,</span> <span class=n>requires_grad</span><span class=o>=</span><span class=kc>True</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>for</span> <span class=n>step</span> <span class=ow>in</span> <span class=nb>range</span><span class=p>(</span><span class=mi>2</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>    <span class=n>x</span><span class=o>.</span><span class=n>grad</span> <span class=o>=</span> <span class=kc>None</span>
+</span></span><span class=line><span class=cl>    <span class=n>loss</span> <span class=o>=</span> <span class=p>(</span><span class=n>x</span> <span class=o>-</span> <span class=mi>5</span><span class=p>)</span><span class=o>**</span><span class=mi>2</span>       <span class=c1># 每轮重新构建计算图</span>
+</span></span><span class=line><span class=cl>    <span class=n>loss</span><span class=o>.</span><span class=n>backward</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>    <span class=nb>print</span><span class=p>(</span><span class=sa>f</span><span class=s2>&#34;第 </span><span class=si>{</span><span class=n>step</span> <span class=o>+</span> <span class=mi>1</span><span class=si>}</span><span class=s2> 轮：loss=</span><span class=si>{</span><span class=n>loss</span><span class=o>.</span><span class=n>item</span><span class=p>()</span><span class=si>:</span><span class=s2>.1f</span><span class=si>}</span><span class=s2>, grad=</span><span class=si>{</span><span class=n>x</span><span class=o>.</span><span class=n>grad</span><span class=o>.</span><span class=n>item</span><span class=p>()</span><span class=si>:</span><span class=s2>.1f</span><span class=si>}</span><span class=s2>&#34;</span><span class=p>)</span>
+</span></span></code></pre></td></tr></table></div></div><p>只有确实需要重复使用同一张图时才考虑 <code>retain_graph=True</code>；它可能增加内存占用，不应作为默认选项。</p><h3 id=63-查看中间张量的梯度>6.3 查看中间张量的梯度</h3><p>默认情况下，非叶子张量的 <code>.grad</code> 不会自动保留。调试时可以调用 <code>retain_grad()</code>：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=kn>import</span> <span class=nn>torch</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>x</span> <span class=o>=</span> <span class=n>torch</span><span class=o>.</span><span class=n>tensor</span><span class=p>(</span><span class=mf>2.0</span><span class=p>,</span> <span class=n>requires_grad</span><span class=o>=</span><span class=kc>True</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=n>u</span> <span class=o>=</span> <span class=n>x</span><span class=o>**</span><span class=mi>2</span>
+</span></span><span class=line><span class=cl><span class=n>u</span><span class=o>.</span><span class=n>retain_grad</span><span class=p>()</span>
+</span></span><span class=line><span class=cl><span class=n>y</span> <span class=o>=</span> <span class=mi>3</span> <span class=o>*</span> <span class=n>u</span> <span class=o>+</span> <span class=mi>1</span>
+</span></span><span class=line><span class=cl><span class=n>y</span><span class=o>.</span><span class=n>backward</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=s2>&#34;dy/dx =&#34;</span><span class=p>,</span> <span class=n>x</span><span class=o>.</span><span class=n>grad</span><span class=o>.</span><span class=n>item</span><span class=p>())</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=s2>&#34;dy/du =&#34;</span><span class=p>,</span> <span class=n>u</span><span class=o>.</span><span class=n>grad</span><span class=o>.</span><span class=n>item</span><span class=p>())</span>
+</span></span></code></pre></td></tr></table></div></div><p>输出：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-text data-lang=text><span class=line><span class=cl>dy/dx = 12.0
+</span></span><span class=line><span class=cl>dy/du = 3.0
+</span></span></code></pre></td></tr></table></div></div><h3 id=64-梯度累积与小批量>6.4 梯度累积与小批量</h3><p>把多个小批量的梯度累积后再更新参数，可以模拟较大的有效批量。但若希望结果等价于平均损失的梯度，需要对每个小批量的损失按样本数或累积步数进行正确缩放。</p><h2 id=7-向量输出雅可比矩阵与向量雅可比积>7. 向量输出、雅可比矩阵与向量—雅可比积</h2><h3 id=71-雅可比矩阵>7.1 雅可比矩阵</h3><p>当函数输出为向量 \(\mathbf{y}=F(\mathbf{x})\) 时，一阶导数可组织成雅可比矩阵：</p>\[
+J_{ij}=\frac{\partial y_i}{\partial x_j}
+\]<p>若输入有 \(n\) 个分量、输出有 \(m\) 个分量，则 \(J\) 的形状为 \(m\times n\)。</p><p><img alt=向量输出、雅可比矩阵与向量—雅可比积示意图 loading=lazy sizes="(max-width: 767px) calc(100vw - 30px), (max-width: 1023px) 700px, (max-width: 1279px) 950px, 1232px" src=/img/DeepLearning–Prerequisites–LinearAlgebra-Automaticdifferentiation/jacobian_vjp_3d.png></p><p><strong>图 3：</strong> 雅可比矩阵记录各输出分量对各输入分量的导数。反向传播通常只需计算给定输出权重下的向量—雅可比积，无需显式构造整个矩阵。</p><h3 id=72-向量雅可比积>7.2 向量—雅可比积</h3><p>给定 \(\mathbf{y}=F(\mathbf{x})\) 和输出侧向量 \(\mathbf{v}\)，自动微分可计算：</p>\[
+\nabla_{\mathbf{x}}(\mathbf{v}^{\mathsf T}\mathbf{y})=J^{\mathsf T}\mathbf{v}
+\]<div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=kn>import</span> <span class=nn>torch</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>x</span> <span class=o>=</span> <span class=n>torch</span><span class=o>.</span><span class=n>tensor</span><span class=p>([</span><span class=mf>2.0</span><span class=p>,</span> <span class=mf>3.0</span><span class=p>],</span> <span class=n>requires_grad</span><span class=o>=</span><span class=kc>True</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># y1 = x1^2 + x2；y2 = x1*x2</span>
+</span></span><span class=line><span class=cl><span class=n>y</span> <span class=o>=</span> <span class=n>torch</span><span class=o>.</span><span class=n>stack</span><span class=p>((</span><span class=n>x</span><span class=p>[</span><span class=mi>0</span><span class=p>]</span><span class=o>**</span><span class=mi>2</span> <span class=o>+</span> <span class=n>x</span><span class=p>[</span><span class=mi>1</span><span class=p>],</span> <span class=n>x</span><span class=p>[</span><span class=mi>0</span><span class=p>]</span> <span class=o>*</span> <span class=n>x</span><span class=p>[</span><span class=mi>1</span><span class=p>]))</span>
+</span></span><span class=line><span class=cl><span class=n>v</span> <span class=o>=</span> <span class=n>torch</span><span class=o>.</span><span class=n>tensor</span><span class=p>([</span><span class=mf>2.0</span><span class=p>,</span> <span class=mf>3.0</span><span class=p>])</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>y</span><span class=o>.</span><span class=n>backward</span><span class=p>(</span><span class=n>gradient</span><span class=o>=</span><span class=n>v</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=s2>&#34;输出 y：&#34;</span><span class=p>,</span> <span class=n>y</span><span class=o>.</span><span class=n>detach</span><span class=p>())</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=s2>&#34;J^T v：&#34;</span><span class=p>,</span> <span class=n>x</span><span class=o>.</span><span class=n>grad</span><span class=p>)</span>
+</span></span></code></pre></td></tr></table></div></div><p>手工验证：</p>\[
+J=\begin{bmatrix}2x_1&1\\x_2&x_1\end{bmatrix}
+=\begin{bmatrix}4&1\\3&2\end{bmatrix}
+\]\[
+J^\mathsf{T}\begin{bmatrix}2\\3\end{bmatrix}
+=\begin{bmatrix}17\\8\end{bmatrix}
+\]<p>预期输出：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-text data-lang=text><span class=line><span class=cl>输出 y： tensor([7., 6.])
+</span></span><span class=line><span class=cl>J^T v： tensor([17., 8.])
+</span></span></code></pre></td></tr></table></div></div><p>显式构造完整雅可比矩阵对分析多输出系统有用，但在大型模型中可能成本很高。训练通常只需标量损失对参数的梯度，因此 VJP 更高效。</p><h2 id=8-禁用梯度跟踪与分离计算图>8. 禁用梯度跟踪与分离计算图</h2><h3 id=81-torchno_grad>8.1 <code>torch.no_grad()</code></h3><p>推理、参数初始化或手工更新参数时，如果不需要梯度，可以使用 <code>torch.no_grad()</code>：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=kn>import</span> <span class=nn>torch</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>x</span> <span class=o>=</span> <span class=n>torch</span><span class=o>.</span><span class=n>tensor</span><span class=p>(</span><span class=mf>3.0</span><span class=p>,</span> <span class=n>requires_grad</span><span class=o>=</span><span class=kc>True</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=k>with</span> <span class=n>torch</span><span class=o>.</span><span class=n>no_grad</span><span class=p>():</span>
+</span></span><span class=line><span class=cl>    <span class=n>y</span> <span class=o>=</span> <span class=n>x</span><span class=o>**</span><span class=mi>2</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=s2>&#34;y =&#34;</span><span class=p>,</span> <span class=n>y</span><span class=o>.</span><span class=n>item</span><span class=p>())</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=s2>&#34;y.requires_grad =&#34;</span><span class=p>,</span> <span class=n>y</span><span class=o>.</span><span class=n>requires_grad</span><span class=p>)</span>
+</span></span></code></pre></td></tr></table></div></div><p>输出：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-text data-lang=text><span class=line><span class=cl>y = 9.0
+</span></span><span class=line><span class=cl>y.requires_grad = False
+</span></span></code></pre></td></tr></table></div></div><h3 id=82-detach>8.2 <code>detach()</code></h3><p><code>detach()</code> 返回与当前计算图分离的张量：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=kn>import</span> <span class=nn>torch</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>x</span> <span class=o>=</span> <span class=n>torch</span><span class=o>.</span><span class=n>tensor</span><span class=p>(</span><span class=mf>2.0</span><span class=p>,</span> <span class=n>requires_grad</span><span class=o>=</span><span class=kc>True</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=n>y</span> <span class=o>=</span> <span class=n>x</span><span class=o>**</span><span class=mi>2</span>
+</span></span><span class=line><span class=cl><span class=n>y_detached</span> <span class=o>=</span> <span class=n>y</span><span class=o>.</span><span class=n>detach</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=n>y</span><span class=o>.</span><span class=n>requires_grad</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=n>y_detached</span><span class=o>.</span><span class=n>requires_grad</span><span class=p>)</span>
+</span></span></code></pre></td></tr></table></div></div><p>输出为 <code>True</code> 和 <code>False</code>。若在训练路径中意外使用 <code>detach()</code>，梯度将无法通过该节点传回更早的参数。</p><h3 id=83-modeleval-不会关闭梯度>8.3 <code>model.eval()</code> 不会关闭梯度</h3><p><code>model.eval()</code> 用于切换 Dropout、Batch Normalization 等模块的训练/评估行为，本身不会关闭梯度跟踪。纯推理时通常还会配合 <code>torch.no_grad()</code>，或在合适场景下使用 <code>torch.inference_mode()</code>。</p><div class=table-wrapper><table><thead><tr><th>机制</th><th>作用</th><th>是否停止记录梯度</th></tr></thead><tbody><tr><td><code>model.eval()</code></td><td>切换部分模块的行为</td><td>否</td></tr><tr><td><code>torch.no_grad()</code></td><td>暂停代码块中的梯度记录</td><td>是</td></tr><tr><td><code>torch.inference_mode()</code></td><td>面向纯推理的更强模式</td><td>是</td></tr></tbody></table></div><h2 id=9-用自动微分完成参数优化>9. 用自动微分完成参数优化</h2><p>考虑一个简单参数估计任务：</p>\[
+L(w)=(w-4)^2,\qquad \frac{dL}{dw}=2(w-4)
+\]<p>使用随机梯度下降逐步调整参数：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=kn>import</span> <span class=nn>torch</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 可训练参数，初始值为 -1</span>
+</span></span><span class=line><span class=cl><span class=n>w</span> <span class=o>=</span> <span class=n>torch</span><span class=o>.</span><span class=n>nn</span><span class=o>.</span><span class=n>Parameter</span><span class=p>(</span><span class=n>torch</span><span class=o>.</span><span class=n>tensor</span><span class=p>(</span><span class=o>-</span><span class=mf>1.0</span><span class=p>))</span>
+</span></span><span class=line><span class=cl><span class=n>optimizer</span> <span class=o>=</span> <span class=n>torch</span><span class=o>.</span><span class=n>optim</span><span class=o>.</span><span class=n>SGD</span><span class=p>([</span><span class=n>w</span><span class=p>],</span> <span class=n>lr</span><span class=o>=</span><span class=mf>0.2</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>for</span> <span class=n>step</span> <span class=ow>in</span> <span class=nb>range</span><span class=p>(</span><span class=mi>8</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>    <span class=n>optimizer</span><span class=o>.</span><span class=n>zero_grad</span><span class=p>()</span>       <span class=c1># 1. 清空上一轮梯度</span>
+</span></span><span class=line><span class=cl>    <span class=n>loss</span> <span class=o>=</span> <span class=p>(</span><span class=n>w</span> <span class=o>-</span> <span class=mi>4</span><span class=p>)</span><span class=o>**</span><span class=mi>2</span>           <span class=c1># 2. 前向计算损失</span>
+</span></span><span class=line><span class=cl>    <span class=n>loss</span><span class=o>.</span><span class=n>backward</span><span class=p>()</span>             <span class=c1># 3. 自动计算梯度</span>
+</span></span><span class=line><span class=cl>    <span class=n>optimizer</span><span class=o>.</span><span class=n>step</span><span class=p>()</span>            <span class=c1># 4. 更新参数</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=c1># 重新计算更新后的损失用于记录</span>
+</span></span><span class=line><span class=cl>    <span class=k>with</span> <span class=n>torch</span><span class=o>.</span><span class=n>no_grad</span><span class=p>():</span>
+</span></span><span class=line><span class=cl>        <span class=n>updated_loss</span> <span class=o>=</span> <span class=p>(</span><span class=n>w</span> <span class=o>-</span> <span class=mi>4</span><span class=p>)</span><span class=o>**</span><span class=mi>2</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=nb>print</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>        <span class=sa>f</span><span class=s2>&#34;第 </span><span class=si>{</span><span class=n>step</span> <span class=o>+</span> <span class=mi>1</span><span class=si>:</span><span class=s2>02d</span><span class=si>}</span><span class=s2> 步：&#34;</span>
+</span></span><span class=line><span class=cl>        <span class=sa>f</span><span class=s2>&#34;w=</span><span class=si>{</span><span class=n>w</span><span class=o>.</span><span class=n>item</span><span class=p>()</span><span class=si>:</span><span class=s2>.4f</span><span class=si>}</span><span class=s2>, &#34;</span>
+</span></span><span class=line><span class=cl>        <span class=sa>f</span><span class=s2>&#34;更新后损失=</span><span class=si>{</span><span class=n>updated_loss</span><span class=o>.</span><span class=n>item</span><span class=p>()</span><span class=si>:</span><span class=s2>.6f</span><span class=si>}</span><span class=s2>&#34;</span>
+</span></span><span class=line><span class=cl>    <span class=p>)</span>
+</span></span></code></pre></td></tr></table></div></div><p>参数会逐渐向 4 靠近，损失也会下降。学习率控制每次更新的幅度；学习率过大可能造成震荡，过小则可能收敛缓慢。</p><p>训练循环的基本结构是：前向计算、计算损失、反向传播、清理/管理梯度、更新参数。自动微分负责求梯度，优化器负责根据梯度更新参数，两者不是同一件事。</p><p>如需详细学习，可前往<a class=link href=https://zh.d2l.ai/ target=_blank rel=noopener>《动手学深度学习》</a>研究。</p></section><footer class="article-meta article-footer"><section class=article-tags><a href=/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86/>深度学习-预备知识</a></section><section class="article-copyright inline-meta"><svg class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>Licensed under <a class=link href=https://creativecommons.org/licenses/by-nc-sa/4.0/ target=_blank rel=noopener>CC BY-NC-SA 4.0</a></span></section></footer><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css integrity=sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV crossorigin=anonymous><script src=https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js integrity=sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG+vnGctmUb0ZY0l8 crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js integrity=sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05 crossorigin=anonymous defer></script><script>window.addEventListener("DOMContentLoaded",()=>{const e=[".main-article",".widget--toc"];e.forEach(e=>{const t=document.querySelector(e);t&&renderMathInElement(t,{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1},{left:"\\(",right:"\\)",display:!1},{left:"\\[",right:"\\]",display:!0}],ignoredClasses:["gist"]})})})</script></article><aside><h2 class=section-title>相关文章</h2><div class=subsection-list><div class=article-list--tile><article class=has-image><a href=/p/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86%E5%BE%AE%E7%A7%AF%E5%88%86pytorch-%E7%89%88/><div class=article-image><img alt="Featured image of post 动手学深度学习笔记 · 预备知识：微积分（PyTorch 版）📘" height=150 loading=lazy src=/p/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86%E5%BE%AE%E7%A7%AF%E5%88%86pytorch-%E7%89%88/wallhaven-vp29op_1920x1080_hu_47875e3e8dc5348.png srcset="/p/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86%E5%BE%AE%E7%A7%AF%E5%88%86pytorch-%E7%89%88/wallhaven-vp29op_1920x1080_hu_47875e3e8dc5348.png 1x, /p/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86%E5%BE%AE%E7%A7%AF%E5%88%86pytorch-%E7%89%88/wallhaven-vp29op_1920x1080_hu_a8792b65558ba3b1.png 2x" width=250></div><div class=article-details style="background:linear-gradient(0deg,#373f4a80 0%,#b2bfd1C0 100%)"><h2 class=article-title>动手学深度学习笔记 · 预备知识：微积分（PyTorch 版）📘</h2></div></a></article><article class=has-image><a href=/p/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0pytorch-%E7%89%88/><div class=article-image><img alt="Featured image of post 动手学深度学习笔记 · 预备知识：线性代数（PyTorch 版）📘" height=150 loading=lazy src=/p/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0pytorch-%E7%89%88/wallhaven-mlo1k8_1920x1080_hu_c4a2cfea324b5787.png srcset="/p/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0pytorch-%E7%89%88/wallhaven-mlo1k8_1920x1080_hu_c4a2cfea324b5787.png 1x, /p/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0pytorch-%E7%89%88/wallhaven-mlo1k8_1920x1080_hu_e9ce77222586e5a3.png 2x" width=250></div><div class=article-details style="background:linear-gradient(0deg,#c8ced880 0%,#457295C0 100%)"><h2 class=article-title>动手学深度学习笔记 · 预备知识：线性代数（PyTorch 版）📘</h2></div></a></article><article class=has-image><a href=/p/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86%E6%95%B0%E6%8D%AE%E9%A2%84%E5%A4%84%E7%90%86pytorch-%E7%89%88/><div class=article-image><img alt="Featured image of post 动手学深度学习笔记 · 预备知识：数据预处理（PyTorch 版）📘" height=150 loading=lazy src=/p/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86%E6%95%B0%E6%8D%AE%E9%A2%84%E5%A4%84%E7%90%86pytorch-%E7%89%88/wallhaven-jel1jq_1920x1080_hu_caaa4dc17fbadfbf.png srcset="/p/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86%E6%95%B0%E6%8D%AE%E9%A2%84%E5%A4%84%E7%90%86pytorch-%E7%89%88/wallhaven-jel1jq_1920x1080_hu_caaa4dc17fbadfbf.png 1x, /p/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86%E6%95%B0%E6%8D%AE%E9%A2%84%E5%A4%84%E7%90%86pytorch-%E7%89%88/wallhaven-jel1jq_1920x1080_hu_8193ba89f9aef95e.png 2x" width=250></div><div class=article-details style="background:linear-gradient(0deg,#414b9380 0%,#1e202cC0 100%)"><h2 class=article-title>动手学深度学习笔记 · 预备知识：数据预处理（PyTorch 版）📘</h2></div></a></article><article class=has-image><a href=/p/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86%E6%95%B0%E6%8D%AE%E6%93%8D%E4%BD%9Cpytorch-%E7%89%88/><div class=article-image><img alt="Featured image of post 动手学深度学习笔记 · 预备知识：数据操作（PyTorch 版）📘" height=150 loading=lazy src=/p/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86%E6%95%B0%E6%8D%AE%E6%93%8D%E4%BD%9Cpytorch-%E7%89%88/wallhaven-yqk2q7_1920x1080_hu_2cd030583da73779.png srcset="/p/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86%E6%95%B0%E6%8D%AE%E6%93%8D%E4%BD%9Cpytorch-%E7%89%88/wallhaven-yqk2q7_1920x1080_hu_2cd030583da73779.png 1x, /p/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86%E6%95%B0%E6%8D%AE%E6%93%8D%E4%BD%9Cpytorch-%E7%89%88/wallhaven-yqk2q7_1920x1080_hu_7735136d8b22175b.png 2x" width=250></div><div class=article-details style="background:linear-gradient(0deg,#ca9d9480 0%,#39291bC0 100%)"><h2 class=article-title>动手学深度学习笔记 · 预备知识：数据操作（PyTorch 版）📘</h2></div></a></article></div></div></aside><script src=https://utteranc.es/client.js repo=winnermeat/winnermeat.github.io issue-term=pathname crossorigin=anonymous async></script><style>.utterances{max-width:unset}</style><script>let utterancesLoaded=!1;function setUtterancesTheme(e){let t=document.querySelector(".utterances iframe");t&&t.contentWindow.postMessage({type:"set-theme",theme:`github-${e}`},"https://utteranc.es")}addEventListener("message",e=>{if(e.origin!=="https://utteranc.es")return;utterancesLoaded=!0,setUtterancesTheme(document.documentElement.dataset.scheme)}),window.addEventListener("onColorSchemeChange",e=>{if(!utterancesLoaded)return;setUtterancesTheme(e.detail)})</script><footer class=site-footer><section class=copyright>&copy;
+2026 愤怒的大角牛</section><section class=powerby>使用 <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a> 构建<br>主题 <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=4.0.3>Stack</a></b> 由 <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a> 设计</section></footer><script type=module>
+    import gallery from '\/ts\/gallery.js';
+
+    const articleContent = document.querySelector('.article-content');
+    const shouldLoad = articleContent && (articleContent.querySelectorAll('figure').length > 0 || articleContent.querySelectorAll('img.gallery-image').length > 0);
+    
+    if (shouldLoad) {
+        gallery(articleContent);
+
+        const PhotoSwipeLightbox = (await import("https:\/\/cdn.jsdelivr.net\/npm\/photoswipe@5.4.4\/dist\/photoswipe-lightbox.esm.min.js")).default;
+        const styleHref = "https:\/\/cdn.jsdelivr.net\/npm\/photoswipe@5.4.4\/dist\/photoswipe.css";
+
+        const styleTag = document.createElement('link');
+        styleTag.rel = 'stylesheet';
+        styleTag.href = styleHref;
+        document.head.appendChild(styleTag);
+
+        const lightbox = new PhotoSwipeLightbox({
+            gallerySelector: '.article-content',
+            childSelector: 'figure a.image-link',
+            pswpModule: () => import("https:\/\/cdn.jsdelivr.net\/npm\/photoswipe@5.4.4\/dist\/photoswipe.esm.min.js")
+        });
+        lightbox.init();
+    }
+</script></main></div><script type=text/javascript src=/ts/main.f856840516f7c2ad1769a8f5937e3d08d6cb386e2cd2dd025ae696e0ff207958.js defer></script></body></html>
